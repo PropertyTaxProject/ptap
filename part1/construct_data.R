@@ -30,9 +30,8 @@ assessments <- fread("data/assessments.csv", colClasses = "character") %>%
 
 assessments <- 
   assessments %>% mutate(CCAO_APPEAL = ifelse(APPEALED == "true", 1, 0),
-                         WON_CCAO = ifelse(CCAO_APPEAL == "1", ifelse(CHANGED == "YES", 1, 0), NA),
-                         WON_BOR = ifelse(`BOR RESULT` < CERTIFIED, 1, 0)) %>% 
-  select(PIN, CLASS, NBHD, TOWN, `BOR RESULT`, `TOWN NAME`, CCAO_APPEAL, WON_CCAO, WON_BOR)
+                         WON_CCAO = ifelse(CCAO_APPEAL == "1", ifelse(CHANGED == "YES", 1, 0), NA)) %>% 
+  select(PIN, CLASS, NBHD, TOWN, CERTIFIED, `TOWN NAME`, CCAO_APPEAL, WON_CCAO)
 
 sales <- fread("data/sales.csv", colClasses = "character") %>% 
   select(PIN, `Sale Price`, `Sale Year`) %>% 
@@ -43,5 +42,17 @@ sales <- fread("data/sales.csv", colClasses = "character") %>%
 joined2 <- assessments %>% left_join(sales)
 
 full <- joined %>% left_join(joined2)
-write_csv(full, "data/combined.csv")
+
+
+good_classes <- c(202, 203, 204, 205, 206, 207, 208, 209, 210, 234, 278, 295)
+bad_classes <- c(211, 212, 299)
+
+full <- full %>% mutate(stories_recode = case_when(`Type of Residence` %in% c("1", "4", "5", "6", "7", "8", "9") ~ "1",
+                                                   TRUE ~ `Type of Residence`),
+                        basement_recode = case_when(Basement %in% c("2", "3", "4") ~ "0",
+                                                    Basement == "1" ~ "1")
+)
+
+fwrite(full %>% filter(CLASS %in% good_classes), "data/combined.csv")
+fwrite(full %>% filter(CLASS %in% bad_classes), "data/otherclasses.csv")
 
