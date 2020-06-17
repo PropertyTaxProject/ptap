@@ -1,35 +1,3 @@
-library(tidyverse)
-library(data.table)
-library(geosphere)
-library(knitr)
-
-num_cols <-
-  c(
-    "Longitude",
-    "Latitude",
-    "Age",
-    "Rooms",
-    "Building Square Feet",
-    "Land Square Feet",
-    "Type of Residence",
-    "Bedrooms",
-    "Basement",
-    "Garage indicator",
-    "CERTIFIED"
-  )
-
-full <-
-  fread("data/combined.csv", colClasses = "character") %>%
-  mutate(across(all_of(num_cols), as.numeric)) %>%
-  as.data.frame()
-
-target_pin <- full %>% filter(PIN == "26321040040000")
-
-make_comps_report(target_pin, full)
-
-#mini <- full %>% filter(CERTIFIED < 200000) %>% sample_n(5000)
-#tst3 <- process_many_pins(mini, full)
-
 calc_dist <- function(target_pin, comps_universe, dist_filter) {
   comps_universe <-
     comps_universe %>% mutate(DISTANCE =
@@ -114,7 +82,7 @@ process_one_pin <- function(target_pin, comps_universe){
   
   if(nrow(cur_comps) > 5){
     dist_weight <- 1
-    valuation_weight <- 2
+    valuation_weight <- 3
     
     #generate distributions
     dist_funct <- ecdf(cur_comps$DISTANCE)
@@ -125,10 +93,17 @@ process_one_pin <- function(target_pin, comps_universe){
         dist_dist = dist_funct(DISTANCE),
         val_dist = val_funct(CERTIFIED),
         score = dist_weight * dist_dist + valuation_weight * val_dist
-      ) %>%
-      top_n(-6, score) %>%
-      arrange(score)
-  } else{
+      )
+    
+    top_comps <- cur_comps %>% top_n(-6, score)
+    
+    if(mean(top_comps$CERTIFIED) < target_pin$CERTIFIED){
+      cur_comps <- top_comps
+    } else {
+      
+    }
+    cur_comps <- cur_comps %>% arrange(score)
+  } else {
     cur_comps <- data.frame()
     print(target_pin$PIN)
   }

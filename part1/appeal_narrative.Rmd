@@ -42,7 +42,7 @@ if(pct_diff < 0){
 
 Utilizing data released from the Cook County Assessor's Office, including [Property Characteristics](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Property-Charac/bcnq-qi2z), the following properties are identified as comparables valued less than `r params$PIN` (`r target_pin["Property Address"]`).
 
-These comparables have an average assessed value of `r dollar(mean_comps)` which is `r paste0( percent(abs(pct_diff)), " ", diff_txt, " ", params$PIN, "'s assessed value of ", dollar(target_pin["Assessed Value"][[1]]))`.
+These comparables have an average assessed value of `r dollar(mean_comps)` which is `r paste0( percent(abs(pct_diff)), " ", diff_txt, " ", params$PIN, "'s current assessed value of ", dollar(target_pin["Assessed Value"][[1]]))`.
 
 ### Suggested Comparables
 
@@ -52,8 +52,8 @@ kable(comps %>%
                `Property Address`,
                `Assessed Value`) %>%
         mutate(`Assessed Value` = dollar(`Assessed Value`)
-  )
-)
+               )
+      )
 ```
 
 # Analysis of Comparables
@@ -73,7 +73,6 @@ kable(data %>% select(
 ))
 ```
 
-&nbsp;
 
 ```{r}
 kable(
