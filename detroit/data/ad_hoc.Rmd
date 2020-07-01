@@ -117,6 +117,10 @@ kable(close_by_props %>% count(TERMS)) %>%
   )
 ```
 
+## Map of Foreclosures
+
+
+
 ## Regressivity Levels
 
 ```{r}
@@ -131,6 +135,8 @@ crs = st_crs(4326)) %>%
 
 close_by <- st_within(detroit_1619, filter_bbox)
 filt_data <- detroit_1619[which(lengths(close_by) != 0), ]
+
+filt_data <- filt_data %>% filter(sl_trms == "VALID ARMS LENGTH")
 
 arms_length_transactions <-
   cmfproperty::reformat_data(
@@ -187,8 +193,8 @@ new_data <-
 
 pal <-
   colorBin(
-    palette = "RdYlGn",
-    bins=c(0,0.5,0.6,0.8,1,2,Inf),
+    palette = c("Red", "Orange", "Dark Green"),
+    bins=c(0,0.5,0.6,Inf),
     reverse = TRUE,
     domain = new_data$mean_ratio,
     na.color = "Grey"
@@ -231,11 +237,13 @@ assessments_mini <-
 
 assessments_mini <- assessments_mini %>% left_join(summ_data)
 
+
 pal <-
-  colorNumeric(
-    palette = "RdYlGn",
+  colorBin(
+    palette = c("Red", "Orange", "Dark Green"),
+    bins=c(0,0.5,0.6,Inf),
     reverse = TRUE,
-    domain = assessments_mini$mean_ratio,
+    domain =  assessments_mini$mean_ratio,
     na.color = "Grey"
   )
 
