@@ -3,7 +3,7 @@ library(data.table)
 library(geosphere)
 library(knitr)
 
-source("part1/comps.R")
+source("attachments/comps.R")
 
 num_cols <-
   c(

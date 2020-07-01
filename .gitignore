@@ -168,5 +168,4 @@ rsconnect/
 
 
 #data files
-cook county/data/*
-detroit/data/*
+*.csv

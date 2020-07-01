@@ -167,12 +167,12 @@ make_comps_report <- function(target_pin, comps_universe){
   comps <- process_one_pin(target_pin, comps_universe)
   tbl_data <- summary_data(target_pin, comps)
 
-  rmarkdown::render("part1/comps_report.Rmd",
+  rmarkdown::render("attachments/comps_report.Rmd",
                     params = list(PIN = target_pin$PIN,
                                   inputdata = tbl_data),
                     output_file = paste0("../reports/", target_pin$PIN, "_comps.pdf"))
   
-  rmarkdown::render("part1/appeal_narrative.Rmd",
+  rmarkdown::render("attachments/appeal_narrative.Rmd",
                     params = list(PIN = target_pin$PIN,
                                   inputdata = tbl_data),
                     output_file = paste0("../reports/", target_pin$PIN, "_narrative.pdf"))

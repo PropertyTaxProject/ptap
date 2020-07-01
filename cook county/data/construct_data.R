@@ -2,8 +2,8 @@ library(tidyverse)
 library(data.table)
 
 #characteristics
-characteristics <- fread("data/characteristics.csv", colClasses = "character")
-addresses <- fread("data/addresses.csv", colClasses = "character")
+characteristics <- fread("characteristics.csv", colClasses = "character")
+addresses <- fread("addresses.csv", colClasses = "character")
 
 characteristics <- characteristics %>% 
   filter(`Tax Year` == 2019) %>% 
@@ -25,7 +25,7 @@ addresses <- addresses %>%
 joined <- characteristics %>% left_join(addresses, by=c("Property Address" = "CMPADDABRV", "PIN10"))
 
 #add most recent assessment/sale
-assessments <- fread("data/assessments.csv", colClasses = "character") %>% 
+assessments <- fread("assessments.csv", colClasses = "character") %>% 
   filter(YEAR == 2019)
 
 assessments <- 
@@ -33,7 +33,7 @@ assessments <-
                          WON_CCAO = ifelse(CCAO_APPEAL == "1", ifelse(CHANGED == "YES", 1, 0), NA)) %>% 
   select(PIN, CLASS, NBHD, TOWN, CERTIFIED, `TOWN NAME`, CCAO_APPEAL, WON_CCAO)
 
-sales <- fread("data/sales.csv", colClasses = "character") %>% 
+sales <- fread("sales.csv", colClasses = "character") %>% 
   select(PIN, `Sale Price`, `Sale Year`) %>% 
   filter(`Sale Price` > 1000) %>%
   arrange(-as.numeric(`Sale Year`)) %>%
@@ -53,6 +53,6 @@ full <- full %>% mutate(stories_recode = case_when(`Type of Residence` %in% c("1
                                                     Basement == "1" ~ "1")
 )
 
-fwrite(full %>% filter(CLASS %in% good_classes), "data/combined.csv")
-fwrite(full %>% filter(CLASS %in% bad_classes), "data/otherclasses.csv")
+fwrite(full %>% filter(CLASS %in% good_classes), "combined.csv")
+fwrite(full %>% filter(CLASS %in% bad_classes), "otherclasses.csv")
 
