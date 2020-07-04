@@ -115,7 +115,7 @@ const PinForm = () => (
   </Form.Item>
 );
 
-const RegistrationForm = (props) => {
+const PropertyForm = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
@@ -170,11 +170,11 @@ const RegistrationForm = (props) => {
 
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">
-          Register
+          Submit
         </Button>
       </Form.Item>
     </Form>
   );
 };
 
-export default RegistrationForm;
+export default PropertyForm;
