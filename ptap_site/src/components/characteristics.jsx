@@ -31,7 +31,6 @@ const CharactaristicsTable = (props) => {
     return <Column title={title} dataIndex={header} key={header} />;
   }).sort();
 
-  console.log(data);
   const labeledData = data.map((property, idx) => ({ property: idx === 0 ? 'Your Property' : `Comparable ${idx}`, ...property }));
 
   return (
@@ -41,14 +40,14 @@ const CharactaristicsTable = (props) => {
       <Column
         title="Action"
         key="action"
-        render={(text, record, idx) => (
-          idx === 0 ? null
+        render={(text, record) => (
+          record.property === 'Your Property' ? null
             : (
               <Button
                 danger
                 onClick={() => {
                   setLoading(true);
-                  props.removeComparable(idx).then(() => {
+                  props.removeComparable(Number.parseInt(record.property.split(' ')[1], 10)).then(() => {
                     setLoading(false);
                   });
                 }}

@@ -24,6 +24,10 @@ const submitForm = async (info) => {
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
 const Page = () => {
+  const a = [];
+  for (let i = 0; i < 20; i += 1) {
+    a.push({ sqft: Math.round(Math.random() * 10000), bedrooms: Math.round(Math.random() * 5) });
+  }
   const [data, setData] = useState([
     {
       sqft: 2000,
@@ -39,6 +43,7 @@ const Page = () => {
       sqft: 3050,
       bedrooms: 2,
     },
+    ...a,
   ]);
   return (
     <Layout className="layout">
