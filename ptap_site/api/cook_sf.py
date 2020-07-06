@@ -44,8 +44,6 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
     
     print(new.shape)
-
-    targ['Distance'] = 0
         
     return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
@@ -54,7 +52,8 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
     # for now, let's do cook sf only
     # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
     target_pin = '16052120090000' #replace with actual input
-    targ = cook_sf[cook_sf['PIN'] == target_pin]
+    targ = cook_sf[cook_sf['PIN'] == target_pin].copy(deep=True)
+    targ['Distance'] = 0
 
     new_targ, cur_comps = comps_cook_sf(targ, cook_sf, multiplier)
     
@@ -74,6 +73,6 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
         output['target_pin'] = new_targ.to_json(orient='records')
         output['comparables'] = cur_comps.to_json(orient='records') 
 
-        print(output)
+        #print(output)
 
         return output
