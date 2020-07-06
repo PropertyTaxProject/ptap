@@ -11,7 +11,8 @@ def ecdf(x):
     return _ecdf
 
 def filter_on(df, col, val, range_val, debug=False):
-    print(df.shape)
+    if debug:
+        print(df.shape)
     
     if (col in ['Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator']) & (range_val == 'Match'):
         if debug:

@@ -19,6 +19,14 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
     'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
     'Distance', 'CERTIFIED']
+
+    cook_sf_rename_dict = {
+        'Property Class':'property_class',
+        'Building Square Feet':'building_sqft',
+        'Land Square Feet':'land_sqft',
+        'Wall Material':'wall_material',
+        'Garage indicator':'garage',
+    }
     ###
        
     new = cook_sf[cook_sf['PIN'] != targ['PIN'].values[0]]
@@ -36,8 +44,10 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
     
     print(new.shape)
+
+    targ['Distance'] = 0
         
-    return(new[cook_sf_cols])
+    return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
 def process_one_pin(input_data, cook_sf, multiplier=1):
     # for now, input only as pin 
@@ -46,7 +56,7 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
     target_pin = '16052120090000' #replace with actual input
     targ = cook_sf[cook_sf['PIN'] == target_pin]
 
-    cur_comps = comps_cook_sf(targ, cook_sf, multiplier)
+    new_targ, cur_comps = comps_cook_sf(targ, cook_sf, multiplier)
     
     if(multiplier > 3): #no comps found with parameters stop search
         return ''
@@ -61,6 +71,9 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
         cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
         cur_comps = cur_comps.sort_values(by=['score'])
         output = {}
-        output['target_pin'] = targ.to_json(orient='records')
+        output['target_pin'] = new_targ.to_json(orient='records')
         output['comparables'] = cur_comps.to_json(orient='records') 
+
+        print(output)
+
         return output
