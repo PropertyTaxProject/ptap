@@ -55,6 +55,12 @@ full <- full %>% mutate(stories_recode = case_when(`Type of Residence` %in% c("1
                                                     Basement == "1" ~ "1")
 ) %>% select(-CLASS, -NBHD, -TOWN)
 
+
+
+full <- full %>% select('PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
+                         'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
+                         'CERTIFIED', 'Longitude', 'Latitude')
+
 fwrite(full %>% filter(`Property Class` %in% res_classes), paste0(file_loc, "cooksf.csv"))
 fwrite(full %>% filter(`Property Class` %in% condos), paste0(file_loc, "cookcondos.csv"))
 
