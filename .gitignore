@@ -168,4 +168,5 @@ rsconnect/
 
 
 #data files
-
+*.docx
+*.html
