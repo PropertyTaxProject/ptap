@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Layout, Menu } from 'antd';
 import axios from 'axios';
-import FormInput from './components/form-input';
 import * as serviceWorker from './serviceWorker';
+import FormInput from './components/form-input';
+import Characteristics from './components/characteristics';
 
 import 'antd/dist/antd.css';
 
@@ -19,21 +20,53 @@ const submitForm = async (info) => {
   }
 };
 
-ReactDOM.render(
-  <React.StrictMode>
+// TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
+const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
+
+const Page = () => {
+  const [data, setData] = useState([
+    {
+      sqft: 2000,
+      bedrooms: 2,
+    },
+    {
+      pin: '124',
+      sqft: 3000,
+      bedrooms: 3,
+    },
+    {
+      pin: '125',
+      sqft: 3050,
+      bedrooms: 2,
+    },
+  ]);
+  return (
     <Layout className="layout">
       <Header>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+        <Menu theme="dark" mode="horizontal">
           <Menu.Item key="1">PTAP</Menu.Item>
         </Menu>
       </Header>
-      <Content style={{ padding: '0 50px' }}>
+      <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
           <FormInput submitForm={submitForm} />
+          <Characteristics
+            data={data}
+            removeComparable={async (idx) => {
+              setData(await removeComparable(data, idx));
+              console.log(`removed ${idx}`);
+            }}
+          />
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Property Tax Appeal Project</Footer>
     </Layout>
+  );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Page />
   </React.StrictMode>,
   document.getElementById('root'),
 );

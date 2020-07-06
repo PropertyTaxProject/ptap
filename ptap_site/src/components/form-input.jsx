@@ -10,20 +10,21 @@ import {
 
 const formItemLayout = {
   labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 8,
-    },
+    span: 24,
   },
   wrapperCol: {
     xs: {
       span: 24,
     },
     sm: {
-      span: 16,
+      span: 20,
     },
+    md: {
+      span: 18,
+    },
+    lg: {
+      span: 14, 
+    }
   },
 };
 const tailFormItemLayout = {
@@ -33,8 +34,8 @@ const tailFormItemLayout = {
       offset: 0,
     },
     sm: {
-      span: 16,
-      offset: 8,
+      span: 24,
+      offset: 0,
     },
   },
 };
@@ -128,6 +129,7 @@ const PropertyForm = (props) => {
       form={form}
       name="Housing Information"
       onFinish={onFinish}
+      labelAlign="left"
       initialValues={{
         identifier: 'address',
       }}
@@ -136,9 +138,10 @@ const PropertyForm = (props) => {
       {...formItemLayout}
     >
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 16, offset: 8 }}>
+        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h2>Property information form</h2>
           <p>Fill out this form and submit to see comparable value properties</p>
+          <br />
         </Col>
       </Row>
       <Form.Item
