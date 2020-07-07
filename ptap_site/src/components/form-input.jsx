@@ -139,7 +139,7 @@ const PropertyForm = (props) => {
     >
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-          <h2>Property information form</h2>
+          <h1>Property information form</h1>
           <p>Fill out this form and submit to see comparable value properties</p>
           <br />
         </Col>

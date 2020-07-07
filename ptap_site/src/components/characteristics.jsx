@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Form,
-  Input,
-  Radio,
   Button,
-  Row,
-  Col,
   Table,
-  Tag,
-  Space,
 } from 'antd';
 
 const { Column } = Table;

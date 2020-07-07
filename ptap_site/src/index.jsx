@@ -11,10 +11,12 @@ import 'antd/dist/antd.css';
 
 const { Header, Content, Footer } = Layout;
 
-const submitForm = async (info) => {
+const submitForm = async (info, setData) => {
   try {
     const resp = await axios.post('/api_v1/submit', info);
-    console.log(resp.data);
+    console.log(resp);
+    const data = resp.data.response.target_pin.concat(resp.data.response.comparables);
+    setData(data);
   } catch (e) {
     console.error(e);
   }
@@ -29,21 +31,21 @@ const Page = () => {
     a.push({ sqft: Math.round(Math.random() * 10000), bedrooms: Math.round(Math.random() * 5) });
   }
   const [data, setData] = useState([
-    {
-      sqft: 2000,
-      bedrooms: 2,
-    },
-    {
-      pin: '124',
-      sqft: 3000,
-      bedrooms: 3,
-    },
-    {
-      pin: '125',
-      sqft: 3050,
-      bedrooms: 2,
-    },
-    ...a,
+    // {
+    //   sqft: 2000,
+    //   bedrooms: 2,
+    // },
+    // {
+    //   pin: '124',
+    //   sqft: 3000,
+    //   bedrooms: 3,
+    // },
+    // {
+    //   pin: '125',
+    //   sqft: 3050,
+    //   bedrooms: 2,
+    // },
+    // ...a,
   ]);
   return (
     <Layout className="layout">
@@ -54,7 +56,7 @@ const Page = () => {
       </Header>
       <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
-          <FormInput submitForm={submitForm} />
+          <FormInput submitForm={(info) => submitForm(info, setData)} />
           <Characteristics
             data={data}
             removeComparable={async (idx) => {
