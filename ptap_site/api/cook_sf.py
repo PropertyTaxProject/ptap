@@ -45,9 +45,7 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     new = filter_on(new, 'Garage indicator', targ['Garage indicator'].values[0], garage_ind)
 
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
-    
-    print(new.shape)
-        
+            
     return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
 def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
@@ -77,8 +75,6 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
         output = {}
         output['target_pin'] = new_targ.to_dict(orient='records')
         output['comparables'] = cur_comps.to_dict(orient='records') 
-
-        #print(output)
 
         return output
 
@@ -135,9 +131,9 @@ def submit_cook_sf(input_data):
     filer['owner_email'] = 'tmp2@tmp.com'
 
     attachments = {}
-    attachments['appeal_narrative'] = 'narrative.pdf'
-    attachments['attorney_auth_form'] = 'attorney.pdf'
-    attachments['comparable_form'] = 'comparables.pdf'
+    attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
+    attachments['attorney_auth_form'] = 'attorney.pdf' #TBD
+    attachments['comparable_form'] = 'tmp_data/' + PIN + '_comps.pdf'
 
     output['begin_appeal'] = begin_appeal
     output['filer'] = filer
