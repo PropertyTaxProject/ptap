@@ -1,5 +1,12 @@
 # PTAP Site
 
+## External Dependencies
+
+- R (>3.3, including rmarkdown, tidyverse, knitr, kableExtra)
+- pandoc
+- latex
+
+
 ## Quick Start
 
 Run the following lines to build and start the app. Must have yarn and flask installed. Run `yarn start-api` on a separate terminal.
