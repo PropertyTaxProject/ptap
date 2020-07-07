@@ -34,7 +34,7 @@ def get_comps(form_data):
     }
     """
     data_json = process_one_pin(form_data, cook_sf, 25)
-    finalize_appeal('') ##TMP
+    finalize_appeal('') #this call is here only until we have a submit for page 2
 
     return(data_json)
 
