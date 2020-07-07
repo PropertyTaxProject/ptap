@@ -1,4 +1,7 @@
 from computils import filter_on, ecdf #module
+from subprocess import Popen
+import csv
+
 
 def comps_cook_sf(targ, cook_sf, multiplier):
     ###
@@ -47,7 +50,7 @@ def comps_cook_sf(targ, cook_sf, multiplier):
         
     return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
-def process_one_pin(input_data, cook_sf, multiplier=1):
+def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
     # for now, input only as pin 
     # for now, let's do cook sf only
     # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
@@ -60,7 +63,7 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
     if(multiplier > 3): #no comps found with parameters stop search
         return ''
     elif(cur_comps.shape[0] < 10): # find more comps
-        return process_one_pin(input_data, multiplier*1.25)
+        return process_one_pin(input_data, multiplier*1.25, 'All')
     else: # return best comps
         dist_weight = 1
         valuation_weight = 3
@@ -69,10 +72,75 @@ def process_one_pin(input_data, cook_sf, multiplier=1):
         cur_comps['val_dist'] = ecdf(cur_comps.CERTIFIED)(cur_comps.CERTIFIED)
         cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
         cur_comps = cur_comps.sort_values(by=['score'])
+        if max_comps != 'All': #return all comps if 'All' else filter
+            cur_comps = cur_comps.head(max_comps)
         output = {}
-        output['target_pin'] = new_targ.to_json(orient='records')
-        output['comparables'] = cur_comps.to_json(orient='records') 
+        output['target_pin'] = new_targ.to_dict(orient='records')
+        output['comparables'] = cur_comps.to_dict(orient='records') 
 
         #print(output)
 
         return output
+
+def submit_cook_sf(input_data):
+    '''
+    Output:
+    {
+        'begin_appeal' : {'PIN':val},
+        'filer': {'attorney_num' : val,
+                  'attorney_email': val,
+                  'owner_name': val,
+                  'owner_address': val,
+                  'owner_zip': val,
+                  'owner_phone': val,
+                  'owner_email': val},
+        'attachments': {'appeal_narrative': file_loc,
+                        'attorney_auth_form': file_loc,
+                        'comparable_form': file_loc}
+
+    }
+    '''
+
+    #let's get some dummy input for generating the attachments
+
+    #generating attachments
+    PIN = input_data['target_pin'][0]['PIN']
+    file_pred = 'tmp_data/' + PIN 
+
+    with open(file_pred + '_target.csv', 'w') as f:
+        w =  csv.DictWriter(f, input_data['target_pin'][0].keys())
+        w.writeheader()
+        w.writerow(input_data['target_pin'][0])
+
+    with open(file_pred + '_comps.csv', 'w') as f:
+        w =  csv.DictWriter(f, input_data['comparables'][0].keys())
+        w.writeheader()
+        w.writerows(input_data['comparables'])
+
+    Popen(['Rscript', '--vanilla', 'make_attachments_py.R', file_pred + '_target.csv', file_pred + '_comps.csv'], shell=False)
+
+    #info for autofiler
+    output = {}
+
+    begin_appeal = {}
+    begin_appeal['PIN'] = '16052120090000'
+
+    filer = {}
+    filer['attorney_num'] = '123456'
+    filer['attorney_email'] = 'tmp@tmp.com'
+    filer['owner_name'] = 'My Name'
+    filer['owner_address'] = '123 TEST ST'
+    filer['owner_zip'] = 60615
+    filer['owner_phone'] = '123456789'
+    filer['owner_email'] = 'tmp2@tmp.com'
+
+    attachments = {}
+    attachments['appeal_narrative'] = 'narrative.pdf'
+    attachments['attorney_auth_form'] = 'attorney.pdf'
+    attachments['comparable_form'] = 'comparables.pdf'
+
+    output['begin_appeal'] = begin_appeal
+    output['filer'] = filer
+    output['attachments'] = attachments   
+    
+    return output

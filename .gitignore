@@ -170,3 +170,6 @@ rsconnect/
 #data files
 *.docx
 *.html
+*.csv
+ptap_site/api/tmp_data/*
+

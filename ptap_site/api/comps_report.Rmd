@@ -1,0 +1,43 @@
+---
+output: pdf_document
+params:
+  PIN:
+    label: "PIN"
+    value: "NA"
+    input: text
+  target:
+    label: "DataFrame"
+    value: ""  
+  comps:
+    label: "DataFrame"
+    value: ""
+title: '`r paste0("Comparables for ", params$PIN)`'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+library(knitr)
+library(kableExtra)
+
+target <- as.data.frame(params$target)
+                        
+comps <- as.data.frame(params$comps)
+```
+
+# Target Property Information
+
+```{r}
+kable(target)
+```
+
+# List of Comparables
+
+```{r}
+kable(comps)
+```
+
