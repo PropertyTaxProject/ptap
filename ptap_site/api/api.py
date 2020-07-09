@@ -1,8 +1,7 @@
 import time
 from flask import Flask, request
 import pandas as pd
-
-from cook_sf import process_one_pin, submit_cook_sf #module
+from cook_sf import process_one_pin, submit_cook_sf
 
 #load data
 cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
@@ -15,9 +14,9 @@ tmp_data = {}
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
     #page 1 form
-    form_data = request.json # this is the data submitted by the form
+    form_data = request.json
 
-    response_dict = get_comps(form_data) # this is the data to send back
+    response_dict = get_comps(form_data)
     global tmp_data
     tmp_data = form_data
 
@@ -28,9 +27,9 @@ def handle_form():
 @app.route('/api_v1/submit2', methods=['POST'])
 def handle_form2():
     #page 2 form
-    form_data = request.json # this is the data submitted by the form
+    form_data = request.json
 
-    response_dict = finalize_appeal(form_data) # this is the data to send back
+    response_dict = finalize_appeal(form_data)
 
     return {'request_status': time.time(),
     'response': response_dict}
@@ -42,7 +41,6 @@ def get_comps(form_data):
     # for now, let's do cook sf only
     # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
 
-    # response format
     """     
     Output:
     {
@@ -72,7 +70,7 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
-    response_dict = submit_cook_sf(form_data, tmp_data) #pull info from first submit down from global
+    response_dict = submit_cook_sf(form_data, tmp_data)
 
     return {'request_status': time.time(),
     'response': response_dict}
