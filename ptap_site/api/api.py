@@ -12,9 +12,21 @@ app = Flask(__name__)
 
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
+    #page 1 form
     form_data = request.json # this is the data submitted by the form
 
     response_dict = get_comps(form_data) # this is the data to send back
+
+    return {'request_status': time.time(),
+    'response': response_dict}
+
+
+@app.route('/api_v1/submit2', methods=['POST'])
+def handle_form2():
+    #page 2 form
+    form_data = request.json # this is the data submitted by the form
+
+    response_dict = finalize_appeal(form_data) # this is the data to send back
 
     return {'request_status': time.time(),
     'response': response_dict}
@@ -34,8 +46,7 @@ def get_comps(form_data):
     }
     """
     data_json = process_one_pin(form_data, cook_sf, 25)
-    finalize_appeal('') #this call is here only until we have a submit for page 2
-
+    
     return(data_json)
 
 

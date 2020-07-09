@@ -52,7 +52,10 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
     # for now, input only as pin 
     # for now, let's do cook sf only
     # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
-    target_pin = '16052120090000' #replace with actual input
+
+    #example pin '16052120090000'
+
+    target_pin = input_data['pin']
     targ = cook_sf[cook_sf['PIN'] == target_pin].copy(deep=True)
     targ['Distance'] = 0
 
@@ -72,6 +75,11 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
         cur_comps = cur_comps.sort_values(by=['score'])
         if max_comps != 'All': #return all comps if 'All' else filter
             cur_comps = cur_comps.head(max_comps)
+
+        print(cur_comps)
+        targ = targ.round(2)
+        cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
+
         output = {}
         output['target_pin'] = new_targ.to_dict(orient='records')
         output['comparables'] = cur_comps.to_dict(orient='records') 
