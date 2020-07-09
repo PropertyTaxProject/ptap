@@ -76,7 +76,6 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
         if max_comps != 'All': #return all comps if 'All' else filter
             cur_comps = cur_comps.head(max_comps)
 
-        print(cur_comps)
         targ = targ.round(2)
         cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
 
@@ -86,9 +85,21 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
 
         return output
 
-def submit_cook_sf(input_data):
+def submit_cook_sf(comp_submit, page_one_submit):
     '''
-    Output:
+    Input:
+    page_one_submit =
+    {
+        tbd
+    }
+
+    comps_submit = 
+    {
+        target_pin : [{char1:val1,...}],
+        comparables : [{char1:val1,...},{char1:val1,...}] #selected comparables only
+    }
+
+    Info for autofiler:
     {
         'begin_appeal' : {'PIN':val},
         'filer': {'attorney_num' : val,
@@ -103,33 +114,38 @@ def submit_cook_sf(input_data):
                         'comparable_form': file_loc}
 
     }
+
+    Output:
+    {
+        success: bool,
+        contention_value: val,
+        message: txt
+    }
     '''
-
-    #let's get some dummy input for generating the attachments
-
     #generating attachments
-    PIN = input_data['target_pin'][0]['PIN']
+    PIN = comp_submit['target_pin'][0]['PIN']
     file_pred = 'tmp_data/' + PIN 
 
     with open(file_pred + '_target.csv', 'w') as f:
-        w =  csv.DictWriter(f, input_data['target_pin'][0].keys())
+        w =  csv.DictWriter(f, comp_submit['target_pin'][0].keys())
         w.writeheader()
-        w.writerow(input_data['target_pin'][0])
+        w.writerow(comp_submit['target_pin'][0])
 
     with open(file_pred + '_comps.csv', 'w') as f:
-        w =  csv.DictWriter(f, input_data['comparables'][0].keys())
+        w =  csv.DictWriter(f, comp_submit['comparables'][0].keys())
         w.writeheader()
-        w.writerows(input_data['comparables'])
+        w.writerows(comp_submit['comparables'])
 
     Popen(['Rscript', '--vanilla', 'make_attachments_py.R', file_pred + '_target.csv', file_pred + '_comps.csv'], shell=False)
 
     #info for autofiler
-    output = {}
+    filer_info = {}
 
     begin_appeal = {}
     begin_appeal['PIN'] = '16052120090000'
 
     filer = {}
+    # replace with info from page_one_submit
     filer['attorney_num'] = '123456'
     filer['attorney_email'] = 'tmp@tmp.com'
     filer['owner_name'] = 'My Name'
@@ -143,8 +159,30 @@ def submit_cook_sf(input_data):
     attachments['attorney_auth_form'] = 'attorney.pdf' #TBD
     attachments['comparable_form'] = 'tmp_data/' + PIN + '_comps.pdf'
 
-    output['begin_appeal'] = begin_appeal
-    output['filer'] = filer
-    output['attachments'] = attachments   
+    filer_info['begin_appeal'] = begin_appeal
+    filer_info['filer'] = filer
+    filer_info['attachments'] = attachments 
+
+    ###
+    # call run autofilier here
+    # output = run_autofiler(filer_info)
+    ####
+
+    # autofilier returns info
+
+    '''
+    {
+        success: bool,
+        contention_value: val,
+        message: txt
+    }
+    '''
+
+    #dummy data
+    output = {}
+
+    output['success'] = 'true'
+    output['contention_value'] = 12345
+    output['message'] = 'appeal filed successfully'
     
     return output
