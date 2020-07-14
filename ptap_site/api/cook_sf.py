@@ -1,4 +1,4 @@
-from computils import filter_on, ecdf #module
+from computils import filter_on, ecdf
 from subprocess import Popen
 import csv
 

@@ -7,6 +7,8 @@ from cook_sf import process_one_pin, submit_cook_sf
 cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
                      dtype={'PIN':str})
 
+#detroit_sf
+
 app = Flask(__name__)
 
 tmp_data = {}
