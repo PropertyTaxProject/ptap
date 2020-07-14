@@ -23,8 +23,8 @@ const formItemLayout = {
       span: 18,
     },
     lg: {
-      span: 14, 
-    }
+      span: 14,
+    },
   },
 };
 const tailFormItemLayout = {
@@ -40,8 +40,41 @@ const tailFormItemLayout = {
   },
 };
 
-const AddressForm = () => (
+const HomeownerInfo = () => (
   <>
+    <Row>
+      <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
+        <h1>Homeowner Information</h1>
+        <br />
+      </Col>
+    </Row>
+    <Form.Item
+      name="name"
+      label="Full Name"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your full name!',
+          whitespace: true,
+        },
+      ]}
+    >
+      <Input />
+    </Form.Item>
+    <Form.Item
+      name="email"
+      label="Email"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your Email!',
+          whitespace: true,
+          type: 'email',
+        },
+      ]}
+    >
+      <Input />
+    </Form.Item>
     <Form.Item
       name="address"
       label="Street Address"
@@ -49,6 +82,20 @@ const AddressForm = () => (
         {
           required: true,
           message: 'Please input your street address!',
+          whitespace: true,
+        },
+      ]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      name="phone"
+      label="Phone Number"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your phone number!',
           whitespace: true,
         },
       ]}
@@ -145,18 +192,19 @@ const PropertyForm = (props) => {
         </Col>
       </Row>
       <Form.Item
-        label="Property Information"
-        name="identifier"
+        label="Appeal Type"
+        name="appeal_type"
         rules={[
           {
             required: true,
-            message: 'Please select a method to identify your property.',
+            message: 'Please select the type of appeal you would like to file.',
           },
         ]}
       >
         <Radio.Group>
-          <Radio.Button value="address">Address</Radio.Button>
-          <Radio.Button value="pin">Pin</Radio.Button>
+          <Radio.Button value="cook_county_single_family">Cook County Single Family</Radio.Button>
+          <Radio.Button value="cook_county_condo">Cook County Condo</Radio.Button>
+          <Radio.Button value="detroit_single_family">Detroit Single Family</Radio.Button>
         </Radio.Group>
       </Form.Item>
 
@@ -166,9 +214,11 @@ const PropertyForm = (props) => {
           (prevValues, currentValues) => prevValues.identifier !== currentValues.identifier
         }
       >
-        {({ getFieldValue }) => (getFieldValue('identifier') === 'address' ? (
+        <PinForm />
+        <HomeownerInfo />
+        {/* {({ getFieldValue }) => (getFieldValue('identifier') === 'address' ? (
           <AddressForm />
-        ) : <PinForm />)}
+        ) : <PinForm />)} */}
       </Form.Item>
 
       <Form.Item {...tailFormItemLayout}>

@@ -22,6 +22,10 @@ const submitForm = async (info, setData) => {
   }
 };
 
+const submitAppeal = async (info) => {
+  console.log('Implement me!');
+};
+
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
@@ -30,40 +34,26 @@ const Page = () => {
   for (let i = 0; i < 20; i += 1) {
     a.push({ sqft: Math.round(Math.random() * 10000), bedrooms: Math.round(Math.random() * 5) });
   }
-  const [data, setData] = useState([
-    // {
-    //   sqft: 2000,
-    //   bedrooms: 2,
-    // },
-    // {
-    //   pin: '124',
-    //   sqft: 3000,
-    //   bedrooms: 3,
-    // },
-    // {
-    //   pin: '125',
-    //   sqft: 3050,
-    //   bedrooms: 2,
-    // },
-    // ...a,
-  ]);
+  const [data, setData] = useState([]);
   return (
     <Layout className="layout">
       <Header>
         <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1">PTAP</Menu.Item>
+          <Menu.Item key="1">Property Tax Appeal Project: Automated Appeal System</Menu.Item>
         </Menu>
       </Header>
       <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
-          <FormInput submitForm={(info) => submitForm(info, setData)} />
-          <Characteristics
-            data={data}
-            removeComparable={async (idx) => {
-              setData(await removeComparable(data, idx));
-              console.log(`removed ${idx}`);
-            }}
-          />
+          { data.length === 0 ? <FormInput submitForm={(info) => submitForm(info, setData)} />
+            : (
+              <Characteristics
+                data={data}
+                removeComparable={async (idx) => {
+                  setData(await removeComparable(data, idx));
+                  console.log(`removed ${idx}`);
+                }}
+              />
+            )}
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Property Tax Appeal Project</Footer>
