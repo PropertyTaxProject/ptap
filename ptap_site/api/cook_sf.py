@@ -161,8 +161,8 @@ def submit_cook_sf(comp_submit, page_one_submit):
     attachments = {}
     attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
     attachments['attorney_auth_form'] = 'attorney.pdf' #TBD file does not exist
-    attachments['comparable_form_alt'] = 'tmp_data/' + PIN + '_comps.pdf'
-    attachments['comparable_form'] = "tmp_data/Comparable PINs for " + hypen_pin + ".csv"
+    attachments['comparable_form_alt'] = 'tmp_data/' + PIN + '_comps.pdf' #keeping this for now, but likely will delete later
+    attachments['comparable_form'] = "tmp_data/Comparable PINs for " + hypen_pin + ".csv" #submit this to form
 
     filer_info['begin_appeal'] = begin_appeal
     filer_info['filer'] = filer
