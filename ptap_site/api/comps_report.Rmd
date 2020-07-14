@@ -77,5 +77,13 @@ kable(target, "latex", booktabs = T) %>%
 ```{r}
 kable(comps, "latex", booktabs = T) %>%
   kable_styling(latex_options = c("striped", "scale_down"))
+
+hypen_pin <- paste0(str_sub(params$PIN, 1, 2), "-", 
+                    str_sub(params$PIN, 3, 4), "-", 
+                    str_sub(params$PIN, 5, 7), "-", 
+                    str_sub(params$PIN, 8, 10), "-",
+                    str_sub(params$PIN, 11, 14))
+
+write_csv(comps, paste0("tmp_data/Comparable PINs for ", hypen_pin, ".csv"))
 ```
 

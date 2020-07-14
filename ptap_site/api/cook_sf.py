@@ -122,6 +122,9 @@ def submit_cook_sf(comp_submit, page_one_submit):
         message: txt
     }
     '''
+    print(page_one_submit)
+
+
     #generating attachments
     PIN = comp_submit['target_pin'][0]['PIN']
     file_pred = 'tmp_data/' + PIN 
@@ -144,20 +147,22 @@ def submit_cook_sf(comp_submit, page_one_submit):
     begin_appeal = {}
     begin_appeal['PIN'] = '16052120090000'
 
+    hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
+
     filer = {}
-    # replace with info from page_one_submit
-    filer['attorney_num'] = '123456'
-    filer['attorney_email'] = 'tmp@tmp.com'
-    filer['owner_name'] = 'My Name'
-    filer['owner_address'] = '123 TEST ST'
-    filer['owner_zip'] = 60615
-    filer['owner_phone'] = '123456789'
-    filer['owner_email'] = 'tmp2@tmp.com'
+    filer['attorney_num'] = '123456' #TMP
+    filer['attorney_email'] = 'tmp@tmp.com' #TMP
+    filer['owner_name'] = page_one_submit['name'] 
+    filer['owner_address'] = page_one_submit['address']
+    filer['owner_zip'] = page_one_submit['zip']
+    filer['owner_phone'] = page_one_submit['phone']
+    filer['owner_email'] = page_one_submit['email']
 
     attachments = {}
     attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
-    attachments['attorney_auth_form'] = 'attorney.pdf' #TBD
-    attachments['comparable_form'] = 'tmp_data/' + PIN + '_comps.pdf'
+    attachments['attorney_auth_form'] = 'attorney.pdf' #TBD file does not exist
+    attachments['comparable_form_alt'] = 'tmp_data/' + PIN + '_comps.pdf'
+    attachments['comparable_form'] = "tmp_data/Comparable PINs for " + hypen_pin + ".csv"
 
     filer_info['begin_appeal'] = begin_appeal
     filer_info['filer'] = filer
@@ -168,7 +173,7 @@ def submit_cook_sf(comp_submit, page_one_submit):
     # output = run_autofiler(filer_info)
     ####
 
-    # autofilier returns info
+    # autofilier sends email on success
 
     '''
     {
