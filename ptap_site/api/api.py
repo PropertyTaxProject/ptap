@@ -1,8 +1,7 @@
 import time
 from flask import Flask, request
 import pandas as pd
-from cook import process_cook, submit_cook_sf
-from detroit import process_detroit, generate_detroit_sf
+import mainfct
 
 #load data
 cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
@@ -10,6 +9,10 @@ cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
 
 detroit_sf = pd.read_csv('../../detroit/data/detroit_sf.csv',
                         dtype={'zip_code':str})
+
+
+#cook example pin '16052120090000'
+#detroit example pin '14010903.'
 
 app = Flask(__name__)
 
@@ -19,13 +22,9 @@ page1_data = {}
 def handle_form():
     #page 1 form
     print('page 1 submit')
-    form_data = request.json
-
-    response_dict = get_comps(form_data)
     global page1_data
-    page1_data = form_data
-
-    #finalize_appeal(form_data)
+    page1_data = request.json
+    response_dict = get_comps(page1_data)
 
     return {'request_status': time.time(),
     'response': response_dict}
@@ -51,15 +50,14 @@ def get_comps(form_data):
         comparables : [{char1:val1,...},{char1:val1,...}] #sorted by best to worst
     }
     """
-    if form_data['appeal_type'] == "detroit_single_family":
-        data_json = process_detroit(form_data, detroit_sf, 10)
-    elif form_data['appeal_type'] == "cook_county_single_family":
-        data_json = process_cook(form_data, cook_sf, 10)
-    else:
-        data_json = {}
+    data_dict = {}
+    data_dict['cook_sf'] = cook_sf
+    data_dict['detroit_sf'] = detroit_sf
 
-    return(data_json)
+    #tmp = mainfct.process_input(form_data, data_dict)
+    #mainfct.process_comps_input(tmp, page1_data)
 
+    return mainfct.process_input(form_data, data_dict)
 
 def finalize_appeal(form_data):
     '''
@@ -75,9 +73,4 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
-    response_dict = submit_cook_sf(form_data, page1_data)
-    #response_dict = submit_cook_sf(process_cook(form_data, cook_sf, 5), page1_data)
-
-
-    return {'request_status': time.time(),
-    'response': response_dict}
+    return mainfct.process_comps_input(form_data, page1_data)

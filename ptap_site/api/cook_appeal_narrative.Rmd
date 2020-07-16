@@ -48,7 +48,7 @@ usepackage_latex("makecell")
 target <- as.data.frame(params$target)
 comps <- as.data.frame(params$comps)
 
-comps <- comps %>% select(PIN:CERTIFIED)
+comps <- comps %>% select(PIN:assessed_value)
 
 final_names <- c("Pin", "Class", "Age", "Building Sqft", "Land Sqft", "Rooms", "Bedrooms", "Wall Material", "Stories", "Basement", "Garage", "Distance", "2019 Certified Value")
 

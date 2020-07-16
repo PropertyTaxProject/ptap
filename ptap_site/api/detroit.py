@@ -20,7 +20,8 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
         'taxpayer_1' : 'taxpayer',
         'property_c' : 'class',
         'total_squa' : 'total_sqft',
-        'total_floo' : 'total_floor_area', 
+        'total_floo' : 'total_floorarea', 
+        'assessed_v' : 'assessed_value'
     }
     ###
 

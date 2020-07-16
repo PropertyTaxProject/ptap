@@ -1,0 +1,95 @@
+---
+output:
+  word_document
+params:
+  target:
+    label: "DataFrame"
+    value: ""  
+  comps:
+    label: "DataFrame"
+    value: ""
+pagetitle: '`r paste0("Protest Letter for ", params$PIN)`'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+library(knitr)
+library(flextable)
+library(tidyverse)
+library(scales)
+
+target <- as.data.frame(params$target)
+comps <- as.data.frame(params$comps)
+```
+
+```{r}
+knitr::include_graphics("michiganlaw.png")
+```
+
+
+```{r}
+owner <- "James Hobson"
+parcel_num <- target$PIN
+address <- paste0(target$address, ", Detroit, MI ", target$zip_code)
+formal_owner <- "Mr. Hobson"
+prop_valuation <- as.numeric(target$assessed_value)
+contention_valuation <- mean(as.numeric(comps$assessed_value))
+```
+
+
+City of Detroit – Assessors Review and Board of Review  
+Coleman A. Young Municipal Center  
+2 Woodward Ave., Suite 824  
+Detroit, MI 48226
+
+
+**Re:** &emsp;&nbsp;&hairsp; Protest of Property Tax Notice of Assessment  
+&emsp;&emsp;&emsp; Property Owner: `r owner`  
+&emsp;&emsp;&emsp; Parcel Identification: `r parcel_num`  
+&emsp;&emsp;&emsp; Address: `r address`
+          
+
+Board of Assessors and Board of Review:
+
+This protest is submitted on behalf of the aforementioned Property Owner, `r formal_owner`, by his authorized representative. (Appendix 1: Letter of Authorization). According to `r formal_owner`’s Notice of Assessment, the Assessment Division (“the Division”) valued Parcel 18006531 at `r dollar(prop_valuation)`.  This means the Division estimates that the market value of the property is `r dollar(2*prop_valuation)`.
+
+This assessment is inaccurate. Given the value of comparable properties, 18006531 is properly assessed at `r dollar(contention_valuation)`, which corresponds with a market value of `r dollar(2*contention_valuation)`.
+
+Here is the relevant data on `r formal_owner`’s home:
+
+```{r}
+qflextable(target %>% select(PIN, address, total_sqft, year_built, assessed_value)) %>% theme_zebra()
+```
+
+Structural Damage:
+
+Cracked foundation, inoperable plumbing, ceiling plaster is falling in the kitchen and bedrooms, holes in walls under the sink and behind the cabinets, front porch is not safe for use, garage is not functional.
+
+
+Here is the relevant data on comparable properties:
+
+```{r}
+qflextable(comps %>% select(PIN, address, total_sqft, year_built, assessed_value, Distance)) %>% theme_zebra()
+```
+
+
+The price of similarly situated homes in the area in closest proximity to `r formal_owner`’s home have all been sold for prices significantly lower than the assessed value of `r formal_owner`’s home. This discrepancy is even more stark considering each of the comparable properties provided above have an additional bedroom, better siding, and more stories. In particular, the property located on Elmira St., 1 block over from Mr. Hobson’s home, is approximately 433 square feet larger, one story taller, has an additional bedroom, and has siding inclusive of aluminum, brick and wood, and that property’s recent sale price was \$6,000. The property located on Orangelawn St., 3 blocks over from Mr. Hobson’s home, is 25 years newer, with an additional bedroom, all brick siding, and a half a story bigger. That property’s sale price is \$7,000.  Another property, located on Northlawn St., has a sale price of \$6,000 and, similarly, is larger than Mr. Hobson’s home. Given that Mr. Hobson’s property is less appealing than and comparable to the aforementioned properties, Mr. Hobson’s property is properly assessed using the recent sales price of the comparable properties at \$6,000.
+
+The assessment of `r formal_owner`’s home is incorrect because the assessment fails to take into account the structural damage of his home. First, the garage is inoperable. The roof does not cover the entire structure and the walls are eroding. (Appendix 2: Photo of Garage). In the basement of his home, there is frequent flooding, mold, and severe plumbing issues. (Appendix 3: Photo of Basement); (Appendix 4: Photo of Mold). The foundation of the home, as viewed from the basement, is cracked. (Appendix 5: Photo of Damaged Foundation). There have been several leaks resulting from the cracked foundation. There is a damaged fence surrounding the house. (Appendix 6: Photo of Fence).  In the backyard, there are power lines that are hanging just above the ground. (Appendix 7: Photo of Powerlines). The ceiling plaster is falling in the kitchen and one of the bedrooms. (Appendix 8: Photo of Ceiling Plaster in the Kitchen). (Appendix 9: Photo of Ceiling Plaster in the Bedroom). There are holes in the walls behind the sinks and cabinets in the kitchen. The steps in the front of the home are not safe for use. (Appendix 10: Photo of Front Porch).
+
+The Michigan Constitution requires that no property shall be assessed at more than 50% of its market value. For the aforementioned reasons, `r formal_owner`’s property should be assessed at `r dollar(contention_valuation)`, given that it has a market value of `r dollar(2*contention_valuation)`.
+
+
+Sincerely,
+&emsp;  
+&emsp;
+
+__________________________________
+**University of Michigan Law School Property Tax Appeal Project**  
+Andrea Van Hoven, Legal Supervisor 
+
