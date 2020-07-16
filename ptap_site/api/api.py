@@ -1,13 +1,15 @@
 import time
 from flask import Flask, request
 import pandas as pd
-from cook_sf import process_one_pin, submit_cook_sf
+from cook import process_cook, submit_cook_sf
+from detroit import process_detroit, generate_detroit_sf
 
 #load data
 cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
                      dtype={'PIN':str})
 
-#detroit_sf
+detroit_sf = pd.read_csv('../../detroit/data/detroit_sf.csv',
+                        dtype={'zip_code':str})
 
 app = Flask(__name__)
 
@@ -42,11 +44,6 @@ def handle_form2():
 
 
 def get_comps(form_data):
-
-    # for now, input only as pin 
-    # for now, let's do cook sf only
-    # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
-
     """     
     Output:
     {
@@ -54,15 +51,17 @@ def get_comps(form_data):
         comparables : [{char1:val1,...},{char1:val1,...}] #sorted by best to worst
     }
     """
-    data_json = process_one_pin(form_data, cook_sf, 10)
+    if form_data['appeal_type'] == "detroit_single_family":
+        data_json = process_detroit(form_data, detroit_sf, 10)
+    elif form_data['appeal_type'] == "cook_county_single_family":
+        data_json = process_cook(form_data, cook_sf, 10)
+    else:
+        data_json = {}
 
     return(data_json)
 
 
 def finalize_appeal(form_data):
-    # convert form input to filed appeal
-    # for now, let's do cook sf only
-    # eventually we will need to deal with cook sf, cook condos, detroit
     '''
     Input:
     {
@@ -77,7 +76,7 @@ def finalize_appeal(form_data):
     }
     '''
     response_dict = submit_cook_sf(form_data, page1_data)
-    #response_dict = submit_cook_sf(process_one_pin(form_data, cook_sf, 5), page1_data)
+    #response_dict = submit_cook_sf(process_cook(form_data, cook_sf, 5), page1_data)
 
 
     return {'request_status': time.time(),

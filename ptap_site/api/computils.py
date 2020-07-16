@@ -13,6 +13,10 @@ def ecdf(x):
 def filter_on(df, col, val, range_val, debug=False):
     if debug:
         print(df.shape)
+
+    if df.shape[0] == 0:
+        print('cannot filter a dataframe with 0 rows')
+        return df
     
     if (col in ['Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator']) & (range_val == 'Match'):
         if debug:

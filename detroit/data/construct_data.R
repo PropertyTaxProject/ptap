@@ -5,6 +5,7 @@ file_loc <- "E:/report data/Detroit/Detroit New/open data refresh/Parcels-shp/96
 
 library(sf)
 library(tidyverse)
+library(data.table)
 
 parcels <- st_read(file_loc)
 
@@ -26,4 +27,17 @@ new <-
          lat = mini_coords$lat) %>%
   filter(property_1 %in% c("RESIDENTIAL"))
 
-new %>% write_csv("detroit/data/detroit_sf.csv")
+new <- new %>% arrange(parcel_num, assessed_v) %>% distinct(parcel_num, .keep_all=TRUE)
+
+valsales <- fread("E:/report data/Detroit/Processed/val_sales20.csv", colClasses = "character") %>% filter(`Property Class` == 401)
+
+valsales_mini <- valsales %>% arrange(-as.numeric(`SALE_YEAR`)) %>% distinct(`Parcel Number`, .keep_all = TRUE)
+joined <- new %>% left_join(valsales_mini, by=c("address" = "Street Address"))
+
+
+mini <- joined %>% select(parcel_num:lat, `Sale Date`, Neighborhood, `Sale Price`, `Asd. when Sold`, `$/Sq.Ft.`, SALE_YEAR)
+
+mini <- mini %>% rename("Longitude" = lon,
+                        "Latitude" = lat)
+
+mini %>% write_csv("detroit/data/detroit_sf.csv")

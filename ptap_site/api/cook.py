@@ -48,7 +48,7 @@ def comps_cook_sf(targ, cook_sf, multiplier):
             
     return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
-def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
+def process_cook(input_data, cook_sf, max_comps, multiplier=1):
     # for now, input only as pin 
     # for now, let's do cook sf only
     # eventually we will need to determine if a pin/address is cook sf, cook condos, detroit
@@ -64,7 +64,7 @@ def process_one_pin(input_data, cook_sf, max_comps, multiplier=1):
     if(multiplier > 3): #no comps found with parameters stop search
         return ''
     elif(cur_comps.shape[0] < 10): # find more comps
-        return process_one_pin(input_data, multiplier*1.25, 'All')
+        return process_cook(input_data, multiplier*1.25, 'All')
     else: # return best comps
         dist_weight = 1
         valuation_weight = 3
