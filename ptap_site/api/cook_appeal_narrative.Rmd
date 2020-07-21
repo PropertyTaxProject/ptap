@@ -1,0 +1,99 @@
+---
+output: pdf_document
+params:
+  PIN:
+    label: "PIN"
+    value: "NA"
+    input: text
+  target:
+    label: "DataFrame"
+    value: ""  
+  comps:
+    label: "DataFrame"
+    value: ""
+title: '`r paste0("Appeal Narrative for ", params$PIN)`'
+classoption: landscape
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+options(kableExtra.latex.load_packages = FALSE)
+
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(scales)
+
+usepackage_latex("booktabs")
+usepackage_latex("longtable")
+usepackage_latex("array")
+usepackage_latex("multirow")
+usepackage_latex("xcolor", "table")
+usepackage_latex("wrapfig")
+usepackage_latex("float")
+usepackage_latex("colortbl")
+usepackage_latex("pdflscape")
+usepackage_latex("tabu")
+usepackage_latex("threeparttable")
+usepackage_latex("threeparttablex")
+usepackage_latex("ulem", "normalem")
+usepackage_latex("makecell")
+
+target <- as.data.frame(params$target)
+comps <- as.data.frame(params$comps)
+
+comps <- comps %>% select(PIN:assessed_value)
+
+final_names <- c("Pin", "Class", "Age", "Building Sqft", "Land Sqft", "Rooms", "Bedrooms", "Wall Material", "Stories", "Basement", "Garage", "Distance", "2019 Certified Value")
+
+
+prettify_df <- function(df){
+  names(df) <- final_names
+  df <- df %>% mutate(
+    Distance = paste0(round(as.numeric(Distance), 2), " miles"),
+    `2019 Certified Value` = as.numeric(`2019 Certified Value`)
+  )
+}
+
+target <- prettify_df(target)
+comps <- prettify_df(comps)
+
+mean_comps <- mean(comps$`2019 Certified Value`)
+target_val <- target$`2019 Certified Value`
+
+pct_diff <- (mean_comps - target_val) / target_val
+
+if(pct_diff < 0){
+  diff_txt <- "less than"
+} else {
+  print("comparables invalid")
+}
+```
+
+# An Appeal on Uniformity
+
+Utilizing data released from the Cook County Assessor's Office, including [Property Characteristics](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Property-Charac/bcnq-qi2z), the following properties are identified as comparables valued less than `r params$PIN`.
+
+These comparables have an average assessed value of `r dollar(mean_comps)` which is `r paste0( percent(abs(pct_diff)), " ", diff_txt, " ", params$PIN, "'s current assessed value of ", dollar(target["2019 Certified Value"][[1]]))`.
+
+# Target Property Information
+
+```{r}
+kable(target %>% mutate(`2019 Certified Value` = dollar(`2019 Certified Value`)), "latex", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+```
+
+# List of Comparables
+
+```{r}
+kable(comps %>% mutate(`2019 Certified Value` = dollar(`2019 Certified Value`)), "latex", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+```
+
+

@@ -1,0 +1,254 @@
+---
+title: "16816 Inverness"
+author: "Eric Langowski"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    df_print: paged
+    theme: sandstone
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 5)
+
+library(tidyverse)
+library(data.table)
+library(readstata13)
+library(sf)
+library(scales)
+library(kableExtra)
+library(ggplot2)
+library(leaflet)
+
+sales <- read_csv("E:/report data/Detroit/Property_Sales.csv") %>% 
+  mutate(SALE_YEAR = year(SALE_DATE))
+
+detroit_1619 <- st_read("E:/report data/Detroit/Detroit New/open data refresh/geocoded_parcels.shp")
+
+assessments <- st_read("E:/report data/Detroit/Refresh/Parcels-shp/96caebee-aa31-4840-ad1b-18cf566d6b6e202047-1-vklj93.jb3n9.shp")
+
+make_map <- function(data_set, pal){
+
+  label_str <- paste0("<strong>%s</strong><br>",
+                      "Estimated Ratio: %s<br/>")
+  
+  labels <- sprintf(label_str,
+                    data_set$address,
+                    round(data_set$mean_ratio, 2)) %>% lapply(htmltools::HTML)
+  
+  m <- leaflet() %>%
+    addTiles() %>% addPolygons(
+      data = data_set,
+      fillColor = ~ pal(mean_ratio),
+      weight = 2,
+      opacity = 1,
+      color = "white",
+      dashArray = 3,
+      fillOpacity = 0.7,
+      highlight = highlightOptions(
+        weight = 5,
+        color = "#666",
+        dashArray = "",
+        fillOpacity = 0.7,
+        bringToFront = TRUE
+      ),
+      label = labels,
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+      )
+    ) %>%
+    addLegend(
+      pal = pal,
+      values = data_set$mean_ratio,
+      opacity = 0.7,
+      title = NULL,
+      position = "bottomright"
+    )
+  
+  return(m)
+}
+```
+
+# Past Sales
+
+```{r}
+target_prop <- sales %>% filter(PARCEL_NO == "08009807.")
+
+kable(target_prop %>% select(SALE_DATE:GRANTEE)) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+# Neighborhood Facts
+
+Roughly from Idaho & Puritan to Normandy & McNichols.
+
+## Sales of Property from 2010 to 2019
+
+```{r}
+x_val <- target_prop$X[[1]]
+y_val <- target_prop$Y[[1]]
+
+xmin_neigh <- x_val - .005
+xmax_neigh <- x_val + .005
+ymin_neigh <- y_val - .005
+ymax_neigh <- y_val + .005
+
+valid_terms <- c("EXEMPT/GOVT", "FORECLOSURE/FORFEIT", "NO CONSIDERATION", "NOT ARMS LENGTH", "VALID ARMS LENGTH")
+
+close_by_props <- sales %>% filter(
+  between(X, xmin_neigh, xmax_neigh),
+  between(Y, ymin_neigh, ymax_neigh),
+  SALE_YEAR >= 2010,
+  TERMS %in% valid_terms
+)
+
+kable(close_by_props %>% count(TERMS)) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+## Map of Foreclosures
+
+
+
+## Regressivity Levels
+
+```{r}
+filter_bbox <- sf::st_bbox(c(
+  xmin = xmin_neigh,
+  ymin = ymin_neigh,
+  xmax = xmax_neigh,
+  ymax = ymax_neigh
+),
+crs = st_crs(4326)) %>%
+  sf::st_as_sfc(.)
+
+close_by <- st_within(detroit_1619, filter_bbox)
+filt_data <- detroit_1619[which(lengths(close_by) != 0), ]
+
+filt_data <- filt_data %>% filter(sl_trms == "VALID ARMS LENGTH")
+
+arms_length_transactions <-
+  cmfproperty::reformat_data(
+    filt_data %>% as.data.frame() %>% filter(sal_prc > 100, SEV > 100),
+    sale_col = "sal_prc",
+    assessment_col = "SEV",
+    sale_year_col = "SALE_YE"
+  ) %>% 
+  mutate(over_50 = ifelse(RATIO > 0.5, 1, 0),
+         sale_quintile = ntile(SALE_PRICE_ADJ, 5),
+         av_decile = ntile(ASSESSED_VALUE_ADJ, 10))
+
+tbldata <- arms_length_transactions %>% group_by(sale_quintile) %>%
+  summarize(`Average Sale Price` = dollar(mean(SALE_PRICE_ADJ)),
+            `Average Assessed Value` = dollar(mean(ASSESSED_VALUE_ADJ)),
+            `Assessed over 50%` = percent(mean(over_50)),
+            `Mean Ratio` = mean(RATIO),
+            `Median Ratio` = median(RATIO),
+            cnt = n())
+
+
+kable(tbldata) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+## Plot of Ratios
+
+```{r}
+ggplot(arms_length_transactions, aes(x=SALE_PRICE_ADJ, y=RATIO, color=factor(sale_quintile))) + 
+  geom_point() + 
+  scale_x_continuous(labels = dollar_format()) +
+  labs(x="Sale Price", color="Sale Quintile") +
+  ylim(0, NA) +
+  geom_hline(yintercept = 0.5) + 
+  theme_classic()
+```
+
+## Map of Ratios
+
+```{r}
+assessments_mini <- assessments %>% filter(property_c == 401, taxable_va > 100)
+close_by <- st_within(assessments_mini, filter_bbox)
+assessments_mini <- assessments_mini[which(lengths(close_by) != 0), ]
+
+new_data <-
+  arms_length_transactions %>% 
+  select(-geometry) %>%
+  left_join(assessments_mini %>% select(parcel_num), by=c("prcl_nm"="parcel_num")) %>%
+  st_as_sf() %>%
+  mutate(mean_ratio = RATIO)
+
+pal <-
+  colorBin(
+    palette = c("Red", "Orange", "Dark Green"),
+    bins=c(0,0.5,0.6,Inf),
+    reverse = TRUE,
+    domain = new_data$mean_ratio,
+    na.color = "Grey"
+  )
+
+make_map(new_data, pal)
+```
+
+## Distribution of Taxable Value
+
+```{r}
+ggplot(assessments_mini, aes(x=as.numeric(taxable_va))) +
+  geom_histogram() +
+  scale_x_continuous(labels = dollar_format()) +
+  labs(x="Taxable Value") + 
+  theme_classic()
+```
+
+## Estimate of total regressivity
+
+```{r}
+summ_data <- 
+  arms_length_transactions %>% group_by(av_decile) %>% summarize(mean_ratio = mean(RATIO),
+                                                               max_av = max(ASSESSED_VALUE_ADJ))
+
+assessments_mini <-
+  assessments_mini %>% mutate( taxable_va = as.numeric(taxable_va),
+    av_decile = case_when(
+  taxable_va < summ_data[1,3][[1]] ~ 1,
+  taxable_va < summ_data[2,3][[1]] ~ 2,
+  taxable_va < summ_data[3,3][[1]] ~ 3,
+  taxable_va < summ_data[4,3][[1]] ~ 4,
+  taxable_va < summ_data[5,3][[1]] ~ 5,
+  taxable_va < summ_data[6,3][[1]] ~ 6,
+  taxable_va < summ_data[7,3][[1]] ~ 7,
+  taxable_va < summ_data[8,3][[1]] ~ 8,
+  taxable_va < summ_data[9,3][[1]] ~ 9,
+  taxable_va < summ_data[10,3][[1]] ~ 10,
+))
+
+assessments_mini <- assessments_mini %>% left_join(summ_data)
+
+
+pal <-
+  colorBin(
+    palette = c("Red", "Orange", "Dark Green"),
+    bins=c(0,0.5,0.6,Inf),
+    reverse = TRUE,
+    domain =  assessments_mini$mean_ratio,
+    na.color = "Grey"
+  )
+
+make_map(assessments_mini, pal)
+```
+
+
+
