@@ -11,19 +11,31 @@ import 'antd/dist/antd.css';
 
 const { Header, Content, Footer } = Layout;
 
-const submitForm = async (info, setData) => {
+const submitForm = async (info, setData, setInfo) => {
   try {
     const resp = await axios.post('/api_v1/submit', info);
     console.log(resp);
     const data = resp.data.response.target_pin.concat(resp.data.response.comparables);
     setData(data);
+    setInfo(info)
   } catch (e) {
     console.error(e);
   }
 };
 
-const submitAppeal = async (info) => {
-  console.log('Implement me!');
+const submitAppeal = async (data, userInfo) => {
+  try {
+    // merge our data and user info
+    const target_pin = [data[0]]
+    const comparables = data.slice(1)
+    const body = Object.assign({}, {target_pin, comparables}, userInfo)
+    console.log(body)
+    const resp = await axios.post('/api_v1/submit2', body)
+
+    // TRIGGER SUBMISSION PAGE
+  } catch (e) {
+    console.error(e)
+  }
 };
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
@@ -35,6 +47,7 @@ const Page = () => {
     a.push({ sqft: Math.round(Math.random() * 10000), bedrooms: Math.round(Math.random() * 5) });
   }
   const [data, setData] = useState([]);
+  const [userInfo, setInfo] = useState({})
   return (
     <Layout className="layout">
       <Header>
@@ -44,10 +57,11 @@ const Page = () => {
       </Header>
       <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
-          { data.length === 0 ? <FormInput submitForm={(info) => submitForm(info, setData)} />
+          { data.length === 0 ? <FormInput submitForm={(info) => submitForm(info, setData, setInfo)} />
             : (
               <Characteristics
                 data={data}
+                submitAppeal={async () => { submitAppeal(data, userInfo) }}
                 removeComparable={async (idx) => {
                   setData(await removeComparable(data, idx));
                   console.log(`removed ${idx}`);
