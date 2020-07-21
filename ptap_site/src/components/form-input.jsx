@@ -203,7 +203,6 @@ const PropertyForm = (props) => {
       >
         <Radio.Group>
           <Radio.Button value="cook_county_single_family">Cook County Single Family</Radio.Button>
-          <Radio.Button value="cook_county_condo">Cook County Condo</Radio.Button>
           <Radio.Button value="detroit_single_family">Detroit Single Family</Radio.Button>
         </Radio.Group>
       </Form.Item>
