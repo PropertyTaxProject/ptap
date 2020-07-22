@@ -41,3 +41,37 @@ mini <- mini %>% rename("Longitude" = lon,
                         "Latitude" = lat)
 
 mini %>% write_csv("detroit/data/detroit_sf.csv")
+
+library(tidyverse)
+library(haven)
+
+tst <- read_dta("~/../Downloads/bsna_to_mls.dta")
+tst3 <- read_csv("~/../Downloads/parcel_data_latest.csv")
+tst4 <- read_dta("~/../Downloads/target_prep.dta")
+
+
+bsna <- read_dta("~/../Downloads/bsna.dta")
+
+
+bsna_mini <- bsna %>% select(parcelnum, address_geo, zip_geo, geometry, generaltaxinfo_propertyclass,
+                       sqft, acres, yearbuilt, height_bba, garage_has,  basement_has, exteriorcat,
+                       bathcat, owner, ownocc, sev)
+
+bsna_mini <- 
+  bsna_mini %>% mutate(heightcat = case_when(height_bba %in% c("1    Story", "1.25 Story", "1.5  Story", "1+   Story") ~ 1,
+                                      height_bba %in% c("2    Story", "1.75 Story", "2.5  Story", "Bi-Level") ~ 2,
+                                      height_bba %in% c("3    Story", "Tri-Level", "3.5  Story") ~ 3,
+                                      TRUE ~ -1)) %>%
+  select(-height_bba)
+
+bsna_mini <- 
+  bsna_mini %>%
+  mutate(geometry = str_replace_all(geometry, "c|\\(|\\)", "")) %>%
+  separate(geometry, sep=",", c("lon", "lat"), convert=TRUE)
+
+
+#exteriorcat (1 siding, 2 brick/other, 3 brick, 4 other)
+#bathcat (1 1.0, 2 1.5, 3 2 to 3, 4 3+)
+#heightcat (1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
+
+write_csv(bsna_mini, "detroit/data/detroit_sf2.csv")
