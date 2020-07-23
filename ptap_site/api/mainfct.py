@@ -140,7 +140,7 @@ def submit_cook_sf(comp_submit):
     filer['owner_email'] = comp_submit['email']
 
     attachments = {}
-    attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
+    attachments['appeal_narrative'] = output_name
     attachments['attorney_auth_form'] = 'attorney.pdf' #TBD file does not exist
     attachments['comparable_form'] = comp_csv_name  #submit this to form
 
