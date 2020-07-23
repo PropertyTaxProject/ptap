@@ -1,6 +1,11 @@
 from computils import comps_cook_sf, comps_detroit_sf, ecdf
 from subprocess import Popen
 import csv
+from docxtpl import DocxTemplate
+import pandas as pd
+from datetime import datetime
+
+
 
 def process_input(input_data, data_dict, multiplier=1):
     target_pin = input_data['pin']
@@ -43,60 +48,49 @@ def process_input(input_data, data_dict, multiplier=1):
         return output
 
 
-def process_comps_input(comp_submit, page_one_submit):
+def process_comps_input(comp_submit):
     '''
     Input:
-    page_one_submit =
     {
-        tbd
-    }
-
-    comps_submit = 
-    {
-        target_pin : [{char1:val1,...}],
-        comparables : [{char1:val1,...},{char1:val1,...}] #selected comparables only
+        'target_pin': [{}],
+        'comparables': [{},{},{},{}]
+        'appeal_type': '', 
+        'pin': '', 
+        'name': '', 
+        'email': '', 
+        'address': '', 
+        'phone': '', 
+        'city': '', 
+        'state': '', 
+        'zip': ''
     }
     '''
-    print(page_one_submit)
-    #generating attachments
-    PIN = comp_submit['target_pin'][0]['PIN']
-    file_pred = 'tmp_data/' + PIN 
 
-    print(comp_submit)
+    if comp_submit['appeal_type'] == "detroit_single_family":
+        return generate_detroit_sf(comp_submit)
 
-    with open(file_pred + '_target.csv', 'w') as f:
-        w = csv.DictWriter(f, comp_submit['target_pin'][0].keys())
-        w.writeheader()
-        w.writerow(comp_submit['target_pin'][0])
+    elif comp_submit['appeal_type'] == "cook_county_single_family":
+        #generating attachments
+        PIN = comp_submit['target_pin'][0]['PIN']
+        file_pred = 'tmp_data/' + PIN 
 
-    with open(file_pred + '_comps.csv', 'w') as f:
-        w = csv.DictWriter(f, comp_submit['comparables'][0].keys())
-        w.writeheader()
-        w.writerows(comp_submit['comparables'])
+        with open(file_pred + '_target.csv', 'w') as f:
+            w = csv.DictWriter(f, comp_submit['target_pin'][0].keys())
+            w.writeheader()
+            w.writerow(comp_submit['target_pin'][0])
 
-    Popen(['Rscript', '--vanilla', 'make_attachments_py.R', file_pred + '_target.csv', file_pred + '_comps.csv', page_one_submit['appeal_type']], shell=False)
-
-    if page_one_submit['appeal_type'] == "detroit_single_family":
-        return submit_cook_sf(comp_submit, page_one_submit)
-
-    elif page_one_submit['appeal_type'] == "cook_county_single_family":
-        return generate_detroit_sf(comp_submit, page_one_submit)
+        with open(file_pred + '_comps.csv', 'w') as f:
+            w = csv.DictWriter(f, comp_submit['comparables'][0].keys())
+            w.writeheader()
+            w.writerows(comp_submit['comparables'])
+        
+        
+        Popen(['Rscript', '--vanilla', 'make_attachments_py.R', file_pred + '_target.csv', file_pred + '_comps.csv', comp_submit['appeal_type']], shell=False)
+        return submit_cook_sf(comp_submit)
 
 
-def submit_cook_sf(comp_submit, page_one_submit):
+def submit_cook_sf(comp_submit):
     '''
-    Input:
-    page_one_submit =
-    {
-        tbd
-    }
-
-    comps_submit = 
-    {
-        target_pin : [{char1:val1,...}],
-        comparables : [{char1:val1,...},{char1:val1,...}] #selected comparables only
-    }
-
     Info for autofiler:
     {
         'begin_appeal' : {'PIN':val},
@@ -126,18 +120,18 @@ def submit_cook_sf(comp_submit, page_one_submit):
     filer_info = {}
 
     begin_appeal = {}
-    begin_appeal['PIN'] = '16052120090000'
+    begin_appeal['PIN'] = PIN
 
     hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
 
     filer = {}
     filer['attorney_num'] = '123456' #TMP
     filer['attorney_email'] = 'tmp@tmp.com' #TMP
-    filer['owner_name'] = page_one_submit['name'] 
-    filer['owner_address'] = page_one_submit['address']
-    filer['owner_zip'] = page_one_submit['zip']
-    filer['owner_phone'] = page_one_submit['phone']
-    filer['owner_email'] = page_one_submit['email']
+    filer['owner_name'] = comp_submit['name'] 
+    filer['owner_address'] = comp_submit['address']
+    filer['owner_zip'] = comp_submit['zip']
+    filer['owner_phone'] = comp_submit['phone']
+    filer['owner_email'] = comp_submit['email']
 
     attachments = {}
     attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
@@ -173,66 +167,37 @@ def submit_cook_sf(comp_submit, page_one_submit):
     
     return output
 
-def generate_detroit_sf(comp_submit, page_one_submit):
+def generate_detroit_sf(comp_submit):
     '''
-    Input:
-    page_one_submit =
-    {
-        tbd
-    }
-
-    comps_submit = 
-    {
-        target_pin : [{char1:val1,...}],
-        comparables : [{char1:val1,...},{char1:val1,...}] #selected comparables only
-    }
     Output:
     Word Document
     '''
-    PIN = comp_submit['target_pin'][0]['PIN']
+    t_dict = comp_submit['target_pin'][0]
 
-    #info for autofiler
-    filer_info = {}
+    comps_df = pd.DataFrame(comp_submit['comparables'])
+    pin_av = t_dict['assessed_value']
+    comps_avg = comps_df.assessed_value.mean()
+    output_name = 'tmp_data/' + t_dict['PIN'] + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
+    print(output_name)
 
-    begin_appeal = {}
-    begin_appeal['PIN'] = '16052120090000'
-
-    hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
-
-    filer = {}
-    filer['attorney_num'] = '123456' #TMP
-    filer['attorney_email'] = 'tmp@tmp.com' #TMP
-    filer['owner_name'] = page_one_submit['name'] 
-    filer['owner_address'] = page_one_submit['address']
-    filer['owner_zip'] = page_one_submit['zip']
-    filer['owner_phone'] = page_one_submit['phone']
-    filer['owner_email'] = page_one_submit['email']
-
-    attachments = {}
-    attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
-    attachments['attorney_auth_form'] = 'attorney.pdf' #TBD file does not exist
-    attachments['comparable_form_alt'] = 'tmp_data/' + PIN + '_comps.pdf' #keeping this for now, but likely will delete later
-    attachments['comparable_form'] = "tmp_data/Comparable PINs for " + hypen_pin + ".csv" #submit this to form
-
-    filer_info['begin_appeal'] = begin_appeal
-    filer_info['filer'] = filer
-    filer_info['attachments'] = attachments 
-
-    ###
-    # call run autofilier here
-    # output = run_autofiler(filer_info)
-    ####
-
-    # autofilier sends email on success
-
-    '''
-    {
-        success: bool,
-        contention_value: val,
-        message: txt
-    }
-    '''
-
+    doc = DocxTemplate("detroit_template.docx")
+    context = {
+        'pin' : t_dict['PIN'],
+        'owner' : comp_submit['name'],
+        'address' : comp_submit['address'],
+        'formal_owner' : comp_submit['name'],
+        'current_sev' : '${:,.2f}'.format(pin_av / 2),
+        'current_faircash' : '${:,.2f}'.format(pin_av),
+        'contention_sev' : '${:,.2f}'.format(comps_avg / 2),
+        'contention_faircash' : '${:,.2f}'.format(comps_avg),
+        'target_labels' : list(t_dict.keys()),
+        'target_contents' : [list(t_dict.values())],
+        'comp_labels' : list(comps_df.columns),
+        'comp_contents' : comps_df.to_numpy().tolist()
+            }
+    doc.render(context)
+    doc.save(output_name)
+    
     #dummy data
     output = {}
 
