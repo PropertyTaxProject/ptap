@@ -1,10 +1,8 @@
-from computils import comps_cook_sf, comps_detroit_sf, ecdf
-from subprocess import Popen
-import csv
-from docxtpl import DocxTemplate
 import pandas as pd
+import pickle
+from docxtpl import DocxTemplate
 from datetime import datetime
-
+from computils import comps_cook_sf, comps_detroit_sf, ecdf
 
 
 def process_input(input_data, data_dict, multiplier=1):
@@ -70,22 +68,6 @@ def process_comps_input(comp_submit):
         return generate_detroit_sf(comp_submit)
 
     elif comp_submit['appeal_type'] == "cook_county_single_family":
-        #generating attachments
-        PIN = comp_submit['target_pin'][0]['PIN']
-        file_pred = 'tmp_data/' + PIN 
-
-        with open(file_pred + '_target.csv', 'w') as f:
-            w = csv.DictWriter(f, comp_submit['target_pin'][0].keys())
-            w.writeheader()
-            w.writerow(comp_submit['target_pin'][0])
-
-        with open(file_pred + '_comps.csv', 'w') as f:
-            w = csv.DictWriter(f, comp_submit['comparables'][0].keys())
-            w.writeheader()
-            w.writerows(comp_submit['comparables'])
-        
-        
-        Popen(['Rscript', '--vanilla', 'make_attachments_py.R', file_pred + '_target.csv', file_pred + '_comps.csv', comp_submit['appeal_type']], shell=False)
         return submit_cook_sf(comp_submit)
 
 
@@ -114,15 +96,39 @@ def submit_cook_sf(comp_submit):
         message: txt
     }
     '''
-    PIN = comp_submit['target_pin'][0]['PIN']
+    t_dict = comp_submit['target_pin'][0]
+    comps_df = pd.DataFrame(comp_submit['comparables'])
+    pin_av = t_dict['assessed_value']
+    comps_avg = comps_df.assessed_value.mean()
+    PIN = t_dict['PIN']
+    hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
+    comp_csv_name = "tmp_data/Comparable PINs for " + hypen_pin + ".csv"
 
-     #info for autofiler
+    #generate comps csv
+    comps_df.to_csv(comp_csv_name)
+
+    #generate appeal narrative
+    output_name = 'tmp_data/' + t_dict['PIN'] + ' Appeal Narrative.docx'
+
+    doc = DocxTemplate("cook_template.docx")
+    context = {
+        'pin' : t_dict['PIN'],
+        'target_av' : '${:,.2f}'.format(pin_av),
+        'comp_av' : '${:,.2f}'.format(comps_avg),
+        'target_labels' : list(t_dict.keys()),
+        'target_contents' : [list(t_dict.values())],
+        'comp_labels' : list(comps_df.columns),
+        'comp_contents' : comps_df.to_numpy().tolist()
+            }
+    doc.render(context)
+    doc.save(output_name)
+
+
+    #info for autofiler
     filer_info = {}
 
     begin_appeal = {}
     begin_appeal['PIN'] = PIN
-
-    hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
 
     filer = {}
     filer['attorney_num'] = '123456' #TMP
@@ -136,33 +142,20 @@ def submit_cook_sf(comp_submit):
     attachments = {}
     attachments['appeal_narrative'] = 'tmp_data/' + PIN + '_narrative.pdf'
     attachments['attorney_auth_form'] = 'attorney.pdf' #TBD file does not exist
-    attachments['comparable_form_alt'] = 'tmp_data/' + PIN + '_comps.pdf' #keeping this for now, but likely will delete later
-    attachments['comparable_form'] = "tmp_data/Comparable PINs for " + hypen_pin + ".csv" #submit this to form
+    attachments['comparable_form'] = comp_csv_name  #submit this to form
 
     filer_info['begin_appeal'] = begin_appeal
     filer_info['filer'] = filer
     filer_info['attachments'] = attachments 
 
-    ###
-    # call run autofilier here
-    # output = run_autofiler(filer_info)
-    ####
+    #save autofiler info to pickle
+    with open('tmp_data/' + PIN + '.pickle', 'wb') as handle:
+        pickle.dump(filer_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    # autofilier sends email on success
-
-    '''
-    {
-        success: bool,
-        contention_value: val,
-        message: txt
-    }
-    '''
-
-    #dummy data
     output = {}
 
     output['success'] = 'true'
-    output['contention_value'] = 12345
+    output['contention_value'] = '${:,.2f}'.format(comps_avg / 2)
     output['message'] = 'appeal filed successfully'
     
     return output
@@ -173,12 +166,10 @@ def generate_detroit_sf(comp_submit):
     Word Document
     '''
     t_dict = comp_submit['target_pin'][0]
-
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_dict['assessed_value']
     comps_avg = comps_df.assessed_value.mean()
     output_name = 'tmp_data/' + t_dict['PIN'] + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
-    print(output_name)
 
     doc = DocxTemplate("detroit_template.docx")
     context = {
@@ -198,11 +189,11 @@ def generate_detroit_sf(comp_submit):
     doc.render(context)
     doc.save(output_name)
     
-    #dummy data
     output = {}
 
-    output['success'] = 'true'
-    output['contention_value'] = 12345
-    output['message'] = 'appeal filed successfully'
+    output['success'] = 'true' #add error handling
+    output['contention_value'] = '${:,.2f}'.format(comps_avg / 2)
+    output['message'] = 'appeal filed successfully' #add error handling
+    output['file_loc'] = output_name
     
     return output
