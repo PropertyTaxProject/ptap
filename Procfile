@@ -1,1 +1,1 @@
-gunicorn wsgi:app
+gunicorn ptap_site.api.wsgi:app
