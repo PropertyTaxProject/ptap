@@ -3,7 +3,7 @@ import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
-
+import io
 
 def process_input(input_data, data_dict, multiplier=1):
     target_pin = input_data['pin']
@@ -102,15 +102,15 @@ def submit_cook_sf(comp_submit):
     comps_avg = comps_df.assessed_value.mean()
     PIN = t_dict['PIN']
     hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
-    comp_csv_name = "tmp_data/Comparable PINs for " + hypen_pin + ".csv"
+    comp_csv_name = "ptap_site/api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
 
     #generate comps csv
     comps_df.to_csv(comp_csv_name)
 
     #generate appeal narrative
-    output_name = 'tmp_data/' + t_dict['PIN'] + ' Appeal Narrative.docx'
+    output_name = 'ptap_site/api/tmp_data/' + t_dict['PIN'] + ' Appeal Narrative.docx'
 
-    doc = DocxTemplate("cook_template.docx")
+    doc = DocxTemplate("ptap_site/api/cook_template.docx")
     context = {
         'pin' : t_dict['PIN'],
         'target_av' : '${:,.2f}'.format(pin_av),
@@ -149,7 +149,7 @@ def submit_cook_sf(comp_submit):
     filer_info['attachments'] = attachments 
 
     #save autofiler info to pickle
-    with open('tmp_data/' + PIN + '.pickle', 'wb') as handle:
+    with open('ptap_site/api/tmp_data/' + PIN + '.pickle', 'wb') as handle:
         pickle.dump(filer_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     output = {}
@@ -169,9 +169,11 @@ def generate_detroit_sf(comp_submit):
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_dict['assessed_value']
     comps_avg = comps_df.assessed_value.mean()
-    output_name = 'tmp_data/' + t_dict['PIN'] + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
 
-    doc = DocxTemplate("detroit_template.docx")
+    # for now we can still save the file for testing, but the filesystem doesn't persist in heroku so we'll need to use something else later on
+    output_name = 'ptap_site/api/tmp_data/' + t_dict['PIN'] + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
+
+    doc = DocxTemplate("ptap_site/api/detroit_template.docx")
     context = {
         'pin' : t_dict['PIN'],
         'owner' : comp_submit['name'],
@@ -189,6 +191,7 @@ def generate_detroit_sf(comp_submit):
     doc.render(context)
     doc.save(output_name)
     
+    
     output = {}
 
     output['success'] = 'true' #add error handling
@@ -196,4 +199,10 @@ def generate_detroit_sf(comp_submit):
     output['message'] = 'appeal filed successfully' #add error handling
     output['file_loc'] = output_name
     
+    # also save a byte object to return
+    file_stream = io.BytesIO()
+    doc.save(file_stream) # save to stream
+    file_stream.seek(0) # reset pointer to head
+    output['file_stream'] = file_stream
+
     return output

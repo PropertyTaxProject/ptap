@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.4.0",
     "axios": "^0.19.2",
+    "file-saver": "^2.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
@@ -18,7 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-api": "cd ../api && ./venv/bin/flask run --no-debugger"
+    "start-api": "cd ../.. && gunicorn -b 127.0.0.1:5000 ptap_site.api.wsgi:app"
   },
   "eslintConfig": {
     "extends": "react-app"

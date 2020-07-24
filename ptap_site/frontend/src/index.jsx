@@ -6,6 +6,8 @@ import axios from 'axios';
 import * as serviceWorker from './serviceWorker';
 import FormInput from './components/form-input';
 import Characteristics from './components/characteristics';
+import { saveAs } from 'file-saver'
+
 
 import 'antd/dist/antd.css';
 
@@ -13,7 +15,7 @@ const { Header, Content, Footer } = Layout;
 
 const submitForm = async (info, setData, setInfo) => {
   try {
-    const resp = await axios.post('https://ptap-api.herokuapp.com/api_v1/submit', info);
+    const resp = await axios.post('/api_v1/submit', info);
     console.log(resp);
     const data = resp.data.response.target_pin.concat(resp.data.response.comparables);
     setData(data);
@@ -30,8 +32,10 @@ const submitAppeal = async (data, userInfo) => {
     const comparables = data.slice(1)
     const body = Object.assign({}, {target_pin, comparables}, userInfo)
     console.log(body)
-    const resp = await axios.post('https://ptap-api.herokuapp.com/api_v1/submit2', body)
+    const resp = await axios.post('/api_v1/submit2', body, { responseType: 'blob' })
+    // saveAs()
 
+    console.log(resp)
     // TRIGGER SUBMISSION PAGE
   } catch (e) {
     console.error(e)

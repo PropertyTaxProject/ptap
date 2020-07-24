@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import pandas as pd
 from .mainfct import process_comps_input, process_input
 from flask_cors import CORS
@@ -46,9 +46,12 @@ def handle_form2():
 
     response_dict = finalize_appeal(form_data)
 
+    if (form_data['appeal_type'] == "detroit_single_family"):
+        return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % form_data['name'].lower().replace(' ', '-'))
+
     resp = jsonify({'request_status': time.time(),
     'response': response_dict})
-    resp.headers.add('Access-Control-Allow-Origin', '*')
+
     return resp
 
 
