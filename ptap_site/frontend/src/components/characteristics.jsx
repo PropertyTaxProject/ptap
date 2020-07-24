@@ -4,6 +4,7 @@ import {
   Table,
   Row,
   Col,
+  Space,
 } from 'antd';
 
 const { Column } = Table;
@@ -61,12 +62,20 @@ const CharactaristicsTable = (props) => {
           )}
         />
       </Table>
-      <Button
-        type="primary"
-        onClick={props.submitAppeal}
-      >
-        Generate Appeal
-      </Button>
+      <Space>
+        <Button
+          type="danger"
+          onClick={props.back}
+        >
+          Back
+        </Button>
+        <Button
+          type="primary"
+          onClick={props.submitAppeal}
+        >
+          Generate Appeal
+        </Button>
+      </Space>
     </>
   );
 };

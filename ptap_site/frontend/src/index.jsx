@@ -31,7 +31,7 @@ const submitAppeal = async (data, userInfo) => {
     const comparables = data.slice(1);
     const body = { target_pin, comparables, ...userInfo };
     console.log(body);
-    const detroit = userInfo.appeal_type === 'detroit_single_family'
+    const detroit = userInfo.appeal_type === 'detroit_single_family';
     const resp = await axios.post('/api_v1/submit2', body, { responseType: detroit ? 'blob' : 'json' }); // detroit downloads file, chicago returns json
     if (detroit) {
       saveAs(resp.data, `${userInfo.name.replace(' ', '-').toLowerCase()}-appeal.docx`);
@@ -72,6 +72,7 @@ const Page = () => {
                   setData(await removeComparable(data, idx));
                   console.log(`removed ${idx}`);
                 }}
+                back={() => { setData([]); }}
               />
             )}
         </div>
