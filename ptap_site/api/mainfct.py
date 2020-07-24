@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_cook
 import io
 
 def process_input(input_data, data_dict, multiplier=1):
@@ -96,27 +96,29 @@ def submit_cook_sf(comp_submit):
         message: txt
     }
     '''
-    t_dict = comp_submit['target_pin'][0]
+    t_df = pd.DataFrame(comp_submit['target_pin'])
     comps_df = pd.DataFrame(comp_submit['comparables'])
-    pin_av = t_dict['assessed_value']
+    pin_av = t_df.assessed_value[0]
     comps_avg = comps_df.assessed_value.mean()
-    PIN = t_dict['PIN']
-    hypen_pin = PIN[0:2] + "-" + PIN[2:4] + "-" + PIN[4:7] + "-" + PIN[7:10] + "-" + PIN[10:] 
+    pin = t_df.PIN[0]
+    hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:] 
     comp_csv_name = "ptap_site/api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
-
+    comps_df = prettify_cook(comps_df)
+    t_df = prettify_cook(pd.DataFrame(comp_submit['target_pin']))
+  
     #generate comps csv
-    comps_df.to_csv(comp_csv_name)
+    comps_df.to_csv(comp_csv_name, index=False)
 
     #generate appeal narrative
-    output_name = 'ptap_site/api/tmp_data/' + t_dict['PIN'] + ' Appeal Narrative.docx'
+    output_name = 'ptap_site/api/tmp_data/' + pin + ' Appeal Narrative.docx'
 
     doc = DocxTemplate("ptap_site/api/cook_template.docx")
     context = {
-        'pin' : t_dict['PIN'],
+        'pin' : pin,
         'target_av' : '${:,.2f}'.format(pin_av),
         'comp_av' : '${:,.2f}'.format(comps_avg),
-        'target_labels' : list(t_dict.keys()),
-        'target_contents' : [list(t_dict.values())],
+        'target_labels' : list(t_df.columns),
+        'target_contents' : t_df.to_numpy().tolist(),
         'comp_labels' : list(comps_df.columns),
         'comp_contents' : comps_df.to_numpy().tolist()
             }
@@ -128,7 +130,7 @@ def submit_cook_sf(comp_submit):
     filer_info = {}
 
     begin_appeal = {}
-    begin_appeal['PIN'] = PIN
+    begin_appeal['PIN'] = pin
 
     filer = {}
     filer['attorney_num'] = '123456' #TMP
@@ -149,7 +151,7 @@ def submit_cook_sf(comp_submit):
     filer_info['attachments'] = attachments 
 
     #save autofiler info to pickle
-    with open('ptap_site/api/tmp_data/' + PIN + '.pickle', 'wb') as handle:
+    with open('ptap_site/api/tmp_data/' + pin + '.pickle', 'wb') as handle:
         pickle.dump(filer_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     output = {}
