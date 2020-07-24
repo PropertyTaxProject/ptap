@@ -2,6 +2,7 @@ import time
 from flask import Flask, request
 import pandas as pd
 from .mainfct import process_comps_input, process_input
+from flask_cors import CORS
 
 #load data
 cook_sf = pd.read_csv('cook county/data/cooksf.csv',
@@ -15,7 +16,7 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv',
 #detroit example pin '14010903.'
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
