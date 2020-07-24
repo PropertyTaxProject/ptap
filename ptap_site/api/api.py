@@ -21,6 +21,8 @@ def handle_form():
     #page 1 form
     print('page 1 submit')
     page1_data = request.json
+    print('PAGE DATA', request.json)
+    print('REQUEST OBJECT', request)
     response_dict = get_comps(page1_data)
     resp = jsonify({'request_status': time.time(),
     'response': response_dict})
