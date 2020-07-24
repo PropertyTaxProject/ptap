@@ -2,6 +2,7 @@ import time
 from flask import Flask, request, jsonify
 import pandas as pd
 from .mainfct import process_comps_input, process_input
+from flask_cors import CORS
 
 #load data
 cook_sf = pd.read_csv('cook county/data/cooksf.csv',
@@ -15,8 +16,9 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv',
 #detroit example pin '14010903.'
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/api_v1/submit', methods=['POST', 'OPTIONS'])
+@app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
     #page 1 form
     print('page 1 submit')
@@ -31,7 +33,7 @@ def handle_form():
         resp = jsonify({'error': str(e)})
         print(e)
 
-    resp.headers.add('Access-Control-Allow-Origin', '*')
+    # resp.headers.add('Access-Control-Allow-Origin', '*')
     return resp
 
 
