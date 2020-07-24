@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
-from computils import comps_cook_sf, comps_detroit_sf, ecdf
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
 
 def process_input(input_data, data_dict, multiplier=1):

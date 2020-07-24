@@ -1,13 +1,13 @@
 import time
 from flask import Flask, request
 import pandas as pd
-import mainfct
+from .mainfct import process_comps_input, process_input
 
 #load data
-cook_sf = pd.read_csv('../../cook county/data/cooksf.csv',
+cook_sf = pd.read_csv('cook county/data/cooksf.csv',
                      dtype={'PIN':str})
 
-detroit_sf = pd.read_csv('../../detroit/data/detroit_sf.csv',
+detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv',
                         dtype={'zip_code':str})
 
 
@@ -52,7 +52,7 @@ def get_comps(form_data):
     data_dict['cook_sf'] = cook_sf
     data_dict['detroit_sf'] = detroit_sf
 
-    return mainfct.process_input(form_data, data_dict)
+    return process_input(form_data, data_dict)
 
 def finalize_appeal(form_data):
     '''
@@ -82,4 +82,4 @@ def finalize_appeal(form_data):
     print(form_data)
     print("~~~~~~~~~")
 
-    return mainfct.process_comps_input(form_data)
+    return process_comps_input(form_data)
