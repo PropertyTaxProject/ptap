@@ -118,4 +118,3 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
 
     return(targ[detroit_sf_cols].rename(columns=detroit_sf_rename_dict), new[detroit_sf_cols].rename(columns=detroit_sf_rename_dict))
-

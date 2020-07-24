@@ -26,6 +26,10 @@ library(kableExtra)
 library(scales)
 library(ggplot2)
 
+pre12 <- read_csv("detroit/data/foreclosures/detroit-2012-pre.csv") 
+
+pre19 <- read_csv("detroit/data/foreclosures/pre-and-owner-occupancy-detroit-201903.csv") 
+
 f17 <- read_csv("detroit/data/2017 (1).csv") %>% 
   select(Parcel, `Auction Status`, `Address`, `Use Type`, Owner, SEV) %>% 
   mutate(year = 2017,
