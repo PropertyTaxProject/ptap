@@ -171,7 +171,7 @@ rsconnect/
 
 
 #data files
-*.csv
+# *.csv
 ptap_site/api/tmp_data/*
 *.pickle
 
