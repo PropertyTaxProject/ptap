@@ -16,7 +16,7 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv',
 
 app = Flask(__name__)
 
-@app.route('/api_v1/submit', methods=['POST'])
+@app.route('/api_v1/submit', methods=['POST', 'OPTIONS'])
 def handle_form():
     #page 1 form
     print('page 1 submit')
