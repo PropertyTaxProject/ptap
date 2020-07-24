@@ -118,3 +118,48 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
 
     return(targ[detroit_sf_cols].rename(columns=detroit_sf_rename_dict), new[detroit_sf_cols].rename(columns=detroit_sf_rename_dict))
+
+
+def prettify_cook(data):
+    cook_sf_cols = ['PIN', 'property_class', 'Age', 'building_sqft', 'land_sqft', 
+    'Rooms', 'Bedrooms', 'wall_material', 'stories_recode', 'basement_recode', 'garage',
+    'Distance', 'assessed_value']
+
+    cook_sf_rename_dict = {
+        'property_class' : 'Class',
+        'building_sqft' : 'Building Sqft',
+        'land_sqft' : 'Land Sqft',
+        'wall_material' : 'Exterior',
+        'garage' :'Garage',
+        'assessed_value': 'Assessed Value',
+        'stories_recode':'Stories',
+        'basement_recode':'Basement',
+        'PIN':'Pin',
+        'Bedrooms':'Beds'
+    }
+
+    wall_d = {
+        1:"Wood",
+        2:"Masonry",
+        3:"Wood/Masonry",
+        4:"Stucco"}
+
+    basement_d = {
+        0:"Partial/None",
+        1:"Full"
+    }
+
+    garage_d = {
+        0:"None",
+        1:"Yes"
+    }
+    data = data[cook_sf_cols].rename(columns=cook_sf_rename_dict)
+    data = data.replace({"Exterior": wall_d,
+                "Basement": basement_d,
+                "Garage": garage_d,
+                })
+    return(data)
+
+
+def prettify_detroit(data):
+    pass
