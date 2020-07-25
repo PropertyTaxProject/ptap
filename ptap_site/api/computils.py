@@ -89,6 +89,12 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
 
 def comps_detroit_sf(targ, detroit_sf, multiplier):
+    print('comps_data')
+    print(targ)
+
+    targ.to_csv('tmp.csv')
+    
+
     ###
     #constants
     #eventually need to switch to sales comps
