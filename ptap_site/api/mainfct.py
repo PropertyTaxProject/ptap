@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_cook
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_cook, prettify_detroit
 import io
 
 def process_input(input_data, data_dict, multiplier=1):
@@ -167,17 +167,21 @@ def generate_detroit_sf(comp_submit):
     Output:
     Word Document
     '''
-    t_dict = comp_submit['target_pin'][0]
+    t_df = pd.DataFrame(comp_submit['target_pin'])
     comps_df = pd.DataFrame(comp_submit['comparables'])
-    pin_av = t_dict['assessed_value']
+    pin_av = t_df.assessed_value[0]
+    pin = t_df.PIN[0]
     comps_avg = comps_df.assessed_value.mean()
 
+    comps_df = prettify_detroit(comps_df)
+    t_df = prettify_detroit(pd.DataFrame(comp_submit['target_pin']))
+
     # for now we can still save the file for testing, but the filesystem doesn't persist in heroku so we'll need to use something else later on
-    output_name = 'ptap_site/api/tmp_data/' + t_dict['PIN'] + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
+    output_name = 'ptap_site/api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
 
     doc = DocxTemplate("ptap_site/api/detroit_template.docx")
     context = {
-        'pin' : t_dict['PIN'],
+        'pin' : pin,
         'owner' : comp_submit['name'],
         'address' : comp_submit['address'],
         'formal_owner' : comp_submit['name'],
@@ -185,8 +189,8 @@ def generate_detroit_sf(comp_submit):
         'current_faircash' : '${:,.2f}'.format(pin_av),
         'contention_sev' : '${:,.2f}'.format(comps_avg / 2),
         'contention_faircash' : '${:,.2f}'.format(comps_avg),
-        'target_labels' : list(t_dict.keys()),
-        'target_contents' : [list(t_dict.values())],
+        'target_labels' : list(t_df.columns),
+        'target_contents' : t_df.to_numpy().tolist(),
         'comp_labels' : list(comps_df.columns),
         'comp_contents' : comps_df.to_numpy().tolist()
             }
