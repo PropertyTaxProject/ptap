@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_cook, prettify_detroit
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 import io
 
 def process_input(input_data, data_dict, multiplier=1):
@@ -14,7 +14,6 @@ def process_input(input_data, data_dict, multiplier=1):
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
         targ['Distance'] = 0
         new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier)
-
     elif input_data['appeal_type'] == "cook_county_single_family":
         data = data_dict['cook_sf']
         max_comps = 9
@@ -22,9 +21,9 @@ def process_input(input_data, data_dict, multiplier=1):
         targ['Distance'] = 0
         new_targ, cur_comps = comps_cook_sf(targ, data, multiplier)
 
-    if(multiplier > 3): #no comps found with parameters stop search
+    if(multiplier > 3): #no comps found within maximum search area---hault
         return ''
-    elif(cur_comps.shape[0] < 10): # find more comps
+    elif(cur_comps.shape[0] < 10): #find more comps
         return process_input(input_data, data_dict, multiplier*1.25)
     else: # return best comps
         dist_weight = 1
@@ -42,6 +41,9 @@ def process_input(input_data, data_dict, multiplier=1):
         output = {}
         output['target_pin'] = new_targ.to_dict(orient='records')
         output['comparables'] = cur_comps.to_dict(orient='records') 
+        output['labeled_headers'] = cur_comps.columns.tolist()
+
+        print(output['labeled_headers'])
 
         return output
 
@@ -96,6 +98,13 @@ def submit_cook_sf(comp_submit):
         message: txt
     }
     '''
+    rename_dict = {
+        'PIN' : 'Pin',
+        'assessed_value' : 'Assessed Value',
+        'building_sqft' : 'Building',
+        'land_sqft' : 'Land',
+    }
+
     t_df = pd.DataFrame(comp_submit['target_pin'])
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_df.assessed_value[0]
@@ -103,9 +112,11 @@ def submit_cook_sf(comp_submit):
     pin = t_df.PIN[0]
     hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:] 
     comp_csv_name = "ptap_site/api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
-    comps_df = prettify_cook(comps_df)
-    t_df = prettify_cook(pd.DataFrame(comp_submit['target_pin']))
-  
+
+    #rename cols
+    t_df = t_df.rename(columns=rename_dict)
+    comps_df = comps_df.rename(columns=rename_dict).drop(['score'], axis=1)
+
     #generate comps csv
     comps_df.to_csv(comp_csv_name, index=False)
 
@@ -167,14 +178,23 @@ def generate_detroit_sf(comp_submit):
     Output:
     Word Document
     '''
+    rename_dict = {
+        'PIN' : 'Parcel ID',
+        'assessed_value' : 'Assessed Value',
+        'total_acre' : 'Acres',
+        'total_floorarea' : 'Floor Area',
+        'total_sqft' : 'SqFt'
+    }
+
     t_df = pd.DataFrame(comp_submit['target_pin'])
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_df.assessed_value[0]
     pin = t_df.PIN[0]
     comps_avg = comps_df.assessed_value.mean()
 
-    comps_df = prettify_detroit(comps_df)
-    t_df = prettify_detroit(pd.DataFrame(comp_submit['target_pin']))
+    #rename cols
+    t_df = t_df.rename(columns=rename_dict)
+    comps_df = comps_df.rename(columns=rename_dict).drop(['score'], axis=1)
 
     # for now we can still save the file for testing, but the filesystem doesn't persist in heroku so we'll need to use something else later on
     output_name = 'ptap_site/api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'

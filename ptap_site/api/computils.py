@@ -68,19 +68,6 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     garage_ind = "Match" #1 any garage 0 no garage
     
     distance_filter = 1 * multiplier #miles
-    
-    cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
-    'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
-    'Distance', 'CERTIFIED']
-
-    cook_sf_rename_dict = {
-        'Property Class':'property_class',
-        'Building Square Feet':'building_sqft',
-        'Land Square Feet':'land_sqft',
-        'Wall Material':'wall_material',
-        'Garage indicator':'garage',
-        'CERTIFIED':'assessed_value'
-    }
     ###
        
     new = cook_sf[cook_sf['PIN'] != targ['PIN'].values[0]]
@@ -97,7 +84,7 @@ def comps_cook_sf(targ, cook_sf, multiplier):
 
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2)
             
-    return(targ[cook_sf_cols].rename(columns=cook_sf_rename_dict), new[cook_sf_cols].rename(columns=cook_sf_rename_dict))
+    return(prettify_cook(targ), prettify_cook(new))
 
 def comps_detroit_sf(targ, detroit_sf, multiplier):
     ###
@@ -112,22 +99,6 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
     garage = 'Match'
     bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
     height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
-    
-    detroit_sf_cols = ['parcel_num', 'address', 'zip_code', 'total_squa', 'total_acre', 
-                        'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
-                        'has_garage', 'has_basement',
-                        'assessed_v', 'Distance',
-                        #'Sale Date', 'Sale Price', '$/Sq.Ft.'
-                        ]
-    detroit_sf_rename_dict = {
-        'parcel_num' : 'PIN',
-        'total_squa' : 'total_sqft',
-        'total_floo' : 'total_floorarea',
-        'heightcat' : 'height',
-        'extcat': 'exterior',
-        'bathcat': 'Baths',
-        'assessed_v' : 'assessed_value'
-    }
     ###
 
     new = detroit_sf[detroit_sf['parcel_num'] != targ['parcel_num'].values[0]]
@@ -145,49 +116,7 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
 
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2)
 
-    return(targ[detroit_sf_cols].rename(columns=detroit_sf_rename_dict), new[detroit_sf_cols].rename(columns=detroit_sf_rename_dict))
-
-
-def prettify_cook(data):
-    cook_sf_cols = ['PIN', 'property_class', 'Age', 'building_sqft', 'land_sqft', 
-    'Rooms', 'Bedrooms', 'wall_material', 'stories_recode', 'basement_recode', 'garage',
-    'Distance', 'assessed_value']
-
-    cook_sf_rename_dict = {
-        'property_class' : 'Class',
-        'building_sqft' : 'Building Sqft',
-        'land_sqft' : 'Land Sqft',
-        'wall_material' : 'Exterior',
-        'garage' :'Garage',
-        'assessed_value': 'Assessed Value',
-        'stories_recode':'Stories',
-        'basement_recode':'Basement',
-        'PIN':'Pin',
-        'Bedrooms':'Beds'
-    }
-
-    wall_d = {
-        1:"Wood",
-        2:"Masonry",
-        3:"Wood/Masonry",
-        4:"Stucco"}
-
-    basement_d = {
-        0:"Partial/None",
-        1:"Full"
-    }
-
-    garage_d = {
-        0:"None",
-        1:"Yes"
-    }
-    data = data[cook_sf_cols].rename(columns=cook_sf_rename_dict)
-    data = data.replace({"Exterior": wall_d,
-                "Basement": basement_d,
-                "Garage": garage_d,
-                })
-    return(data)
-
+    return(prettify_detroit2(targ), prettify_detroit2(new))
 
 def prettify_detroit(data):
 
@@ -250,4 +179,104 @@ def prettify_detroit(data):
                 })
     return data
 
-    
+
+def prettify_cook(data):
+    cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
+    'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
+    'Distance', 'CERTIFIED']
+
+    cook_sf_rename_dict = {
+        'Property Class':'Class',
+        'Building Square Feet':'building_sqft',
+        'Land Square Feet':'land_sqft',
+        'Bedrooms':'Beds',
+        'Wall Material':'Exterior',
+        'stories_recode':'Stories',
+        'basement_recode':'Basement',
+        'Garage indicator':'Garage',
+        'CERTIFIED':'assessed_value'
+    }
+
+    wall_d = {
+        1:"Wood",
+        2:"Masonry",
+        3:"Wood/Masonry",
+        4:"Stucco"}
+
+    basement_d = {
+        0:"Partial/None",
+        1:"Full"
+    }
+
+    garage_d = {
+        0:"None",
+        1:"Yes"
+    }
+    data = data[cook_sf_cols].rename(columns=cook_sf_rename_dict)
+    data = data.replace({"Exterior": wall_d,
+                "Basement": basement_d,
+                "Garage": garage_d,
+                })
+
+    return data
+
+
+def prettify_detroit2(data):
+    detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
+                        'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
+                        'has_garage', 'has_basement', 'assessed_v', 'Distance',
+                        #'Sale Date', 'Sale Price', '$/Sq.Ft.'
+                        ]
+    detroit_sf_rename_dict = {
+        'parcel_num' : 'PIN',
+        'total_squa' : 'total_sqft',
+        'total_floo' : 'total_floorarea',
+        'heightcat' : 'Height',
+        'extcat': 'Exterior',
+        'bathcat': 'Baths',
+        'assessed_v' : 'assessed_value',
+        'address' : 'Address',
+        'has_basement': 'Basement',
+        'has_garage': 'Garage',
+        'year_built': 'Age',
+    }
+
+
+    bath_d = {
+        1:"1",
+        2:"1.5",
+        3:"2 to 3",
+        4:"3+"
+    }
+
+    basement_d = {
+        0:"None",
+        1:"Yes"
+    }
+
+    garage_d = {
+        0:"None",
+        1:"Yes"
+    }
+
+    exterior_d = {
+        1:"Siding",
+        2:"Brick/other",
+        3:"Brick",
+        4:"Other"
+    }
+
+    height_d = {
+        1:"1 to 1.5",
+        2:"1.5 to 2.5",
+        3:"3+",
+    }
+
+    data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
+    data = data.replace({"Baths": bath_d,
+                "Basement": basement_d,
+                "Garage": garage_d,
+                "Height": height_d,
+                "Exterior": exterior_d
+                })
+    return data
