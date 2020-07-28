@@ -1,6 +1,3 @@
-#currently this is the best we have...
-#https://data.detroitmi.gov/datasets/parcels-2?geometry=-83.754%2C42.264%2C-82.447%2C42.442
-
 file_loc <- "E:/report data/Detroit/Detroit New/open data refresh/Parcels-shp/96caebee-aa31-4840-ad1b-18cf566d6b6e202047-1-vklj93.jb3n9.shp"
 
 library(sf)
@@ -64,7 +61,7 @@ bsna_mini <-
   select(`Parcel ID`, heightcat, extcat, has_garage, has_basement, bathcat)
 
 joined <- mini %>% mutate(`Parcel ID` = str_replace_all(parcel_num, "\\.$", "")) %>% left_join(bsna_mini, by=c("Parcel ID"))
-joined <- joined %>% select(-property_1, -homestead_, -`Parcel ID`)
+joined <- joined %>% select(-property_1, -zip_code, -`Parcel ID`)
 
 write_csv(joined, "detroit/data/detroit_sf.csv")
 #garage, basement, exterior, bathroom, height
