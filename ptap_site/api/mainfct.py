@@ -14,13 +14,15 @@ def process_input(input_data, data_dict, multiplier=1):
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
         targ['Distance'] = 0
         new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier)
+
+        prop_info = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '\nCurrent Homestead Status: ' + targ['homestead_'].to_string(index=False)
     elif input_data['appeal_type'] == "cook_county_single_family":
         data = data_dict['cook_sf']
         max_comps = 9
         targ = data[data['PIN'] == target_pin].copy(deep=True)
         targ['Distance'] = 0
         new_targ, cur_comps = comps_cook_sf(targ, data, multiplier)
-
+        prop_info = ''
     if(multiplier > 3): #no comps found within maximum search area---hault
         return ''
     elif(cur_comps.shape[0] < 10): #find more comps
@@ -35,15 +37,14 @@ def process_input(input_data, data_dict, multiplier=1):
         cur_comps = cur_comps.sort_values(by=['score'])
         cur_comps = cur_comps.head(max_comps)
 
-        targ = targ.round(2)
+        new_targ = new_targ.round(2)
         cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
 
         output = {}
         output['target_pin'] = new_targ.to_dict(orient='records')
         output['comparables'] = cur_comps.to_dict(orient='records') 
         output['labeled_headers'] = cur_comps.columns.tolist()
-
-        print(output['labeled_headers'])
+        output['prop_info'] = prop_info
 
         return output
 

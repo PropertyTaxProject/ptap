@@ -10,7 +10,7 @@ def ecdf(x):
         return (searchsorted(x, v, side='right') + 1) / n
     return _ecdf
 
-def filter_on(df, col, val, range_val, filter_type, debug=True):
+def filter_on(df, col, val, range_val, filter_type, debug=False):
     '''
     type: 
     1 -> categorical
@@ -115,70 +115,8 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
     new = filter_on(new, 'has_garage', targ['has_garage'].values[0], garage, 1)
 
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2)
-
-    return(prettify_detroit2(targ), prettify_detroit2(new))
-
-def prettify_detroit(data):
-
-    detroit_sf_cols = ['PIN', 'address', 'zip_code', 'total_sqft', 
-                            'total_floorarea', 'year_built', 'height', 'exterior', 'Baths',
-                            'has_garage', 'has_basement',
-                            'assessed_value', 'Distance',
-                            #'Sale Date', 'Sale Price', '$/Sq.Ft.'
-                            ]
-    detroit_sf_rename_dict = {
-        'PIN' : 'Pin',
-        'address' : 'Address',
-        'assessed_value' : 'Assessed Value',
-        'exterior' : 'Exterior',
-        'has_basement': 'Basement',
-        'has_garage': 'Garage',
-        'height':'Height',
-        'total_floorarea':'Floor Area',
-        'total_sqft':'Sq. Ft.',
-        'year_built': 'Age',
-        'zip_code':'Zip'
-    }
-
-    bath_d = {
-        1:"1",
-        2:"1.5",
-        3:"2 to 3",
-        4:"3+"
-    }
-
-    basement_d = {
-        0:"None",
-        1:"Yes"
-    }
-
-    garage_d = {
-        0:"None",
-        1:"Yes"
-    }
-
-    exterior_d = {
-        1:"Siding",
-        2:"Brick/other",
-        3:"Brick",
-        4:"Other"
-    }
-
-    height_d = {
-        1:"1 to 1.5",
-        2:"1.5 to 2.5",
-        3:"3+",
-    }
-
-    data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
-    data = data.replace({"Baths": bath_d,
-                "Basement": basement_d,
-                "Garage": garage_d,
-                "Height": height_d,
-                "Exterior": exterior_d
-                })
-    return data
-
+    
+    return(prettify_detroit(targ), prettify_detroit(new))
 
 def prettify_cook(data):
     cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
@@ -221,7 +159,7 @@ def prettify_cook(data):
     return data
 
 
-def prettify_detroit2(data):
+def prettify_detroit(data):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
                         'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance',

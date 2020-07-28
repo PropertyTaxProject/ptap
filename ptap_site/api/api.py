@@ -61,6 +61,8 @@ def get_comps(form_data):
     {
         target_pin : [{char1:val1,...}],
         comparables : [{char1:val1,...},{char1:val1,...}] #sorted by best to worst
+        labeled_headers : [h1, h2, ...] #headers sorted in display order
+        prop_info: 'str' #a string of info to display
     }
     """
     data_dict = {}
