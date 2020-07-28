@@ -12,19 +12,28 @@ def process_input(input_data, data_dict, multiplier=1):
         data = data_dict['detroit_sf']
         max_comps = 9
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
+        if targ.empty:
+            raise Exception('Invalid PIN')
         targ['Distance'] = 0
-        new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier)
-
+        try:
+            new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier)
+        except:
+            print('Error Finding Comparables')
         prop_info = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '\nCurrent Homestead Status: ' + targ['homestead_'].to_string(index=False)
     elif input_data['appeal_type'] == "cook_county_single_family":
         data = data_dict['cook_sf']
         max_comps = 9
         targ = data[data['PIN'] == target_pin].copy(deep=True)
+        if targ.empty:
+            raise Exception('Invalid PIN')
         targ['Distance'] = 0
-        new_targ, cur_comps = comps_cook_sf(targ, data, multiplier)
+        try:
+            new_targ, cur_comps = comps_cook_sf(targ, data, multiplier)
+        except:
+            print('Error Finding Comparables')
         prop_info = ''
     if(multiplier > 3): #no comps found within maximum search area---hault
-        return ''
+        raise Exception('Comparables not found with given search')
     elif(cur_comps.shape[0] < 10): #find more comps
         return process_input(input_data, data_dict, multiplier*1.25)
     else: # return best comps
@@ -72,6 +81,7 @@ def process_comps_input(comp_submit):
 
     elif comp_submit['appeal_type'] == "cook_county_single_family":
         return submit_cook_sf(comp_submit)
+    
 
 
 def submit_cook_sf(comp_submit):

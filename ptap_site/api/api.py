@@ -8,8 +8,7 @@ from flask_cors import CORS
 cook_sf = pd.read_csv('cook county/data/cooksf.csv',
                      dtype={'PIN':str})
 
-detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv',
-                        dtype={'zip_code':str})
+detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv')
 
 
 #cook example pin '16052120090000'
@@ -43,14 +42,16 @@ def handle_form2():
     #page 2 form
     print('page 2 submit')
     form_data = request.json
+    try:
+        response_dict = finalize_appeal(form_data)
+        if (form_data['appeal_type'] == "detroit_single_family"):
+            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % form_data['name'].lower().replace(' ', '-'))
 
-    response_dict = finalize_appeal(form_data)
-
-    if (form_data['appeal_type'] == "detroit_single_family"):
-        return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % form_data['name'].lower().replace(' ', '-'))
-
-    resp = jsonify({'request_status': time.time(),
-    'response': response_dict})
+        resp = jsonify({'request_status': time.time(),
+        'response': response_dict})
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        print(e)
 
     return resp
 
@@ -95,8 +96,4 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
-    print("~~~~~~~~~")
-    print(form_data)
-    print("~~~~~~~~~")
-
     return process_comps_input(form_data)
