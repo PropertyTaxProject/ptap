@@ -2,8 +2,23 @@ import pandas as pd
 import pickle
 from docxtpl import DocxTemplate
 from datetime import datetime
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf
+from fuzzywuzzy import process
 import io
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf
+
+def address_candidates(input_data, data):
+    #detroit only
+    output = {}
+    
+    st_num = input_data['st_num']
+    st_name = input_data['st_name']
+    mini = data[data['st_num'] == int(st_num)]
+    candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
+    selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])]
+
+    output['candidates'] = selected[['address', 'parcel_num']].to_dict(orient='records')
+
+    return output
 
 def process_input(input_data, data_dict, multiplier=1):
     target_pin = input_data['pin']

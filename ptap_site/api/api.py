@@ -1,7 +1,7 @@
 import time
 from flask import Flask, request, jsonify, send_file
 import pandas as pd
-from .mainfct import process_comps_input, process_input
+from .mainfct import process_comps_input, process_input, address_candidates
 from flask_cors import CORS
 
 #load data
@@ -16,6 +16,27 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv')
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route('/api_v1/submit0', methods=['POST'])
+def handle_form0():
+    #page 0 form find pin from address
+    print('page 0 submit')
+    page0_data = request.json
+    print('PAGE DATA', request.json)
+    print('REQUEST OBJECT', request)
+    try:
+        response_dict = get_pin(page0_data)
+        resp = jsonify({'request_status': time.time(),
+        'response': response_dict})
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        print(e)
+
+    # resp.headers.add('Access-Control-Allow-Origin', '*')
+    return resp
+
+
 
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
@@ -54,6 +75,20 @@ def handle_form2():
         print(e)
 
     return resp
+
+def get_pin(form_data):
+    '''
+    Input:
+    {
+        st_num : 'num' #street number,
+        st_name : 'str' #street name/rest of address
+    }
+    Output:
+    {
+        candidates: [{'address':val,'parcel_num':val},{}]
+    }
+    '''
+    return address_candidates(form_data, detroit_sf)
 
 
 def get_comps(form_data):

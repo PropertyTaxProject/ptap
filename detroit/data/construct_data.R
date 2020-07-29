@@ -62,11 +62,12 @@ bsna_mini <-
 
 joined <- mini %>% mutate(`Parcel ID` = str_replace_all(parcel_num, "\\.$", "")) %>% left_join(bsna_mini, by=c("Parcel ID"))
 joined <- joined %>% select(-property_1, -zip_code, -`Parcel ID`)
+joined <- joined %>% separate(col=address, into=c('st_num', 'st_name'), sep=' ', extra='merge', remove=FALSE)
+
 
 write_csv(joined, "detroit/data/detroit_sf.csv")
 #garage, basement, exterior, bathroom, height
 #exteriorcat (1 siding, 2 brick/other, 3 brick, 4 other)
 #bathcat (1 1.0, 2 1.5, 3 2 to 3, 4 3+)
 #heightcat (1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
-
 
