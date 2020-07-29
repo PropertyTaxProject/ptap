@@ -165,10 +165,18 @@ const PinForm = () => (
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
+  const { submitForm, city } = props;
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-    props.submitForm(values);
+    let appealType;
+    if (city === 'detroit') {
+      appealType = 'detroit_single_family';
+    } else if (city === 'chicago') {
+      appealType = 'cook_county_single_family';
+    }
+    const info = { ...values, appeal_type: appealType };
+    console.log('Received values of form: ', info);
+    submitForm(info);
   };
 
   return (
@@ -177,9 +185,7 @@ const PropertyForm = (props) => {
       name="Housing Information"
       onFinish={onFinish}
       labelAlign="left"
-      initialValues={{
-        identifier: 'address',
-      }}
+      // initialValues={}
       scrollToFirstError
       autoComplete="off"
       {...formItemLayout}
@@ -191,7 +197,7 @@ const PropertyForm = (props) => {
           <br />
         </Col>
       </Row>
-      <Form.Item
+      {/* <Form.Item
         label="Appeal Type"
         name="appeal_type"
         rules={[
@@ -205,19 +211,11 @@ const PropertyForm = (props) => {
           <Radio.Button value="cook_county_single_family">Cook County Single Family</Radio.Button>
           <Radio.Button value="detroit_single_family">Detroit Single Family</Radio.Button>
         </Radio.Group>
-      </Form.Item>
+      </Form.Item> */}
 
-      <Form.Item
-        noStyle
-        shouldUpdate={
-          (prevValues, currentValues) => prevValues.identifier !== currentValues.identifier
-        }
-      >
+      <Form.Item noStyle>
         <PinForm />
         <HomeownerInfo />
-        {/* {({ getFieldValue }) => (getFieldValue('identifier') === 'address' ? (
-          <AddressForm />
-        ) : <PinForm />)} */}
       </Form.Item>
 
       <Form.Item {...tailFormItemLayout}>

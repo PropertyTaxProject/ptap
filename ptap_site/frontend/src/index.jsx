@@ -1,86 +1,48 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import { Layout, Menu } from 'antd';
-import axios from 'axios';
-import { saveAs } from 'file-saver';
-import * as serviceWorker from './serviceWorker';
-import FormInput from './components/form-input';
-import Characteristics from './components/characteristics';
-
 import 'antd/dist/antd.css';
+import './index.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Layout } from 'antd';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from 'react-router-dom';
+import Header from './components/header';
+import LandingPage from './components/landing-page';
+import * as serviceWorker from './serviceWorker';
+import Appeal from './components/appeal';
 
-const { Header, Content, Footer } = Layout;
-
-const submitForm = async (info, setData, setInfo) => {
-  try {
-    const resp = await axios.post('/api_v1/submit', info);
-    console.log(resp);
-    const data = resp.data.response.target_pin.concat(resp.data.response.comparables);
-    setData(data);
-    setInfo(info);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const submitAppeal = async (data, userInfo) => {
-  try {
-    // merge our data and user info
-    const target_pin = [data[0]];
-    const comparables = data.slice(1);
-    const body = { target_pin, comparables, ...userInfo };
-    console.log(body);
-    const detroit = userInfo.appeal_type === 'detroit_single_family';
-    const resp = await axios.post('/api_v1/submit2', body, { responseType: detroit ? 'blob' : 'json' }); // detroit downloads file, chicago returns json
-    if (detroit) {
-      saveAs(resp.data, `${userInfo.name.replace(' ', '-').toLowerCase()}-appeal.docx`);
-    } else {
-      console.log(resp);
-    }
-    // TRIGGER SUBMISSION PAGE
-  } catch (e) {
-    console.error(e);
-  }
-};
+const { Content, Footer } = Layout;
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
-const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
-const Page = () => {
-  const a = [];
-  for (let i = 0; i < 20; i += 1) {
-    a.push({ sqft: Math.round(Math.random() * 10000), bedrooms: Math.round(Math.random() * 5) });
-  }
-  const [data, setData] = useState([]);
-  const [userInfo, setInfo] = useState({});
-  return (
+const Page = () => (
+  <Router>
     <Layout className="layout">
-      <Header>
-        <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1">Property Tax Appeal Project: Automated Appeal System</Menu.Item>
-        </Menu>
-      </Header>
+      <Header />
       <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
-          { data.length === 0 ? <FormInput submitForm={(info) => submitForm(info, setData, setInfo)} />
-            : (
-              <Characteristics
-                data={data}
-                submitAppeal={async () => { submitAppeal(data, userInfo); }}
-                removeComparable={async (idx) => {
-                  setData(await removeComparable(data, idx));
-                  console.log(`removed ${idx}`);
-                }}
-                back={() => { setData([]); }}
-              />
-            )}
+          <Switch>
+            <Route
+              path="/detroit"
+              render={() => <Appeal city="detroit" />}
+            />
+            <Route
+              path="/chicago"
+              render={() => <Appeal city="chicago" />}
+            />
+            <Route
+              path="/"
+              render={() => <LandingPage />}
+            />
+          </Switch>
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Property Tax Appeal Project</Footer>
     </Layout>
-  );
-};
+  </Router>
+);
 
 ReactDOM.render(
   <React.StrictMode>
