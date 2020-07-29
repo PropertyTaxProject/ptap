@@ -172,7 +172,8 @@ rsconnect/
 
 #data files
 # *.csv
-ptap_site/api/tmp_data/*
+# we need this folder to exist for the backend to run successfully
+ptap_site/api/tmp_data/*.docx
 *.pickle
 detroit/data/*
 cook county/data/*
