@@ -68,3 +68,5 @@ write_csv(joined, "detroit/data/detroit_sf.csv")
 #exteriorcat (1 siding, 2 brick/other, 3 brick, 4 other)
 #bathcat (1 1.0, 2 1.5, 3 2 to 3, 4 3+)
 #heightcat (1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
+
+

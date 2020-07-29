@@ -104,3 +104,27 @@ This combines multiple open data sets which all have different limitations.
 
 The City releases information on new rental registrations only since January 1, 2019. The City also releases data on successful inspections only. The City also releases information on properties which received a blight ticket for failing to register as a rental property and for failing to receive a certificate of compliance. Tickets issued since 2017 are included.
 
+
+```{r eval=FALSE}
+rentaldata <- read_csv('Detroit/data/misc/rentalordinance.csv')
+
+tmp <- rentaldata %>% filter(property_1 %in% c("RESIDENTIAL", "RESIDENTIAL VACANT")) 
+
+counts <- tmp %>% count(taxpayer_1, property_1) %>% pivot_wider(id_cols = taxpayer_1, names_from = property_1, values_from=n, values_fill=0)
+counts <- counts %>% mutate(total = RESIDENTIAL + `RESIDENTIAL VACANT`)
+rslt <- counts %>% filter(total >= 20)
+rslt %>% filter(RESIDENTIAL >= 20)
+
+rslt2 <- tmp %>% filter(property_1 == "RESIDENTIAL") %>% count(taxpayer_1, rental_status) %>% 
+  pivot_wider(id_cols = taxpayer_1, names_from = rental_status, values_from=n, values_fill=0)
+
+rslt2 <- rslt2 %>% mutate(valid = `1`, invalid_or_missing = `NA` + `-1` + `0`, total=valid+invalid_or_missing) %>% 
+  select(taxpayer_1, valid, invalid_or_missing, total)%>% mutate(pct_valid = valid/total)
+
+rslt2 <- rslt2 %>% filter(total >= 20) %>% arrange(-total)
+
+rslt2 %>% write_csv('largeowners.csv')
+
+```
+
+
