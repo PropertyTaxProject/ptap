@@ -12,6 +12,7 @@ import {
   Upload,
   message,
 } from 'antd';
+import ImageWall from './image-upload';
 
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
@@ -93,7 +94,7 @@ class Avatar extends React.Component {
 
   render() {
     const uploadButton = (
-      <div>
+      <div style={{width: '330px'}}>
         {this.state.loading ? <LoadingOutlined /> : <PlusOutlined />}
         <div className="ant-upload-text">Upload</div>
       </div>
@@ -116,15 +117,16 @@ class Avatar extends React.Component {
 }
 
 const CardBody = (props) => {
-  const {} = props;
+  const {id} = props;
 
   return (
     <Card
       title={(
-        <Form.Item name="gender" label="Gender" noStyle rules={[{ required: true }]}>
+        <Form.Item name={`damage_type_${id}`} label="Damage Type" noStyle rules={[{ required: true }]}>
           <Select
+            style={{width: '350px'}}
             placeholder="Select a option and change input text above"
-            onChange={() => { console.log('test'); }}
+            onChange={() => {console.log(id)}}
           >
             <Option value="garage">Garage Damage</Option>
             <Option value="roof">Water Damage</Option>
@@ -132,9 +134,9 @@ const CardBody = (props) => {
           </Select>
         </Form.Item>
 )}
-      style={{ width: 'auto' }}
+      style={{ width: '400px' }}
     >
-      <DamageInput />
+      <DamageInput id={id}/>
     </Card>
   );
 };
@@ -144,21 +146,25 @@ const DamageInput = (props) => {
   return (
     <>
       <Form.Item
-        name={`damage_input_${props.id}`}
-        label="Description"
+        name={`damage_description_${props.id}`}
+        label="Damage Description"
         rules={[
           {
             required: true,
-            message: 'Please input your property!',
+            message: 'Please add a description of your damage.',
             whitespace: true,
           },
         ]}
+        noStyle
       >
-        <TextArea />
+        <TextArea rows={4} placeholder="Please provide any details regarding the damage." />
       </Form.Item>
+      <br/>
+      <br/>
+      <p>Please upload any images of the damage.</p>
       <Form.Item
-        name={`damage_images_${props.id}`}
-        label="Damage Images"
+        name={`damage_image_${props.id}`}
+        label="Damage Image"
         rules={[
           {
             required: true,
@@ -166,6 +172,7 @@ const DamageInput = (props) => {
             whitespace: true,
           },
         ]}
+        noStyle
       >
         <Avatar></Avatar>
       </Form.Item>

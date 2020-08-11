@@ -1,9 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from 'react-router-dom';
+import React, { useState } from 'react';
 import { submitAppeal, submitForm } from '../requests';
 import FormInput from './form-input';
 import Characteristics from './characteristics';
