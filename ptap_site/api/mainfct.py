@@ -4,6 +4,7 @@ from docxtpl import DocxTemplate
 from datetime import datetime
 from fuzzywuzzy import process
 import io
+import os
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
 def address_candidates(input_data, data):
@@ -258,3 +259,15 @@ def generate_detroit_sf(comp_submit):
     output['file_stream'] = file_stream
 
     return output
+
+def record_log(uuid_val, process_step_id, exception, form_data):
+    new = {}
+    new['uuid'] = uuid_val
+    new['process_step_id'] = process_step_id,
+    new['exception'] = exception
+
+    tmp = pd.DataFrame.from_dict(new)
+    tmp = pd.concat([tmp, pd.json_normalize(form_data)], axis=1)
+    p = 'tmp_log.csv'
+
+    tmp.to_csv(p, index=False, mode='a')#, header=not os.path.exists(p))

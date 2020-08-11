@@ -1,7 +1,8 @@
 import time
 from flask import Flask, request, jsonify, send_file
 import pandas as pd
-from .mainfct import process_comps_input, process_input, address_candidates
+import uuid
+from .mainfct import process_comps_input, process_input, address_candidates, record_log
 from flask_cors import CORS
 
 #load data
@@ -27,16 +28,14 @@ def handle_form0():
     print('REQUEST OBJECT', request)
     try:
         response_dict = get_pin(page0_data)
+        responce_dict['uuid'] = logger(page0_data, 'address_finder')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        print(e)
+        logger(page0_data, 'address_finder', True)
 
-    # resp.headers.add('Access-Control-Allow-Origin', '*')
     return resp
-
-
 
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
@@ -47,13 +46,13 @@ def handle_form():
     print('REQUEST OBJECT', request)
     try:
         response_dict = get_comps(page1_data)
+        logger(page1_data, 'get_comps')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        print(e)
+        logger(page1_data, 'get_comps', True)
 
-    # resp.headers.add('Access-Control-Allow-Origin', '*')
     return resp
 
 
@@ -65,6 +64,8 @@ def handle_form2():
     form_data = request.json
     try:
         response_dict = finalize_appeal(form_data)
+        logger(form_data, 'submit')
+
         if (form_data['appeal_type'] == "detroit_single_family"):
             return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % form_data['name'].lower().replace(' ', '-'))
 
@@ -72,9 +73,22 @@ def handle_form2():
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        print(e)
+        logger(form_data, 'submit', True)
 
     return resp
+
+
+def logger(form_data, process_step_id, exception=False):
+    if process_step_id == 'address_finder':
+        uuid_val = uuid.uuid4().bytes
+        record_log(uuid_val, process_step_id, exception, form_data)
+        return uuid_val
+    else:
+        if uuid in form_data:
+            record_log(form_data['uuid'], process_step_id, exception, form_data)
+        else:
+            record_log('placeholder', process_step_id, exception, form_data)
+        return
 
 def get_pin(form_data):
     '''
