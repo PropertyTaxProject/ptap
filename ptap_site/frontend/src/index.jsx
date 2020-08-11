@@ -13,9 +13,9 @@ import LandingPage from './components/landing-page';
 import * as serviceWorker from './serviceWorker';
 import Appeal from './components/appeal';
 
-const { Content, Footer } = Layout;
+import DamageInput from './components/damages';
 
-// TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
+const { Content, Footer } = Layout;
 
 const Page = () => (
   <Router>
@@ -31,6 +31,10 @@ const Page = () => (
             <Route
               path="/chicago"
               render={() => <Appeal city="chicago" />}
+            />
+            <Route
+              path="/test"
+              render={() => <DamageInput />}
             />
             <Route
               path="/"
