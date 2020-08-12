@@ -23,7 +23,11 @@ const Appeal = () => {
         city="detroit"
         pin={pin}
         submitForm={(info) => submitForm(info, setData, setInfo)}
-        back={() => { setPin(undefined); }}
+        back={() => {
+          setPin(undefined);
+          setInfo({});
+          setData([]);
+        }}
       />
     );
   }
@@ -37,7 +41,10 @@ const Appeal = () => {
           setData(await removeComparable(data, idx));
           console.log(`removed ${idx}`);
         }}
-        back={() => { setData([]); }}
+        back={() => {
+          setInfo({});
+          setData([]);
+        }}
       />
     );
   }

@@ -69,6 +69,9 @@ const Lookup = (props) => {
 
   return (
     <>
+      <h2>Pin Lookup</h2>
+      <p>Let&apos;s begin by looking up your pin.</p>
+      <p style={{ width: '350px' }}>Enter your street number and street name and select the correct property from the dropdown.</p>
       <Form
         form={form}
         name="Pin Lookup"

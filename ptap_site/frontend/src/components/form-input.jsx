@@ -5,6 +5,7 @@ import {
   Button,
   Row,
   Col,
+  Space,
 } from 'antd';
 
 const formItemLayout = {
@@ -218,9 +219,10 @@ const PropertyForm = (props) => {
       </Form.Item>
 
       <Form.Item {...tailFormItemLayout}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
+        <Space>
+          <Button type="danger" onClick={props.back} >Back</Button>
+          <Button type="primary" htmlType="submit">Submit</Button>
+        </Space>
       </Form.Item>
     </Form>
   );
