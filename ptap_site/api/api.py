@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/api_v1/submit0', methods=['POST'])
+@app.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
     #page 0 form find pin from address
     print('page 0 submit')
@@ -28,7 +28,7 @@ def handle_form0():
     print('REQUEST OBJECT', request)
     try:
         response_dict = get_pin(page0_data)
-        responce_dict['uuid'] = logger(page0_data, 'address_finder')
+        response_dict['uuid'] = logger(page0_data, 'address_finder')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
@@ -80,8 +80,8 @@ def handle_form2():
 
 def logger(form_data, process_step_id, exception=False):
     if process_step_id == 'address_finder':
-        uuid_val = uuid.uuid4().bytes
-        record_log(uuid_val, process_step_id, exception, form_data)
+        uuid_val = uuid.uuid4()
+        record_log(uuid_val.bytes, process_step_id, exception, form_data)
         return uuid_val
     else:
         if uuid in form_data:

@@ -14,6 +14,7 @@ import * as serviceWorker from './serviceWorker';
 import Appeal from './components/appeal';
 
 import DamageInput from './components/damages';
+import PinLookup from './components/pin-lookup';
 
 const { Content, Footer } = Layout;
 
@@ -34,7 +35,8 @@ const Page = () => (
             />
             <Route
               path="/test"
-              render={() => <DamageInput />}
+              render={() => <PinLookup />}
+              // render={() => <DamageInput />}
             />
             <Route
               path="/"
