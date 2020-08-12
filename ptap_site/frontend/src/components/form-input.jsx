@@ -164,7 +164,7 @@ const PinForm = () => (
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
-  const { submitForm, city } = props;
+  const { submitForm, city, pin } = props;
 
   const onFinish = (values) => {
     let appealType;
@@ -173,7 +173,7 @@ const PropertyForm = (props) => {
     } else if (city === 'chicago') {
       appealType = 'cook_county_single_family';
     }
-    const info = { ...values, appeal_type: appealType };
+    const info = { ...values, pin, appeal_type: appealType };
     console.log('Received values of form: ', info);
     submitForm(info);
   };
@@ -213,7 +213,7 @@ const PropertyForm = (props) => {
       </Form.Item> */}
 
       <Form.Item noStyle>
-        <PinForm />
+        {/* <PinForm /> */}
         <HomeownerInfo />
       </Form.Item>
 

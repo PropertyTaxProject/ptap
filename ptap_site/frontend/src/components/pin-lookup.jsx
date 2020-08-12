@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Form,
@@ -7,6 +7,8 @@ import {
   Button,
   Row,
   Col,
+  Space,
+  Table,
 } from 'antd';
 
 import axios from 'axios';
@@ -32,33 +34,68 @@ const formItemLayout = {
 };
 
 const lookupPin = async (data) => {
-  console.log(data);
-  const resp = await axios.post('/api_v1/pin-lookup', data);
-  console.log(resp.data);
+  try {
+    return (await (axios.post('/api_v1/pin-lookup', data))).data.response.candidates;
+  } catch (err) {
+    return [];
+  }
 };
 
 const Lookup = (props) => {
   const [form] = Form.useForm();
+  const [pins, setPin] = useState([]);
+
+  const { logPin } = props;
+
+  const columns = [
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
+    {
+      title: 'Pin',
+      dataIndex: 'parcel_num',
+      key: 'pin',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <Button onClick={() => { logPin(record.parcel_num); }}>Select</Button>
+      ),
+    },
+  ];
+
   return (
-    <Form
-      form={form}
-      name="Pin Lookup"
-      onFinish={lookupPin}
-      labelAlign="left"
-      scrollToFirstError
-      autoComplete="off"
-      {...formItemLayout}
-    >
-      <Input.Group compact>
-        <Form.Item name="st_name" noStyle rules={[{ required: true, message: 'Street name is required.' }]}>
-          <Input placeholder="street" />
-        </Form.Item>
-        <Form.Item name="st_num" noStyle rules={[{ required: true, message: 'Street name is required.' }]}>
-          <Input type="number" placeholder="number" />
-        </Form.Item>
+    <>
+      <Form
+        form={form}
+        name="Pin Lookup"
+        onFinish={async (data) => { setPin(await lookupPin(data)); }}
+        labelAlign="left"
+        scrollToFirstError
+        autoComplete="off"
+      >
+        <Input.Group compact>
+          <Form.Item style={{ width: '100px' }} name="st_num" rules={[{ required: true, message: 'Street name is required.' }]}>
+            <Input type="number" placeholder="number" />
+          </Form.Item>
+          <Form.Item style={{ width: '300px' }} name="st_name" rules={[{ required: true, message: 'Street name is required.' }]}>
+            <Input placeholder="street" />
+          </Form.Item>
+        </Input.Group>
         <Button type="primary" htmlType="submit">Lookup Pin</Button>
-      </Input.Group>
-    </Form>
+      </Form>
+      {(pins.length !== 0
+        ? (
+          <>
+            <br />
+            <Table columns={columns} dataSource={pins} />
+          </>
+        )
+        : null)}
+    </>
   );
 };
 
