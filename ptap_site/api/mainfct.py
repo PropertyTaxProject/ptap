@@ -1,5 +1,6 @@
 import pandas as pd
 import pickle
+import time
 from docxtpl import DocxTemplate
 from datetime import datetime
 from fuzzywuzzy import process
@@ -18,6 +19,9 @@ def address_candidates(input_data, data):
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])]
 
     output['candidates'] = selected[['address', 'parcel_num']].to_dict(orient='records')
+
+    if len(output['candidates']) == 0: #if none found raise
+        raise Exception('No Matches Found')
 
     return output
 
@@ -48,7 +52,7 @@ def process_input(input_data, data_dict, multiplier=1):
         except:
             print('Error Finding Comparables')
         prop_info = ''
-    if(multiplier > 3): #no comps found within maximum search area---hault
+    if(multiplier > 5): #no comps found within maximum search area---hault
         raise Exception('Comparables not found with given search')
     elif(cur_comps.shape[0] < 10): #find more comps
         return process_input(input_data, data_dict, multiplier*1.25)
@@ -265,9 +269,13 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     new['uuid'] = uuid_val
     new['process_step_id'] = process_step_id,
     new['exception'] = exception
+    new['time'] = time.time()
 
     tmp = pd.DataFrame.from_dict(new)
     tmp = pd.concat([tmp, pd.json_normalize(form_data)], axis=1)
     p = 'tmp_log.csv'
 
     tmp.to_csv(p, index=False, mode='a')#, header=not os.path.exists(p))
+
+    if exception:
+        print(tmp.T)

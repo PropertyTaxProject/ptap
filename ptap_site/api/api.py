@@ -33,7 +33,7 @@ def handle_form0():
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(page0_data, 'address_finder', True)
+        logger(page0_data, 'address_finder', e)
 
     return resp
 
@@ -51,7 +51,7 @@ def handle_form():
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(page1_data, 'get_comps', True)
+        logger(page1_data, 'get_comps', e)
 
     return resp
 
@@ -73,12 +73,12 @@ def handle_form2():
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(form_data, 'submit', True)
+        logger(form_data, 'submit', e)
 
     return resp
 
 
-def logger(form_data, process_step_id, exception=False):
+def logger(form_data, process_step_id, exception=''):
     if process_step_id == 'address_finder':
         uuid_val = uuid.uuid4()
         record_log(uuid_val.bytes, process_step_id, exception, form_data)
