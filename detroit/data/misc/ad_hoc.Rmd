@@ -250,5 +250,75 @@ pal <-
 make_map(assessments_mini, pal)
 ```
 
+```{r}
+target_sales <- read_csv('C:/Users/erhla/Documents/GitHub/ptap/detroit/data/misc/target_sales.csv')
+
+target_sales <- target_sales %>% mutate(decade = SALE_YEAR - SALE_YEAR %% 10)
+
+nine <- target_sales %>% filter(decade == 1990)
+zero <- target_sales %>% filter(decade == 2000)
+ten <- target_sales %>% filter(decade == 2010)
+```
+
+# 1990s
+
+```{r}
+nine %>% count(TERMS) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
 
 
+# 2000s
+
+```{r}
+zero %>% count(TERMS) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+```{r} 
+zero %>% count(GRANTOR) %>% filter(n > 10, !is.na(GRANTOR)) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+```{r}
+zero %>% count(GRANTEE) %>% filter(n > 10, !is.na(GRANTEE)) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+# 2010s
+
+```{r}
+ten %>% count(TERMS) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+```{r}
+ten %>% count(GRANTOR)%>% filter(n > 10, !is.na(GRANTOR))  %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```
+
+```{r}
+ten %>% count(GRANTEE) %>% filter(n > 10, !is.na(GRANTEE)) %>% kable() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  )
+```

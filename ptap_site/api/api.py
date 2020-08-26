@@ -6,9 +6,9 @@ from .mainfct import process_comps_input, process_input, address_candidates, rec
 from flask_cors import CORS
 
 #load data
-cook_sf = pd.read_csv('cook county/data/cooksf.csv',
-                     dtype={'PIN':str})
-
+cook_sf = pd.concat([pd.read_csv('cook county/data/cooksf1.csv', dtype={'PIN':str}), 
+                     pd.read_csv('cook county/data/cooksf2.csv', dtype={'PIN':str})])
+               
 detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv')
 
 
@@ -102,7 +102,11 @@ def get_pin(form_data):
         candidates: [{'address':val,'parcel_num':val},{}]
     }
     '''
-    return address_candidates(form_data, detroit_sf)
+    data_dict = {}
+    data_dict['cook_sf'] = cook_sf
+    data_dict['detroit_sf'] = detroit_sf
+
+    return address_candidates(form_data, data_dict)
 
 
 def get_comps(form_data):

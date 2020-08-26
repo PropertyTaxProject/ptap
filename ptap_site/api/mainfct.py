@@ -8,10 +8,18 @@ import io
 import os
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
-def address_candidates(input_data, data):
-    #detroit only
+def address_candidates(input_data, data_dict):
+    print(input_data)
+    input_data['appeal_type'] = "cook_county_single_family"
+
+    if input_data['appeal_type'] == "detroit_single_family":
+        data = data_dict['detroit_sf']
+    elif input_data['appeal_type'] == "cook_county_single_family":
+        data = data_dict['cook_sf']
+        data = data.rename(columns={'Property Address': 'address',
+                                    'PIN' : 'parcel_num'})
+
     output = {}
-    
     st_num = input_data['st_num']
     st_name = input_data['st_name']
     mini = data[data['st_num'] == int(st_num)]
@@ -52,7 +60,7 @@ def process_input(input_data, data_dict, multiplier=1):
         except:
             print('Error Finding Comparables')
         prop_info = ''
-    if(multiplier > 5): #no comps found within maximum search area---hault
+    if(multiplier > 8): #no comps found within maximum search area---hault
         raise Exception('Comparables not found with given search')
     elif(cur_comps.shape[0] < 10): #find more comps
         return process_input(input_data, data_dict, multiplier*1.25)
