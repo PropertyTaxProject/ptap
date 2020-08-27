@@ -52,15 +52,18 @@ condos <- c(299)
 full <- full %>% mutate(stories_recode = case_when(`Type of Residence` %in% c("1", "4", "5", "6", "7", "8", "9") ~ "1",
                                                    TRUE ~ `Type of Residence`),
                         basement_recode = case_when(Basement %in% c("2", "3", "4") ~ "0",
-                                                    Basement == "1" ~ "1")
-) %>% select(-CLASS, -NBHD, -TOWN)
+                                                    Basement == "1" ~ "1")) %>% select(-CLASS, -NBHD, -TOWN)
 
+full <- full %>%
+  separate(`Property Address`, " ", into=c("st_num", "st_name"), extra='merge', remove=FALSE)
 
-
-full <- full %>% select('PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
+full2 <- full %>% select('PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
                          'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
-                         'CERTIFIED', 'Longitude', 'Latitude')
+                         'CERTIFIED', 'Longitude', 'Latitude', 'Property Address', 'st_num', 'st_name', 'Sale Price', 'Sale Year')
 
-fwrite(full %>% filter(`Property Class` %in% res_classes), paste0(file_loc, "cooksf.csv"))
-fwrite(full %>% filter(`Property Class` %in% condos), paste0(file_loc, "cookcondos.csv"))
+fwrite(full2 %>% filter(`Property Class` %in% res_classes), paste0(file_loc, "cooksf.csv"))
+fwrite(full2 %>% filter(`Property Class` %in% condos), paste0(file_loc, "cookcondos.csv"))
 
+
+fwrite(full2 %>% filter(`Property Class` %in% c(202, 203, 204)), paste0(file_loc, "cooksf1.csv"))
+fwrite(full2 %>% filter(`Property Class` %in% c(205, 206, 207, 208, 209, 210, 211, 212, 234, 278, 295)), paste0(file_loc, "cooksf2.csv"))

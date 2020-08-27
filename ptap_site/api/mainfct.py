@@ -9,9 +9,6 @@ import os
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
 def address_candidates(input_data, data_dict):
-    print(input_data)
-    input_data['appeal_type'] = "cook_county_single_family"
-
     if input_data['appeal_type'] == "detroit_single_family":
         data = data_dict['detroit_sf']
     elif input_data['appeal_type'] == "cook_county_single_family":
@@ -33,7 +30,7 @@ def address_candidates(input_data, data_dict):
 
     return output
 
-def process_input(input_data, data_dict, multiplier=1):
+def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
     target_pin = input_data['pin']
 
     if input_data['appeal_type'] == "detroit_single_family":
@@ -44,7 +41,7 @@ def process_input(input_data, data_dict, multiplier=1):
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
         try:
-            new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier)
+            new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier, sales_comps)
         except:
             print('Error Finding Comparables')
         prop_info = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '\nCurrent Homestead Status: ' + targ['homestead_'].to_string(index=False)
@@ -56,14 +53,15 @@ def process_input(input_data, data_dict, multiplier=1):
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
         try:
-            new_targ, cur_comps = comps_cook_sf(targ, data, multiplier)
+            new_targ, cur_comps = comps_cook_sf(targ, data, multiplier, sales_comps)
         except:
             print('Error Finding Comparables')
         prop_info = ''
+
     if(multiplier > 8): #no comps found within maximum search area---hault
         raise Exception('Comparables not found with given search')
     elif(cur_comps.shape[0] < 10): #find more comps
-        return process_input(input_data, data_dict, multiplier*1.25)
+        return process_input(input_data, data_dict, multiplier*1.25, sales_comps)
     else: # return best comps
         dist_weight = 1
         valuation_weight = 3
@@ -82,6 +80,10 @@ def process_input(input_data, data_dict, multiplier=1):
         output['comparables'] = cur_comps.to_dict(orient='records') 
         output['labeled_headers'] = cur_comps.columns.tolist()
         output['prop_info'] = prop_info
+        output['pinav'] = new_targ.assessed_value.mean()
+        output['compsav'] = cur_comps.assessed_value.mean()
+        output['compssp'] = cur_comps['Sale Price'].mean()
+        output['pin'] = target_pin
 
         return output
 

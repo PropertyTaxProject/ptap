@@ -17,10 +17,8 @@ def filter_on(df, col, val, range_val, filter_type, debug=False):
     2 -> distance
     3 -> continuous 
     '''
-
     if debug:
         print(df.shape)
-
     if df.shape[0] == 0:
         print('cannot filter a dataframe with 0 rows')
         return df
@@ -53,14 +51,16 @@ def great_circle(lon1, lat1, lon2, lat2):
     )
 
 #comp finder functions
-def comps_cook_sf(targ, cook_sf, multiplier):
+def comps_cook_sf(targ, cook_sf, multiplier, sales_comps):
     ###
     #constants
-    age_dif = 10 * multiplier
-    build_dif = 0.05 * targ['Building Square Feet'].values[0] * multiplier
+    age_dif = 15 * multiplier
+    build_dif = 0.10 * targ['Building Square Feet'].values[0] * multiplier
     land_dif = 0.25 * targ['Land Square Feet'].values[0] * multiplier
-    rooms_dif = 1 * multiplier
-    bedroom_dif = 1 * multiplier
+    rooms_dif = 1.5 * multiplier
+    bedroom_dif = 1.5 * multiplier
+    av_dif = 0.5 * targ['CERTIFIED'].values[0] * multiplier
+
     
     wall_material = "Match" #wall material 1=wood, 2=masonry, 3=wood&masonry, 4=stucco
     stories = "Match" #1, 2, or 3 stories
@@ -68,25 +68,41 @@ def comps_cook_sf(targ, cook_sf, multiplier):
     garage_ind = "Match" #1 any garage 0 no garage
     
     distance_filter = 1 * multiplier #miles
-    ###
-       
-    new = cook_sf[cook_sf['PIN'] != targ['PIN'].values[0]]
-    new = filter_on(new, 'Age', targ['Age'].values[0], age_dif, 3)
-    new = filter_on(new, 'Building Square Feet', targ['Building Square Feet'].values[0], build_dif, 3)
-    new = filter_on(new, 'Land Square Feet', targ['Land Square Feet'].values[0], land_dif, 3)
-    new = filter_on(new, 'Rooms', targ['Rooms'].values[0], rooms_dif, 3)
-    new = filter_on(new, 'Bedrooms', targ['Bedrooms'].values[0], bedroom_dif, 3)
-    
-    new = filter_on(new, 'Wall Material', targ['Wall Material'].values[0], wall_material, 1)
-    new = filter_on(new, 'stories_recode', targ['stories_recode'].values[0], stories, 1)
-    new = filter_on(new, 'basement_recode', targ['basement_recode'].values[0], basement, 1)
-    new = filter_on(new, 'Garage indicator', targ['Garage indicator'].values[0], garage_ind, 1)
 
-    new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2)
-            
+    debug = False
+    fulldebug = False
+    ###
+    new = cook_sf[cook_sf['PIN'] != targ['PIN'].values[0]]
+
+    if sales_comps:
+        new = new[new['Sale Price'].notnull()]
+
+    if debug:
+        print("~~~")
+        print(targ['PIN'].values[0] + " |||| multiplier " + str(multiplier))
+        print(new.shape)
+
+    new = filter_on(new, 'Age', targ['Age'].values[0], age_dif, 3, fulldebug)
+    new = filter_on(new, 'Building Square Feet', targ['Building Square Feet'].values[0], build_dif, 3, fulldebug)
+    new = filter_on(new, 'Land Square Feet', targ['Land Square Feet'].values[0], land_dif, 3, fulldebug)
+    new = filter_on(new, 'Rooms', targ['Rooms'].values[0], rooms_dif, 3, fulldebug)
+    new = filter_on(new, 'Bedrooms', targ['Bedrooms'].values[0], bedroom_dif, 3, fulldebug)
+    new = filter_on(new, 'CERTIFIED', targ['CERTIFIED'].values[0], av_dif, 3, fulldebug)
+
+    new = filter_on(new, 'Wall Material', targ['Wall Material'].values[0], wall_material, 1, fulldebug)
+    new = filter_on(new, 'stories_recode', targ['stories_recode'].values[0], stories, 1, fulldebug)
+    new = filter_on(new, 'basement_recode', targ['basement_recode'].values[0], basement, 1, fulldebug)
+    new = filter_on(new, 'Garage indicator', targ['Garage indicator'].values[0], garage_ind, 1, fulldebug)
+
+    new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2, fulldebug)
+
+    if debug:
+        print(new.shape)
+        print("~~~")
+
     return(prettify_cook(targ), prettify_cook(new))
 
-def comps_detroit_sf(targ, detroit_sf, multiplier):
+def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     ###
     #constants
     square_dif = 100 * multiplier
@@ -99,29 +115,32 @@ def comps_detroit_sf(targ, detroit_sf, multiplier):
     garage = 'Match'
     bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
     height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
+
+    debug = False
+    fulldebug = False
     ###
 
     new = detroit_sf[detroit_sf['parcel_num'] != targ['parcel_num'].values[0]]
 
-    new = filter_on(new, 'year_built', targ['year_built'].values[0], age_dif, 3)
-    new = filter_on(new, 'total_floo', targ['total_floo'].values[0], floor_dif, 3)
-    new = filter_on(new, 'total_acre', targ['total_acre'].values[0], acre_dif, 3)
-    new = filter_on(new, 'total_squa', targ['total_squa'].values[0], square_dif, 3)
+    new = filter_on(new, 'year_built', targ['year_built'].values[0], age_dif, 3, fulldebug)
+    new = filter_on(new, 'total_floo', targ['total_floo'].values[0], floor_dif, 3, fulldebug)
+    new = filter_on(new, 'total_acre', targ['total_acre'].values[0], acre_dif, 3, fulldebug)
+    new = filter_on(new, 'total_squa', targ['total_squa'].values[0], square_dif, 3, fulldebug)
 
-    new = filter_on(new, 'heightcat', targ['heightcat'].values[0], height, 1)
-    new = filter_on(new, 'extcat', targ['extcat'].values[0], exterior, 1)
-    new = filter_on(new, 'bathcat', targ['bathcat'].values[0], bath, 1)
-    new = filter_on(new, 'has_basement', targ['has_basement'].values[0], basement, 1)
-    new = filter_on(new, 'has_garage', targ['has_garage'].values[0], garage, 1)
+    new = filter_on(new, 'heightcat', targ['heightcat'].values[0], height, 1, fulldebug)
+    new = filter_on(new, 'extcat', targ['extcat'].values[0], exterior, 1, fulldebug)
+    new = filter_on(new, 'bathcat', targ['bathcat'].values[0], bath, 1, fulldebug)
+    new = filter_on(new, 'has_basement', targ['has_basement'].values[0], basement, 1, fulldebug)
+    new = filter_on(new, 'has_garage', targ['has_garage'].values[0], garage, 1, fulldebug)
 
-    new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2)
+    new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2, fulldebug)
     
     return(prettify_detroit(targ), prettify_detroit(new))
 
 def prettify_cook(data):
     cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
     'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
-    'Distance', 'CERTIFIED']
+    'Distance', 'CERTIFIED', 'Sale Price', 'Sale Year']
 
     cook_sf_rename_dict = {
         'Property Class':'Class',
@@ -150,12 +169,13 @@ def prettify_cook(data):
         0:"None",
         1:"Yes"
     }
-    data = data[cook_sf_cols].rename(columns=cook_sf_rename_dict)
-    data = data.replace({"Exterior": wall_d,
-                "Basement": basement_d,
-                "Garage": garage_d,
-                })
 
+    if data.shape[0] != 0:
+        data = data[cook_sf_cols].rename(columns=cook_sf_rename_dict)
+        data = data.replace({"Exterior": wall_d,
+                    "Basement": basement_d,
+                    "Garage": garage_d,
+                    }) 
     return data
 
 
@@ -163,7 +183,7 @@ def prettify_detroit(data):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
                         'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance',
-                        #'Sale Date', 'Sale Price', '$/Sq.Ft.'
+                        'Sale Date', 'Sale Price',
                         ]
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
@@ -209,12 +229,13 @@ def prettify_detroit(data):
         2:"1.5 to 2.5",
         3:"3+",
     }
-
-    data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
-    data = data.replace({"Baths": bath_d,
-                "Basement": basement_d,
-                "Garage": garage_d,
-                "Height": height_d,
-                "Exterior": exterior_d
-                })
+    if data.shape[0] != 0:
+        data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
+        data = data.replace({"Baths": bath_d,
+                    "Basement": basement_d,
+                    "Garage": garage_d,
+                    "Height": height_d,
+                    "Exterior": exterior_d
+                    })
+    
     return data
