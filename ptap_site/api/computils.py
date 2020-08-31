@@ -100,7 +100,7 @@ def comps_cook_sf(targ, cook_sf, multiplier, sales_comps):
         print(new.shape)
         print("~~~")
 
-    return(prettify_cook(targ), prettify_cook(new))
+    return(prettify_cook(targ, sales_comps), prettify_cook(new, sales_comps))
 
 def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     ###
@@ -134,13 +134,20 @@ def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     new = filter_on(new, 'has_garage', targ['has_garage'].values[0], garage, 1, fulldebug)
 
     new = filter_on(new, 'Distance', (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter, 2, fulldebug)
-    
-    return(prettify_detroit(targ), prettify_detroit(new))
 
-def prettify_cook(data):
+    if debug:
+        print(new.shape)
+        print("~~~")
+    
+    return(prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps))
+
+def prettify_cook(data, sales_comps):
     cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
     'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
-    'Distance', 'CERTIFIED', 'Sale Price', 'Sale Year']
+    'Distance', 'CERTIFIED']
+    
+    if sales_comps:
+        cook_sf_cols = cook_sf_cols + ['Sale Price', 'Sale Year']
 
     cook_sf_rename_dict = {
         'Property Class':'Class',
@@ -179,12 +186,15 @@ def prettify_cook(data):
     return data
 
 
-def prettify_detroit(data):
+def prettify_detroit(data, sales_comps):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
                         'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance',
-                        'Sale Date', 'Sale Price',
-                        ]
+                        'Sale Date', 'Sale Price']
+
+    if sales_comps:
+        detroit_sf_cols = detroit_sf_cols + ['Sale Price', 'Sale Date']
+
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
         'total_squa' : 'total_sqft',

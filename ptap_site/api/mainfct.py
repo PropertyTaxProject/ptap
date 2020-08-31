@@ -19,7 +19,7 @@ def address_candidates(input_data, data_dict):
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
-    mini = data[data['st_num'] == int(st_num)]
+    mini = data[data['st_num'] == st_num]
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])]
 
@@ -63,29 +63,30 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
     elif(cur_comps.shape[0] < 10): #find more comps
         return process_input(input_data, data_dict, multiplier*1.25, sales_comps)
     else: # return best comps
-        dist_weight = 1
-        valuation_weight = 3
-        
-        cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
-        cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
-        cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
-        cur_comps = cur_comps.sort_values(by=['score'])
-        cur_comps = cur_comps.head(max_comps)
+        try:
+            dist_weight = 1
+            valuation_weight = 3
+            
+            cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
+            cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
+            cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
+            cur_comps = cur_comps.sort_values(by=['score'])
+            cur_comps = cur_comps.head(max_comps)
 
-        new_targ = new_targ.round(2)
-        cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
+            new_targ = new_targ.round(2)
+            cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
 
-        output = {}
-        output['target_pin'] = new_targ.to_dict(orient='records')
-        output['comparables'] = cur_comps.to_dict(orient='records') 
-        output['labeled_headers'] = cur_comps.columns.tolist()
-        output['prop_info'] = prop_info
-        output['pinav'] = new_targ.assessed_value.mean()
-        output['compsav'] = cur_comps.assessed_value.mean()
-        output['compssp'] = cur_comps['Sale Price'].mean()
-        output['pin'] = target_pin
+            output = {}
+            output['target_pin'] = new_targ.to_dict(orient='records')
+            output['comparables'] = cur_comps.to_dict(orient='records') 
+            output['labeled_headers'] = cur_comps.columns.tolist()
+            output['prop_info'] = prop_info
+            output['pinav'] = new_targ.assessed_value.mean()
 
-        return output
+            return output
+
+        except:
+            print('Error Producing Comps Output')
 
 
 def process_comps_input(comp_submit):

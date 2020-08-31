@@ -6,10 +6,10 @@ from .mainfct import process_comps_input, process_input, address_candidates, rec
 from flask_cors import CORS
 
 #load data
-cook_sf = pd.concat([pd.read_csv('cook county/data/cooksf1.csv', dtype={'PIN':str}), 
-                     pd.read_csv('cook county/data/cooksf2.csv', dtype={'PIN':str})])
+cook_sf = pd.concat([pd.read_csv('cook county/data/cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
+                     pd.read_csv('cook county/data/cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
                
-detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv')
+detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv', dtype={'st_num':str})
 
 
 #cook example pin '16052120090000'
@@ -18,62 +18,68 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv')
 app = Flask(__name__)
 CORS(app)
 
+CURRENT_CITY = 'cook_county_single_family'
 
 @app.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
-    #page 0 form find pin from address
-    print('page 0 submit')
-    page0_data = request.json
+    #get pin from address / send to owner input page
+    print('pin finder submit')
+    pf_data = request.json
     print('PAGE DATA', request.json)
     print('REQUEST OBJECT', request)
     try:
-        response_dict = get_pin(page0_data)
-        response_dict['uuid'] = logger(page0_data, 'address_finder')
+        pf_data['appeal_type'] = CURRENT_CITY
+        response_dict = get_pin(pf_data)
+        response_dict['uuid'] = logger(pf_data, 'address_finder')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(page0_data, 'address_finder', e)
+        logger(pf_data, 'address_finder', e)
 
     return resp
 
 @app.route('/api_v1/submit', methods=['POST'])
 def handle_form():
-    #page 1 form
-    print('page 1 submit')
-    page1_data = request.json
+    #owner information submit / get comps / send to comps select page
+    print('owner info submit')
+    owner_data = request.json
     print('PAGE DATA', request.json)
     print('REQUEST OBJECT', request)
     try:
-        response_dict = get_comps(page1_data)
-        logger(page1_data, 'get_comps')
+        owner_data['appeal_type'] = CURRENT_CITY
+        response_dict = get_comps(owner_data)
+        logger(owner_data, 'get_comps')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(page1_data, 'get_comps', e)
+        logger(owner_data, 'get_comps', e)
 
     return resp
 
 
-
 @app.route('/api_v1/submit2', methods=['POST'])
 def handle_form2():
-    #page 2 form
+    #submit selected comps / finalize appeal / send to summary or complete page
     print('page 2 submit')
-    form_data = request.json
+    comps_data = request.json
     try:
-        response_dict = finalize_appeal(form_data)
-        logger(form_data, 'submit')
+        comps_data['appeal_type'] = CURRENT_CITY
+        response_dict = finalize_appeal(comps_data)
+        logger(comps_data, 'submit')
 
-        if (form_data['appeal_type'] == "detroit_single_family"):
-            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % form_data['name'].lower().replace(' ', '-'))
+        if comps_data['appeal_type'] == "detroit_single_family":
+            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
+        elif comps_data['appeal_type'] == "cook_county_single_family":
+            print('placeholder')
+            #call cook submit
 
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(form_data, 'submit', e)
+        logger(comps_data, 'submit', e)
 
     return resp
 
