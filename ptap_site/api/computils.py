@@ -119,8 +119,15 @@ def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     debug = False
     fulldebug = False
     ###
-
     new = detroit_sf[detroit_sf['parcel_num'] != targ['parcel_num'].values[0]]
+
+    if sales_comps:
+        new = new[new['Sale Price'].notnull()]
+
+    if debug:
+        print("~~~")
+        print(targ['parcel_num'].values[0] + " |||| multiplier " + str(multiplier))
+        print(new.shape)
 
     new = filter_on(new, 'year_built', targ['year_built'].values[0], age_dif, 3, fulldebug)
     new = filter_on(new, 'total_floo', targ['total_floo'].values[0], floor_dif, 3, fulldebug)
@@ -189,8 +196,7 @@ def prettify_cook(data, sales_comps):
 def prettify_detroit(data, sales_comps):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
                         'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
-                        'has_garage', 'has_basement', 'assessed_v', 'Distance',
-                        'Sale Date', 'Sale Price']
+                        'has_garage', 'has_basement', 'assessed_v', 'Distance']
 
     if sales_comps:
         detroit_sf_cols = detroit_sf_cols + ['Sale Price', 'Sale Date']

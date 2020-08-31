@@ -36,6 +36,7 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
     if input_data['appeal_type'] == "detroit_single_family":
         data = data_dict['detroit_sf']
         max_comps = 9
+        sales_comps = False
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
         if targ.empty:
             raise Exception('Invalid PIN')

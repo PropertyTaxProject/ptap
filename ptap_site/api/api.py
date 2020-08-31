@@ -18,7 +18,7 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv', dtype={'st_num':str})
 app = Flask(__name__)
 CORS(app)
 
-CURRENT_CITY = 'cook_county_single_family'
+CURRENT_CITY = 'detroit_single_family'
 
 @app.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
