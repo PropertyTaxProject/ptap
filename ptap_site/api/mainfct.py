@@ -36,7 +36,7 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
     if input_data['appeal_type'] == "detroit_single_family":
         data = data_dict['detroit_sf']
         max_comps = 9
-        sales_comps = False
+        sales_comps = True
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
         if targ.empty:
             raise Exception('Invalid PIN')
@@ -78,6 +78,9 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
             cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
 
             output = {}
+            new_targ = new_targ.fillna('')
+            cur_comps = cur_comps.fillna('')
+
             output['target_pin'] = new_targ.to_dict(orient='records')
             output['comparables'] = cur_comps.to_dict(orient='records') 
             output['labeled_headers'] = cur_comps.columns.tolist()
