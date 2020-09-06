@@ -1,24 +1,20 @@
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 
-export const submitForm = async (info, setData, setInfo) => {
+export const submitForm = async (info) => {
   try {
     const resp = await axios.post('/api_v1/submit', info);
     console.log(resp);
-    const data = resp.data.response.target_pin.concat(resp.data.response.comparables);
-    setData(data);
-    setInfo(info);
+    return resp.data.response;
   } catch (e) {
     console.error(e);
+    return null;
   }
 };
 
-export const submitAppeal = async (data, userInfo) => {
+export const submitAppeal = async (targetProperty, comparables, userInfo) => {
   try {
-    // merge our data and user info
-    const targetPin = [data[0]];
-    const comparables = data.slice(1);
-    const body = { target_pin: targetPin, comparables, ...userInfo };
+    const body = { target_pin: targetProperty, comparables, ...userInfo };
     console.log(body);
     const detroit = userInfo.appeal_type === 'detroit_single_family';
     const resp = await axios.post('/api_v1/submit2', body, { responseType: detroit ? 'blob' : 'json' }); // detroit downloads file, chicago returns json

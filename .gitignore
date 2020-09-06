@@ -177,3 +177,4 @@ ptap_site/api/tmp_data/*.docx
 *.pickle
 detroit/data/*
 cook county/data/*
+tmp_log.csv

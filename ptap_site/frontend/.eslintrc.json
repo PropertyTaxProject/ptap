@@ -22,6 +22,7 @@
         "react"
     ],
     "rules": {
-        "jsx-filename-extension": "off"
+        "jsx-filename-extension": "off",
+        "react/prop-types": "off"
     }
 }

@@ -7,10 +7,13 @@ import PinLookup from './pin-lookup';
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
-const Appeal = () => {
-  const [data, setData] = useState([]);
+const Appeal = (props) => {
+  const { city } = props;
+  const [comparables, setComparables] = useState([]);
+  const [headers, setHeaders] = useState([]);
+  const [targetProperty, setTargetProperty] = useState(null);
   const [userInfo, setInfo] = useState({});
-  const [pin, setPin] = useState();
+  const [pin, setPin] = useState(null);
   let view = (
     <PinLookup
       logPin={(selectedPin) => { setPin(selectedPin); }}
@@ -20,30 +23,46 @@ const Appeal = () => {
   if (pin != null) {
     view = (
       <FormInput
-        city="detroit"
+        city={city}
         pin={pin}
-        submitForm={(info) => submitForm(info, setData, setInfo)}
+        submitForm={async (info) => {
+          const response = await submitForm(info);
+          if (response != null) {
+            setInfo(info);
+            setComparables(response.comparables);
+            setHeaders(response.labeled_headers);
+            setTargetProperty(response.target_pin[0]); // TODO: pass value not list
+          } else {
+            // TODO: THROW ERROR
+          }
+        }}
         back={() => {
-          setPin(undefined);
           setInfo({});
-          setData([]);
+          setPin(null);
+          setComparables([]);
+          setHeaders([]);
+          setTargetProperty(null);
         }}
       />
     );
   }
 
-  if (data.length !== 0) {
+  if (targetProperty != null) {
     view = (
       <Characteristics
-        data={data}
-        submitAppeal={async () => { submitAppeal(data, userInfo); }}
+        comparables={comparables}
+        headers={headers}
+        targetProperty={targetProperty}
+        submitAppeal={async () => { submitAppeal(targetProperty, comparables, userInfo); }}
         removeComparable={async (idx) => {
-          setData(await removeComparable(data, idx));
+          setComparables(await removeComparable(comparables, idx));
           console.log(`removed ${idx}`);
         }}
         back={() => {
           setInfo({});
-          setData([]);
+          setComparables([]);
+          setHeaders([]);
+          setTargetProperty(null);
         }}
       />
     );
