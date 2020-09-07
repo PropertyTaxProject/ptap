@@ -101,7 +101,13 @@ const PropertyInfo = (props) => {
   const characteristics = Object.entries(targetProperty).filter(([title, description]) => (
     title !== '' && description !== ''
   ));
-
+  characteristics.sort(([title1], [title2]) => {
+    const t1 = title1.toLowerCase();
+    const t2 = title2.toLowerCase();
+    if (t1 > t2) { return 1; }
+    if (t1 < t2) { return -1; }
+    return 0;
+  });
   return (
     <>
       <Row>

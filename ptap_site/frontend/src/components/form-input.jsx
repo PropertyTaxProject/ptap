@@ -147,21 +147,22 @@ const HomeownerInfo = () => (
   </>
 );
 
-const PinForm = () => (
-  <Form.Item
-    name="pin"
-    label="Pin"
-    rules={[
-      {
-        required: true,
-        message: 'Please input your pin!',
-        whitespace: true,
-      },
-    ]}
-  >
-    <Input />
-  </Form.Item>
-);
+// unused for now, we can use this code if we ever want an option to directly enter a pin
+// const PinForm = () => (
+//   <Form.Item
+//     name="pin"
+//     label="Pin"
+//     rules={[
+//       {
+//         required: true,
+//         message: 'Please input your pin!',
+//         whitespace: true,
+//       },
+//     ]}
+//   >
+//     <Input />
+//   </Form.Item>
+// );
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
