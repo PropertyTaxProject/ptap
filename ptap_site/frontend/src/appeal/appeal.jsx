@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { submitAppeal, submitForm } from '../requests';
-import FormInput from './form-input';
-import Characteristics from './characteristics';
-import PinLookup from './pin-lookup';
+import FormInput from './homeowner/form-input';
+import Characteristics from './comparables/characteristics';
+import PinLookup from './homeowner/pin-lookup';
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));

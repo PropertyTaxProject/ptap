@@ -8,13 +8,13 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import Header from './components/header';
-import LandingPage from './components/landing-page';
+import Header from './general/header';
+import LandingPage from './landing/landing-page';
 import * as serviceWorker from './serviceWorker';
-import Appeal from './components/appeal';
+import Appeal from './appeal/appeal';
 
-import DamageInput from './components/damages';
-import PinLookup from './components/pin-lookup';
+import DamageInput from './appeal/damage/damages';
+import PinLookup from './appeal/homeowner/pin-lookup';
 
 const { Content, Footer } = Layout;
 
