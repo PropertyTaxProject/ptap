@@ -18,7 +18,6 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv', dtype={'st_num':str})
 app = Flask(__name__)
 CORS(app)
 
-CURRENT_CITY = 'detroit_single_family'
 
 @app.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
@@ -28,7 +27,6 @@ def handle_form0():
     print('PAGE DATA', request.json)
     print('REQUEST OBJECT', request)
     try:
-        pf_data['appeal_type'] = CURRENT_CITY
         response_dict = get_pin(pf_data)
         response_dict['uuid'] = logger(pf_data, 'address_finder')
         resp = jsonify({'request_status': time.time(),
@@ -47,7 +45,6 @@ def handle_form():
     print('PAGE DATA', request.json)
     print('REQUEST OBJECT', request)
     try:
-        owner_data['appeal_type'] = CURRENT_CITY
         response_dict = get_comps(owner_data)
         logger(owner_data, 'get_comps')
         resp = jsonify({'request_status': time.time(),
@@ -65,7 +62,6 @@ def handle_form2():
     print('page 2 submit')
     comps_data = request.json
     try:
-        comps_data['appeal_type'] = CURRENT_CITY
         response_dict = finalize_appeal(comps_data)
         logger(comps_data, 'submit')
 

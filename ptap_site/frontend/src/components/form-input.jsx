@@ -185,7 +185,6 @@ const PropertyForm = (props) => {
       name="Housing Information"
       onFinish={onFinish}
       labelAlign="left"
-      // initialValues={}
       scrollToFirstError
       autoComplete="off"
       {...formItemLayout}
@@ -197,22 +196,6 @@ const PropertyForm = (props) => {
           <br />
         </Col>
       </Row>
-      {/* <Form.Item
-        label="Appeal Type"
-        name="appeal_type"
-        rules={[
-          {
-            required: true,
-            message: 'Please select the type of appeal you would like to file.',
-          },
-        ]}
-      >
-        <Radio.Group>
-          <Radio.Button value="cook_county_single_family">Cook County Single Family</Radio.Button>
-          <Radio.Button value="detroit_single_family">Detroit Single Family</Radio.Button>
-        </Radio.Group>
-      </Form.Item> */}
-
       <Form.Item noStyle>
         {/* <PinForm /> */}
         <HomeownerInfo />

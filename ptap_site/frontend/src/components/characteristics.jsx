@@ -9,8 +9,6 @@ import {
   Card,
 } from 'antd';
 
-import PropTypes from 'prop-types';
-
 const { Column } = Table;
 
 const re = /(\b[a-z](?!\s))/g;

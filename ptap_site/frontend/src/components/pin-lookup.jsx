@@ -31,6 +31,7 @@ const formItemLayout = {
 
 const lookupPin = async (data) => {
   try {
+    console.log(data);
     return (await (axios.post('/api_v1/pin-lookup', data))).data.response.candidates;
   } catch (err) {
     return [];
@@ -41,7 +42,15 @@ const Lookup = (props) => {
   const [form] = Form.useForm();
   const [pins, setPin] = useState([]);
 
-  const { logPin } = props;
+  const { logPin, city } = props;
+
+  // TODO: Centralize this mapping
+  let appealType;
+  if (city === 'detroit') {
+    appealType = 'detroit_single_family';
+  } else if (city === 'chicago') {
+    appealType = 'cook_county_single_family';
+  }
 
   const columns = [
     {
@@ -71,7 +80,7 @@ const Lookup = (props) => {
       <Form
         form={form}
         name="Pin Lookup"
-        onFinish={async (data) => { setPin(await lookupPin(data)); }}
+        onFinish={async (data) => { setPin(await lookupPin({ appeal_type: appealType, ...data })); }}
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"

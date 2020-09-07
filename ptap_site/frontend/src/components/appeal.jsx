@@ -17,6 +17,7 @@ const Appeal = (props) => {
   let view = (
     <PinLookup
       logPin={(selectedPin) => { setPin(selectedPin); }}
+      city={city}
     />
   );
 
