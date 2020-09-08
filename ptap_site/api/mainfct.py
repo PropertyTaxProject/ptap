@@ -231,8 +231,7 @@ def generate_detroit_sf(comp_submit):
         'total_floorarea' : 'Floor Area',
         'total_sqft' : 'SqFt'
     }
-
-    t_df = pd.DataFrame(comp_submit['target_pin'])
+    t_df = pd.DataFrame([comp_submit['target_pin']])
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_df.assessed_value[0]
     pin = t_df.PIN[0]
@@ -246,6 +245,7 @@ def generate_detroit_sf(comp_submit):
     output_name = 'ptap_site/api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
 
     doc = DocxTemplate("ptap_site/api/detroit_template.docx")
+
     context = {
         'pin' : pin,
         'owner' : comp_submit['name'],
@@ -260,9 +260,9 @@ def generate_detroit_sf(comp_submit):
         'comp_labels' : list(comps_df.columns),
         'comp_contents' : comps_df.to_numpy().tolist()
             }
+
     doc.render(context)
     doc.save(output_name)
-    
     
     output = {}
 
