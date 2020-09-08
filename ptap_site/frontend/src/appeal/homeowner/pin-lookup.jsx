@@ -9,26 +9,6 @@ import {
 
 import axios from 'axios';
 
-const formItemLayout = {
-  labelCol: {
-    span: 24,
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 20,
-    },
-    md: {
-      span: 18,
-    },
-    lg: {
-      span: 14,
-    },
-  },
-};
-
 const lookupPin = async (data) => {
   try {
     console.log(data);
