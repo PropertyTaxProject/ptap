@@ -151,7 +151,7 @@ def submit_cook_sf(comp_submit):
         'land_sqft' : 'Land',
     }
 
-    t_df = pd.DataFrame(comp_submit['target_pin'])
+    t_df = pd.DataFrame([comp_submit['target_pin']])
     comps_df = pd.DataFrame(comp_submit['comparables'])
     pin_av = t_df.assessed_value[0]
     comps_avg = comps_df.assessed_value.mean()
