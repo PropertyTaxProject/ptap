@@ -69,7 +69,7 @@ python-http-client==3.2.6
 python-Levenshtein==0.12.0
 pytz==2020.1
 pyxdg==0.25
-PyYAML==3.12
+PyYAML==5.1
 requests==2.18.4
 requests-unixsocket==0.1.5
 scour==0.36
