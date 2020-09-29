@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 import pandas as pd
 import uuid
 from .mainfct import process_comps_input, process_input, address_candidates, record_log
@@ -15,9 +15,12 @@ detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv', dtype={'st_num':str})
 #cook example pin '16052120090000'
 #detroit example pin '14010903.'
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
 CORS(app)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
