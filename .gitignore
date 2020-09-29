@@ -178,3 +178,4 @@ ptap_site/api/tmp_data/*.docx
 detroit/data/*
 cook county/data/*
 tmp_log.csv
+ptap_site/frontend/node_modules/*
