@@ -1,1 +1,1 @@
-web: gunicorn ptap_site.api.wsgi:app
+web: gunicorn -b 127.0.0.1:5000 ptap_site.api.wsgi:app
