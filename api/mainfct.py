@@ -157,7 +157,7 @@ def submit_cook_sf(comp_submit):
     comps_avg = comps_df.assessed_value.mean()
     pin = t_df.PIN[0]
     hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:] 
-    comp_csv_name = "ptap_site/api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
+    comp_csv_name = "api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
 
     #rename cols
     t_df = t_df.rename(columns=rename_dict)
@@ -167,9 +167,9 @@ def submit_cook_sf(comp_submit):
     comps_df.to_csv(comp_csv_name, index=False)
 
     #generate appeal narrative
-    output_name = 'ptap_site/api/tmp_data/' + pin + ' Appeal Narrative.docx'
+    output_name = 'api/tmp_data/' + pin + ' Appeal Narrative.docx'
 
-    doc = DocxTemplate("ptap_site/api/cook_template.docx")
+    doc = DocxTemplate("api/cook_template.docx")
     context = {
         'pin' : pin,
         'target_av' : '${:,.2f}'.format(pin_av),
@@ -208,7 +208,7 @@ def submit_cook_sf(comp_submit):
     filer_info['attachments'] = attachments 
 
     #save autofiler info to pickle
-    with open('ptap_site/api/tmp_data/' + pin + '.pickle', 'wb') as handle:
+    with open('api/tmp_data/' + pin + '.pickle', 'wb') as handle:
         pickle.dump(filer_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     output = {}
@@ -242,9 +242,9 @@ def generate_detroit_sf(comp_submit):
     comps_df = comps_df.rename(columns=rename_dict).drop(['score'], axis=1)
 
     # for now we can still save the file for testing, but the filesystem doesn't persist in heroku so we'll need to use something else later on
-    output_name = 'ptap_site/api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
+    output_name = 'api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
 
-    doc = DocxTemplate("ptap_site/api/detroit_template.docx")
+    doc = DocxTemplate("api/detroit_template.docx")
 
     context = {
         'pin' : pin,

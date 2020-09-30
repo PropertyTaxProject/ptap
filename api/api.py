@@ -6,16 +6,16 @@ from .mainfct import process_comps_input, process_input, address_candidates, rec
 from flask_cors import CORS
 
 #load data
-cook_sf = pd.concat([pd.read_csv('cook county/data/cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
-                     pd.read_csv('cook county/data/cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
+cook_sf = pd.concat([pd.read_csv('cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
+                     pd.read_csv('cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
                
-detroit_sf = pd.read_csv('detroit/data/detroit_sf.csv', dtype={'st_num':str})
+detroit_sf = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 
 
 #cook example pin '16052120090000'
 #detroit example pin '14010903.'
 
-app = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
+app = Flask(__name__, static_folder='frontend/build/', template_folder='frontend/build/')
 CORS(app)
 
 @app.route('/')
