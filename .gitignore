@@ -1,1 +1,3 @@
 frontend/node_modules/*
+api/tmp_data/*
+tmp_log.csv

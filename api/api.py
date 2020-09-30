@@ -15,7 +15,7 @@ detroit_sf = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 #cook example pin '16052120090000'
 #detroit example pin '14010903.'
 
-app = Flask(__name__, static_folder='frontend/build/', template_folder='frontend/build/')
+app = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
 CORS(app)
 
 @app.route('/')
