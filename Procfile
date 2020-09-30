@@ -1,1 +1,1 @@
-web: gunicorn -b 127.0.0.1:5000 --workers 3 --threads 2 api.application:app
+web: gunicorn -b 127.0.0.1:5000 --workers 3 --threads 2 application:application

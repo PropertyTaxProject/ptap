@@ -15,14 +15,14 @@ detroit_sf = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 #cook example pin '16052120090000'
 #detroit example pin '14010903.'
 
-app = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
-CORS(app)
+application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
+CORS(application)
 
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api_v1/pin-lookup', methods=['POST'])
+@application.route('/api_v1/pin-lookup', methods=['POST'])
 def handle_form0():
     #get pin from address / send to owner input page
     print('pin finder submit')
@@ -40,7 +40,7 @@ def handle_form0():
 
     return resp
 
-@app.route('/api_v1/submit', methods=['POST'])
+@application.route('/api_v1/submit', methods=['POST'])
 def handle_form():
     #owner information submit / get comps / send to comps select page
     print('owner info submit')
@@ -59,7 +59,7 @@ def handle_form():
     return resp
 
 
-@app.route('/api_v1/submit2', methods=['POST'])
+@application.route('/api_v1/submit2', methods=['POST'])
 def handle_form2():
     #submit selected comps / finalize appeal / send to summary or complete page
     print('page 2 submit')
