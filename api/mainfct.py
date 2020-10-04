@@ -9,17 +9,18 @@ import os
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
 def address_candidates(input_data, data_dict):
-    if input_data['appeal_type'] == "detroit_single_family":
-        data = data_dict['detroit_sf']
-    elif input_data['appeal_type'] == "cook_county_single_family":
-        data = data_dict['cook_sf']
-        data = data.rename(columns={'Property Address': 'address',
-                                    'PIN' : 'parcel_num'})
-
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
-    mini = data[data['st_num'] == st_num]
+    
+    if input_data['appeal_type'] == "detroit_single_family":
+        mini = data_dict['detroit_sf'][data_dict['detroit_sf']['st_num'] == st_num]
+
+    elif input_data['appeal_type'] == "cook_county_single_family":
+        mini = data_dict['cook_sf'][data_dict['cook_sf']['st_num'] == st_num]
+        mini = mini.rename(columns={'Property Address': 'address',
+                                    'PIN' : 'parcel_num'})
+
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])]
 
@@ -182,7 +183,6 @@ def submit_cook_sf(comp_submit):
     doc.render(context)
     doc.save(output_name)
 
-
     #info for autofiler
     filer_info = {}
 
@@ -216,6 +216,12 @@ def submit_cook_sf(comp_submit):
     output['success'] = 'true'
     output['contention_value'] = '${:,.2f}'.format(comps_avg / 2)
     output['message'] = 'appeal filed successfully'
+
+    # also save a byte object to return
+    file_stream = io.BytesIO()
+    doc.save(file_stream) # save to stream
+    file_stream.seek(0) # reset pointer to head
+    output['file_stream'] = file_stream
     
     return output
 
@@ -241,9 +247,8 @@ def generate_detroit_sf(comp_submit):
     t_df = t_df.rename(columns=rename_dict)
     comps_df = comps_df.rename(columns=rename_dict).drop(['score'], axis=1)
 
-    # for now we can still save the file for testing, but the filesystem doesn't persist in heroku so we'll need to use something else later on
+    #generate docx
     output_name = 'api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
-
     doc = DocxTemplate("api/detroit_template.docx")
 
     context = {

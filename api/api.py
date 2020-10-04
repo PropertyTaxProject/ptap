@@ -6,10 +6,10 @@ from .mainfct import process_comps_input, process_input, address_candidates, rec
 from flask_cors import CORS
 
 #load data
-cook_sf = pd.concat([pd.read_csv('cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
-                     pd.read_csv('cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
-               
-detroit_sf = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
+data_dict = {}
+data_dict['cook_sf'] =  pd.concat([pd.read_csv('cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
+                                   pd.read_csv('cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
+data_dict['detroit_sf'] = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 
 
 #cook example pin '16052120090000'
@@ -67,13 +67,12 @@ def handle_form2():
     try:
         response_dict = finalize_appeal(comps_data)
         logger(comps_data, 'submit')
+        print(response_dict)
 
         if comps_data['appeal_type'] == "detroit_single_family":
             return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
-        elif comps_data['appeal_type'] == "cook_county_single_family":
-            print('placeholder')
-            #call cook submit
-
+        elif comps_data['appeal_type'] == "cook_county_single_family": #temp serve file
+            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
@@ -107,10 +106,6 @@ def get_pin(form_data):
         candidates: [{'address':val,'parcel_num':val},{}]
     }
     '''
-    data_dict = {}
-    data_dict['cook_sf'] = cook_sf
-    data_dict['detroit_sf'] = detroit_sf
-
     return address_candidates(form_data, data_dict)
 
 
@@ -124,10 +119,6 @@ def get_comps(form_data):
         prop_info: 'str' #a string of info to display
     }
     """
-    data_dict = {}
-    data_dict['cook_sf'] = cook_sf
-    data_dict['detroit_sf'] = detroit_sf
-
     return process_input(form_data, data_dict)
 
 def finalize_appeal(form_data):
