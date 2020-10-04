@@ -1,6 +1,7 @@
 frontend/node_modules/*
 api/tmp_data/*
 tmp_log.csv
+__pycache__
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
