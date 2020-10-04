@@ -11,10 +11,6 @@ data_dict['cook_sf'] =  pd.concat([pd.read_csv('cooksf1.csv', dtype={'PIN':str, 
                                    pd.read_csv('cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
 data_dict['detroit_sf'] = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 
-
-#cook example pin '16052120090000'
-#detroit example pin '14010903.'
-
 application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
 CORS(application)
 

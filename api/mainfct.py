@@ -14,10 +14,12 @@ def address_candidates(input_data, data_dict):
     st_name = input_data['st_name']
     
     if input_data['appeal_type'] == "detroit_single_family":
-        mini = data_dict['detroit_sf'][data_dict['detroit_sf']['st_num'] == st_num]
+        mini = data_dict['detroit_sf']
+        mini = mini[mini['st_num'] == st_num]
 
     elif input_data['appeal_type'] == "cook_county_single_family":
-        mini = data_dict['cook_sf'][data_dict['cook_sf']['st_num'] == st_num]
+        mini = data_dict['cook_sf']
+        mini = mini[mini['st_num'] == st_num]
         mini = mini.rename(columns={'Property Address': 'address',
                                     'PIN' : 'parcel_num'})
 
