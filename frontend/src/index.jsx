@@ -9,12 +9,12 @@ import {
   Route,
 } from 'react-router-dom';
 import Header from './general/header';
-import LandingPage from './landing/landing-page';
 import * as serviceWorker from './serviceWorker';
-import Appeal from './appeal/appeal';
 
-import DamageInput from './appeal/damage/damages';
-import PinLookup from './appeal/homeowner/pin-lookup';
+import LandingPage from './landing/landing-page';
+import Appeal from './appeal/appeal';
+import GetStarted from './landing/get-started';
+import SelectRegion from './landing/select-region';
 
 const { Content, Footer } = Layout;
 
@@ -34,9 +34,12 @@ const Page = () => (
               render={() => <Appeal city="chicago" />}
             />
             <Route
-              path="/test"
-              render={() => <PinLookup />}
-              // render={() => <DamageInput />}
+              path="/getstarted"
+              render={() => <GetStarted />}
+            />
+            <Route
+              path="/selectregion"
+              render={() => <SelectRegion />}
             />
             <Route
               path="/"
