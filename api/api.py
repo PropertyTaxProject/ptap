@@ -102,7 +102,12 @@ def get_pin(form_data):
         candidates: [{'address':val,'parcel_num':val},{}]
     }
     '''
-    return address_candidates(form_data, data_dict)
+    cutoff_info = {
+        'detroit': 100000,
+        'cook': 250000
+    }
+
+    return address_candidates(form_data, data_dict, cutoff_info)
 
 
 def get_comps(form_data):

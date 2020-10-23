@@ -8,25 +8,28 @@ import io
 import os
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf
 
-def address_candidates(input_data, data_dict):
+def address_candidates(input_data, data_dict, cutoff_info):
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
     
     if input_data['appeal_type'] == "detroit_single_family":
         mini = data_dict['detroit_sf']
-        mini = mini[mini['st_num'] == st_num]
+        cutoff = cutoff_info['detroit']
 
     elif input_data['appeal_type'] == "cook_county_single_family":
         mini = data_dict['cook_sf']
-        mini = mini[mini['st_num'] == st_num]
         mini = mini.rename(columns={'Property Address': 'address',
-                                    'PIN' : 'parcel_num'})
-
+                                    'PIN' : 'parcel_num',
+                                    'CERTIFIED' : 'assessed_v'})
+        cutoff = cutoff_info['cook']
+    
+    mini = mini[mini['st_num'] == st_num]
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
-    selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])]
+    selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])].copy()
+    selected['eligible'] = selected.assessed_v <= cutoff
 
-    output['candidates'] = selected[['address', 'parcel_num']].to_dict(orient='records')
+    output['candidates'] = selected[['address', 'parcel_num', 'eligible']].to_dict(orient='records')
 
     if len(output['candidates']) == 0: #if none found raise
         raise Exception('No Matches Found')
