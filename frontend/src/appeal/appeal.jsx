@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { submitAppeal, submitForm } from '../requests';
 import FormInput from './homeowner/form-input';
 import Characteristics from './comparables/characteristics';
-import PinLookup from './homeowner/pin-lookup';
+import EligibilityRequirements from './homeowner/eligibility-requirements';
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
@@ -15,7 +15,7 @@ const Appeal = (props) => {
   const [userInfo, setInfo] = useState({});
   const [pin, setPin] = useState(null);
   let view = (
-    <PinLookup
+    <EligibilityRequirements
       logPin={(selectedPin) => { setPin(selectedPin); }}
       city={city}
     />
