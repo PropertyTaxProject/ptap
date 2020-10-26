@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   Form,
   Input,
+  InputNumber,
   Button,
   Table,
   Radio
@@ -39,7 +40,7 @@ const Lookup = (props) => {
     } else if (record.eligibility === false){
       alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Assessed Value");
     }
-    logPin(record.parcel_num);
+    logPin(record.PIN);
   };
 
   // TODO: Centralize this mapping
@@ -53,19 +54,18 @@ const Lookup = (props) => {
   const columns = [
     {
       title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      dataIndex: 'Address',
+      key: 'Address',
     },
     {
       title: 'Pin',
-      dataIndex: 'parcel_num',
+      dataIndex: 'PIN',
       key: 'pin',
     },
     {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        //<Button onClick={() => { logPin(record.parcel_num); }}>Select</Button>
         <Button onClick={() => { selectPin(record); }}>Select</Button>
       ),
     },
@@ -79,28 +79,44 @@ const Lookup = (props) => {
       <Form
         form={form}
         name="Pin Lookup"
+        layout='vertical'
         onFinish={async (data) => { setPin(await lookupPin({ appeal_type: appealType, ...data })); }}
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
       >
-        <p style={{ width: '350px' }}>First, is this home your primary residence, meaning the place you live most of the year?</p>
-        <Form.Item name="residence" rules={[{ required: true, message: 'Your response is required.' }]}>
+        <Form.Item 
+          name="residence" 
+          rules={[{ required: true, message: 'Your response is required.' }]}
+          label="First, is this home your primary residence, meaning the place you live most of the year?"
+        >
           <Radio.Group>
             <Radio value='Yes'>Yes</Radio>
             <Radio value='No'>No</Radio>
           </Radio.Group>
         </Form.Item>
 
-        <p style={{ width: '350px' }}>Second, did you inherit or buy this home?</p>
-        <Form.Item name="owner" rules={[{ required: true, message: 'Your response is required.' }]}>
+        <Form.Item 
+          name="owner" 
+          rules={[{ required: true, message: 'Your response is required.' }]}
+          label = "Second, did you inherit or buy this home?"
+        >
           <Radio.Group>
             <Radio value='Yes'>Yes</Radio>
             <Radio value='No'>No</Radio>
           </Radio.Group>
         </Form.Item>
 
-        <p style={{ width: '350px' }}>Third, enter your street number and street name and select your property from the table.</p>
+        <p style={{ width: '350px' }}></p>
+        <Form.Item 
+          name="owner_year" 
+          rules={[{ required: true, message: 'Your response is required.' }]}
+          label="Third, what year did you buy or inherit the home? (If you are not sure, it is okay to guess)"
+        >
+          <InputNumber min={1925} max={2021}/>
+        </Form.Item>
+
+        <p style={{ width: '350px' }}>Finally, enter your street number and street name and select your property from the table.</p>
 
         <Input.Group compact>
           <Form.Item style={{ width: '100px' }} name="st_num" rules={[{ required: true, message: 'Street name is required.' }]}>

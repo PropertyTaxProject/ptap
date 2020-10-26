@@ -6,7 +6,7 @@ from datetime import datetime
 from fuzzywuzzy import process
 import io
 import os
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_detroit, prettify_cook
 
 def address_candidates(input_data, data_dict, cutoff_info):
     output = {}
@@ -27,9 +27,17 @@ def address_candidates(input_data, data_dict, cutoff_info):
     mini = mini[mini['st_num'] == st_num]
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])].copy()
-    selected['eligible'] = selected.assessed_v <= cutoff
+    selected['Distance'] = 0
 
-    output['candidates'] = selected[['address', 'parcel_num', 'eligible']].to_dict(orient='records')
+    if input_data['appeal_type'] == "detroit_single_family":
+        selected = prettify_detroit(selected, False)
+    elif input_data['appeal_type'] == "cook_county_single_family":
+        selected = prettify_cook(selected, False)
+
+    selected['eligible'] = selected.assessed_value <= cutoff
+    output['candidates'] = selected.to_dict(orient='records')
+
+    print(output['candidates'])
 
     if len(output['candidates']) == 0: #if none found raise
         raise Exception('No Matches Found')
