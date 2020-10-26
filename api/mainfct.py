@@ -19,9 +19,6 @@ def address_candidates(input_data, data_dict, cutoff_info):
 
     elif input_data['appeal_type'] == "cook_county_single_family":
         mini = data_dict['cook_sf']
-        mini = mini.rename(columns={'Property Address': 'address',
-                                    'PIN' : 'parcel_num',
-                                    'CERTIFIED' : 'assessed_v'})
         cutoff = cutoff_info['cook']
     
     mini = mini[mini['st_num'] == st_num]

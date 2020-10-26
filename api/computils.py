@@ -149,7 +149,7 @@ def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     return(prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps))
 
 def prettify_cook(data, sales_comps):
-    cook_sf_cols = ['PIN', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
+    cook_sf_cols = ['PIN', 'Property Address', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
     'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
     'Distance', 'CERTIFIED']
     
@@ -165,7 +165,8 @@ def prettify_cook(data, sales_comps):
         'stories_recode':'Stories',
         'basement_recode':'Basement',
         'Garage indicator':'Garage',
-        'CERTIFIED':'assessed_value'
+        'CERTIFIED':'assessed_value',
+        'Property Address':'Address'
     }
 
     wall_d = {
