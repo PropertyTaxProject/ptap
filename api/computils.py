@@ -116,12 +116,10 @@ def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
     bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
     height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
 
-    debug = True
-    fulldebug = True
+    debug = False
+    fulldebug = False
     ###
     new = detroit_sf[detroit_sf['parcel_num'] != targ['parcel_num'].values[0]]
-
-    print(targ.T)
 
     if sales_comps:
         new = new[new['Sale Price'].notnull()]

@@ -15,11 +15,13 @@ const Appeal = (props) => {
   const [userInfo, setInfo] = useState({});
   const [pin, setPin] = useState(null);
   const [propInfo, setPropInfo] = useState([]);
+  const [sessionUuid, setUuid] = useState([]);
 
   let view = (
     <EligibilityRequirements
       logPin={(selectedPin) => { setPin(selectedPin); }}
       city={city}
+      logUuid={(givenUuid) => { setUuid(givenUuid); }}
     />
   );
 
@@ -28,6 +30,7 @@ const Appeal = (props) => {
       <ContactCharacteristics
         city={city}
         pin={pin}
+        uuid={sessionUuid}
         submitForm={async (info) => {
           const response = await submitForm(info);
           if (response != null) {
@@ -59,7 +62,8 @@ const Appeal = (props) => {
         headers={headers}
         targetProperty={targetProperty}
         propInfo={propInfo}
-        submitAppeal={async () => { submitAppeal(targetProperty, comparables, userInfo); }}
+        uuid={sessionUuid}
+        submitAppeal={async () => { submitAppeal(targetProperty, comparables, userInfo, sessionUuid); }}
         removeComparable={async (idx) => {
           setComparables(await removeComparable(comparables, idx));
           console.log(`removed ${idx}`);

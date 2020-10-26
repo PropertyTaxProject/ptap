@@ -204,7 +204,7 @@ const CharacteristicsForm = () => (
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
-  const { submitForm, city, pin } = props;
+  const { submitForm, city, pin, uuid } = props;
 
   const onFinish = (values) => {
     let appealType;
@@ -213,7 +213,7 @@ const PropertyForm = (props) => {
     } else if (city === 'chicago') {
       appealType = 'cook_county_single_family';
     }
-    const info = { ...values, pin, appeal_type: appealType };
+    const info = { ...values, pin, appeal_type: appealType, uuid };
     console.log('Received values of form: ', info);
     submitForm(info);
   };

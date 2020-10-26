@@ -135,6 +135,7 @@ const Characteristics = (props) => {
     headers,
     targetProperty,
     propInfo,
+    uuid,
     submitAppeal,
     removeComparable,
     back,

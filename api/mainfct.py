@@ -37,8 +37,6 @@ def address_candidates(input_data, data_dict, cutoff_info):
     selected['eligible'] = selected.assessed_value <= cutoff
     output['candidates'] = selected.to_dict(orient='records')
 
-    print(output['candidates'])
-
     if len(output['candidates']) == 0: #if none found raise
         raise Exception('No Matches Found')
 
@@ -121,7 +119,8 @@ def process_comps_input(comp_submit):
         'phone': '', 
         'city': '', 
         'state': '', 
-        'zip': ''
+        'zip': '',
+        'preferred': ''
     }
     '''
 
@@ -305,7 +304,7 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     new['time'] = time.time()
 
     tmp = pd.DataFrame.from_dict(new)
-    tmp = pd.concat([tmp, pd.json_normalize(form_data)], axis=1)
+    tmp = pd.concat([tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
     p = 'tmp_log.csv'
 
     tmp.to_csv(p, index=False, mode='a')#, header=not os.path.exists(p))

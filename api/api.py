@@ -79,16 +79,15 @@ def handle_form2():
 
 
 def logger(form_data, process_step_id, exception=''):
-    if process_step_id == 'address_finder':
+    if process_step_id == 'address_finder': #give uuid
         uuid_val = uuid.uuid4()
-        record_log(uuid_val.bytes, process_step_id, exception, form_data)
+        record_log(uuid_val, process_step_id, exception, form_data)
         return uuid_val
-    else:
-        if uuid in form_data:
-            record_log(form_data['uuid'], process_step_id, exception, form_data)
-        else:
-            record_log('placeholder', process_step_id, exception, form_data)
-        return
+    elif 'uuid' in form_data: #if uuid given
+        record_log(form_data['uuid'], process_step_id, exception, form_data)
+    else: #missing
+        record_log('missing', process_step_id, exception, form_data)
+    return
 
 def get_pin(form_data):
     '''
@@ -136,7 +135,8 @@ def finalize_appeal(form_data):
         'phone': '', 
         'city': '', 
         'state': '',
-        'zip': ''
+        'zip': '',
+        'preferred: ''
     }
        
     Output:
@@ -146,4 +146,5 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
+    print(form_data)
     return process_comps_input(form_data)

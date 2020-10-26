@@ -16,21 +16,28 @@ var submitted = false;
 const lookupPin = async (data) => {
   try {
     console.log(data);
-    submitted = true;
-
-    return (await (axios.post('/api_v1/pin-lookup', data))).data.response.candidates;
+    return (await (axios.post('/api_v1/pin-lookup', data))).data.response;
   } catch (err) {
     return [];
   }
 };
 
-
-
 const Lookup = (props) => {
   const [form] = Form.useForm();
   const [pins, setPin] = useState([]);
 
-  const { logPin, city } = props;
+  const { logPin, city, logUuid } = props;
+
+  const logResponse = (theResponse) => {
+    submitted = true;
+    try {
+      setPin(theResponse.candidates);
+      logUuid(theResponse.uuid);
+    } catch (err) {
+      setPin([]);
+    }
+  }
+
 
   const selectPin = (record) => { //determine eligibility and log pin
     if (form.getFieldValue('residence') !== 'Yes'){
@@ -80,7 +87,7 @@ const Lookup = (props) => {
         form={form}
         name="Pin Lookup"
         layout='vertical'
-        onFinish={async (data) => { setPin(await lookupPin({ appeal_type: appealType, ...data })); }}
+        onFinish={async (data) => { logResponse(await lookupPin({ appeal_type: appealType, ...data })); }}
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
@@ -128,6 +135,7 @@ const Lookup = (props) => {
         </Input.Group>
         <Button type="primary" htmlType="submit">Lookup Pin</Button>
       </Form>
+
       {(pins.length !== 0
         ? (
           <>
@@ -135,7 +143,7 @@ const Lookup = (props) => {
             <Table columns={columns} dataSource={pins} />
           </>
         )
-        : (submitted ? 'Your property could not be found.' : null))}
+        : (submitted ? 'Your property could not be found. Please try searching again.' : null))}
     </>
   );
 };
