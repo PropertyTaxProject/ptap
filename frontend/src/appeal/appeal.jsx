@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { submitAppeal, submitForm } from '../requests';
-import FormInput from './homeowner/form-input';
-import Characteristics from './comparables/characteristics';
+import ContactCharacteristics from './homeowner/contact-characteristics';
+import ComparablesForm from './comparables/comparables';
 import EligibilityRequirements from './homeowner/eligibility-requirements';
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
@@ -14,6 +14,8 @@ const Appeal = (props) => {
   const [targetProperty, setTargetProperty] = useState(null);
   const [userInfo, setInfo] = useState({});
   const [pin, setPin] = useState(null);
+  const [propInfo, setPropInfo] = useState([]);
+
   let view = (
     <EligibilityRequirements
       logPin={(selectedPin) => { setPin(selectedPin); }}
@@ -23,7 +25,7 @@ const Appeal = (props) => {
 
   if (pin != null) {
     view = (
-      <FormInput
+      <ContactCharacteristics
         city={city}
         pin={pin}
         submitForm={async (info) => {
@@ -33,6 +35,7 @@ const Appeal = (props) => {
             setComparables(response.comparables);
             setHeaders(response.labeled_headers);
             setTargetProperty(response.target_pin[0]); // TODO: pass value not list
+            setPropInfo(response.prop_info)
           } else {
             // TODO: THROW ERROR
           }
@@ -43,6 +46,7 @@ const Appeal = (props) => {
           setComparables([]);
           setHeaders([]);
           setTargetProperty(null);
+          setPropInfo([]);
         }}
       />
     );
@@ -50,10 +54,11 @@ const Appeal = (props) => {
 
   if (targetProperty != null) {
     view = (
-      <Characteristics
+      <ComparablesForm
         comparables={comparables}
         headers={headers}
         targetProperty={targetProperty}
+        propInfo={propInfo}
         submitAppeal={async () => { submitAppeal(targetProperty, comparables, userInfo); }}
         removeComparable={async (idx) => {
           setComparables(await removeComparable(comparables, idx));

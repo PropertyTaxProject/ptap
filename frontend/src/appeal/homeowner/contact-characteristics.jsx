@@ -3,6 +3,7 @@ import {
   Form,
   Input,
   Button,
+  Radio,
   Row,
   Col,
   Space,
@@ -45,6 +46,7 @@ const HomeownerInfo = () => (
     <Row>
       <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
         <h1>Homeowner Information</h1>
+        <p>How should we contact you?</p>
         <br />
       </Col>
     </Row>
@@ -75,13 +77,14 @@ const HomeownerInfo = () => (
     >
       <Input />
     </Form.Item>
+  
     <Form.Item
-      name="address"
-      label="Street Address"
+      name="phone"
+      label="Phone Number"
       rules={[
         {
           required: true,
-          message: 'Please input your street address!',
+          message: 'Please input your phone number!',
           whitespace: true,
         },
       ]}
@@ -90,12 +93,12 @@ const HomeownerInfo = () => (
     </Form.Item>
 
     <Form.Item
-      name="phone"
-      label="Phone Number"
+      name="address"
+      label="Street Address"
       rules={[
         {
           required: true,
-          message: 'Please input your phone number!',
+          message: 'Please input your street address!',
           whitespace: true,
         },
       ]}
@@ -144,6 +147,23 @@ const HomeownerInfo = () => (
     >
       <Input />
     </Form.Item>
+
+    <Form.Item
+      name="preferred"
+      label="Preferred Contact Method:"
+      rules={[
+        {
+          required: true,
+          message: 'Please mark your preferred method!',
+          whitespace: true,
+        },
+      ]}
+    >
+      <Radio.Group>
+        <Radio value='Phone'>Phone</Radio>
+        <Radio value='Email'>Email</Radio>
+      </Radio.Group>
+    </Form.Item>
   </>
 );
 
@@ -163,6 +183,24 @@ const HomeownerInfo = () => (
 //     <Input />
 //   </Form.Item>
 // );
+
+const CharacteristicsForm = () => (
+  <Form.Item
+    name="pin"
+    label="Pin"
+    rules={[
+      {
+        required: true,
+        message: 'Please input your pin!',
+        whitespace: true,
+      },
+    ]}
+  >
+    <Input />
+  </Form.Item>
+);
+
+
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
@@ -192,14 +230,15 @@ const PropertyForm = (props) => {
     >
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-          <h1>Property information form</h1>
-          <p>Fill out this form and submit to see comparable value properties</p>
+          <h1>Your Information </h1>
+          <p>In order to properly file your appeal, we need your contact information and for you to verify information on your property.</p>
           <br />
         </Col>
       </Row>
       <Form.Item noStyle>
         {/* <PinForm /> */}
         <HomeownerInfo />
+        {/*<CharacteristicsForm />*/}
       </Form.Item>
 
       <Form.Item {...tailFormItemLayout}>

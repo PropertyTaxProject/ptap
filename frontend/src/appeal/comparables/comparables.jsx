@@ -93,6 +93,7 @@ const CharacteristicsTable = (props) => {
 // displays the target property information
 const PropertyInfo = (props) => {
   const { targetProperty } = props;
+  const { propInfo } = props;
   const { cols } = props;
   const gridStyle = {
     width: `${Math.round(100 / cols)}%`,
@@ -114,6 +115,7 @@ const PropertyInfo = (props) => {
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h1>Your Property</h1>
           <p>Below is the data that we have on file for your property.</p>
+          <p>{propInfo}</p>
           <br />
         </Col>
       </Row>
@@ -132,6 +134,7 @@ const Characteristics = (props) => {
     comparables,
     headers,
     targetProperty,
+    propInfo,
     submitAppeal,
     removeComparable,
     back,
@@ -139,7 +142,10 @@ const Characteristics = (props) => {
 
   return (
     <>
-      <PropertyInfo targetProperty={targetProperty} cols={5} />
+      <PropertyInfo 
+        targetProperty={targetProperty} 
+        cols={5}
+        propInfo={propInfo} />
       <Divider />
       <CharacteristicsTable
         comparables={comparables}
