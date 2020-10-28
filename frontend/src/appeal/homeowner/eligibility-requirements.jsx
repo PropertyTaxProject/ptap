@@ -26,7 +26,7 @@ const Lookup = (props) => {
   const [form] = Form.useForm();
   const [pins, setPin] = useState([]);
 
-  const { logPin, city, logUuid } = props;
+  const { logPin, city, logUuid, logEligibility } = props;
 
   const logResponse = (theResponse) => {
     submitted = true;
@@ -40,14 +40,19 @@ const Lookup = (props) => {
 
 
   const selectPin = (record) => { //determine eligibility and log pin
+    var eligibility = true;
     if (form.getFieldValue('residence') !== 'Yes'){
       alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Residency");
+      eligibility = false;
     } else if (form.getFieldValue('owner') !== 'Yes'){
       alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Ownership");
+      eligibility = false;
     } else if (record.eligibility === false){
       alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Assessed Value");
+      eligibility = false;
     }
     logPin(record.PIN);
+    logEligibility(eligibility);
   };
 
   // TODO: Centralize this mapping
