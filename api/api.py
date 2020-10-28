@@ -80,7 +80,7 @@ def handle_form2():
 
 def logger(form_data, process_step_id, exception=''):
     if process_step_id == 'address_finder': #give uuid
-        uuid_val = uuid.uuid4()
+        uuid_val = uuid.uuid4().urn[9:]
         record_log(uuid_val, process_step_id, exception, form_data)
         return uuid_val
     elif 'uuid' in form_data: #if uuid given
@@ -146,5 +146,4 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
-    print(form_data)
     return process_comps_input(form_data)
