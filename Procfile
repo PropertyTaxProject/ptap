@@ -1,1 +1,1 @@
-web: gunicorn -b 127.0.0.1:5000 --workers 3 --threads 2 ptap_site.api.wsgi:app
+web: gunicorn -b 127.0.0.1:5000 -w 1 -k gthread --thread=4 application:application
