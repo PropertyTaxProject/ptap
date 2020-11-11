@@ -63,8 +63,6 @@ def handle_form2():
     try:
         response_dict = finalize_appeal(comps_data)
         logger(comps_data, 'submit')
-        print(response_dict)
-
         if comps_data['appeal_type'] == "detroit_single_family":
             return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
         elif comps_data['appeal_type'] == "cook_county_single_family": #temp serve file

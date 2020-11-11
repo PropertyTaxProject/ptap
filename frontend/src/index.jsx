@@ -46,10 +46,16 @@ const Page = () => (
               path="/test2"
               render={() => <Damage />}
             />
+            <Route 
+              path='/completedappeal' 
+              component={() => { 
+                window.location.href = 'https://illegalforeclosures.org/'; return null;}}
+            />
             <Route
               path="/"
               render={() => <LandingPage />}
             />
+
           </Switch>
         </div>
       </Content>

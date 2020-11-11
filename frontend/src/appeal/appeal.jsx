@@ -3,6 +3,7 @@ import { submitAppeal, submitForm } from '../requests';
 import ContactCharacteristics from './homeowner/contact-characteristics';
 import ComparablesForm from './comparables/comparables';
 import EligibilityRequirements from './homeowner/eligibility-requirements';
+import ReviewPage from './review/review-page';
 
 // TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
@@ -17,6 +18,7 @@ const Appeal = (props) => {
   const [propInfo, setPropInfo] = useState([]);
   const [sessionUuid, setUuid] = useState([]);
   const [reportedEligibility, setEligibility] = useState([]);
+  const [reviewAppeal, setReview] = useState(null);
 
   let view = (
     <EligibilityRequirements
@@ -65,7 +67,10 @@ const Appeal = (props) => {
         headers={headers}
         targetProperty={targetProperty}
         propInfo={propInfo}
-        submitAppeal={async () => { submitAppeal(targetProperty, comparables, userInfo, sessionUuid); }}
+        submitAppeal={async () => { 
+          submitAppeal(targetProperty, comparables, userInfo, sessionUuid);
+          setReview(true);
+        }}
         removeComparable={async (idx) => {
           setComparables(await removeComparable(comparables, idx));
           console.log(`removed ${idx}`);
@@ -75,6 +80,24 @@ const Appeal = (props) => {
           setComparables([]);
           setHeaders([]);
           setTargetProperty(null);
+        }}
+      />
+    );
+  }
+
+  if (reviewAppeal != null) {
+    view = (
+      <ReviewPage 
+        targetProperty={targetProperty} 
+        propInfo={propInfo} 
+        userInfo={userInfo}
+        comparables={comparables}
+        confirmInfo={() => {
+          
+        }}
+        
+        back={() => {
+          setReview(null);
         }}
       />
     );
