@@ -1,0 +1,12 @@
+.git*
+.ipynb_checkpoints*
+.Rproj.user*
+.Rhistory
+.Rproj
+__pycache__*
+cook county/*
+detroit/*
+frontend/*
+!cook county/data/cooksf*
+!detroit/detroit_sf
+!build/*
