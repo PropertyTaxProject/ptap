@@ -10,7 +10,7 @@ import json
 import gspread
 from google.oauth2 import service_account
 from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_detroit, prettify_cook
-
+from .dataqueries import address_candidates_query, get_pin
 #open connection with google sheets
 credentials = service_account.Credentials.from_service_account_file(
     './.env/ptap-904555bfffb0.json',
@@ -30,11 +30,14 @@ def address_candidates(input_data, data_dict, cutoff_info):
     if input_data['appeal_type'] == "detroit_single_family":
         mini = data_dict['detroit_sf']
         cutoff = cutoff_info['detroit']
+        #region = 'detroit'
 
     elif input_data['appeal_type'] == "cook_county_single_family":
         mini = data_dict['cook_sf']
         cutoff = cutoff_info['cook']
+        #region = 'cook'
     
+    #mini = address_candidates_query(region, st_num)
     mini = mini[mini['st_num'] == st_num]
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])].copy()
@@ -60,6 +63,8 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
         data = data_dict['detroit_sf']
         max_comps = 9
         sales_comps = True
+        #region = 'detroit'
+        #targ = get_pin(region, target_pin)
         targ = data[data['parcel_num'] == target_pin].copy(deep=True)
         if targ.empty:
             raise Exception('Invalid PIN')

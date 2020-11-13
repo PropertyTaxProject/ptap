@@ -7,3 +7,5 @@ __pycache__
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .env
+.ipynb_checkpoints
+*.sqlite

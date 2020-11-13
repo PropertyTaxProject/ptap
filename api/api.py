@@ -1,6 +1,7 @@
 import time
 from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 import pandas as pd
+import sqlite3
 import uuid
 from .mainfct import process_comps_input, process_input, address_candidates, record_log
 from flask_cors import CORS
@@ -13,6 +14,8 @@ data_dict['detroit_sf'] = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 
 application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
 CORS(application)
+
+#CON = sqlite3.connect('api/data.sqlite')
 
 @application.route('/')
 def index():
