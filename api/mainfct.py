@@ -9,8 +9,9 @@ import os
 import json
 import gspread
 from google.oauth2 import service_account
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_detroit, prettify_cook
+from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_detroit, prettify_cook, calculate_comps
 from .dataqueries import address_candidates_query, get_pin
+
 #open connection with google sheets
 credentials = service_account.Credentials.from_service_account_file(
     './.env/ptap-904555bfffb0.json',
@@ -22,23 +23,20 @@ credentials = service_account.Credentials.from_service_account_file(
 client = gspread.authorize(credentials)
 gsheet = client.open("ptap-log").sheet1
 
-def address_candidates(input_data, data_dict, cutoff_info):
+def address_candidates(input_data, cutoff_info):
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
     
     if input_data['appeal_type'] == "detroit_single_family":
-        mini = data_dict['detroit_sf']
         cutoff = cutoff_info['detroit']
-        #region = 'detroit'
+        region = 'detroit'
 
     elif input_data['appeal_type'] == "cook_county_single_family":
-        mini = data_dict['cook_sf']
         cutoff = cutoff_info['cook']
-        #region = 'cook'
+        region = 'cook'
     
-    #mini = address_candidates_query(region, st_num)
-    mini = mini[mini['st_num'] == st_num]
+    mini = address_candidates_query(region, st_num)
     candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])].copy()
     selected['Distance'] = 0
@@ -59,13 +57,14 @@ def address_candidates(input_data, data_dict, cutoff_info):
 def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
     target_pin = input_data['pin']
 
+
+
     if input_data['appeal_type'] == "detroit_single_family":
         data = data_dict['detroit_sf']
         max_comps = 9
         sales_comps = True
-        #region = 'detroit'
-        #targ = get_pin(region, target_pin)
-        targ = data[data['parcel_num'] == target_pin].copy(deep=True)
+        region = 'detroit'
+        targ = get_pin(region, target_pin)
         if targ.empty:
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
@@ -119,6 +118,73 @@ def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
 
         except:
             print('Error Producing Comps Output')
+
+
+def process_input2(input_data, sales_comps=False):
+    target_pin = input_data['pin']
+
+    #set constants
+    if input_data['appeal_type'] == "detroit_single_family":
+        max_comps = 9
+        sales_comps = True
+        region = 'detroit'
+        targ = get_pin(region, target_pin)
+        if targ.empty:
+            raise Exception('Invalid PIN')
+        targ['Distance'] = 0
+        p1 = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) 
+        p2 = 'Current Homestead Status: ' + targ['homestead_'].to_string(index=False)
+        prop_info = p1 +'\n' + p2
+    elif input_data['appeal_type'] == "cook_county_single_family":
+        max_comps = 9
+        sales_comps = False
+        region = 'cook'
+        targ = get_pin(region, target_pin)
+        if targ.empty:
+            raise Exception('Invalid PIN')
+        targ['Distance'] = 0
+        prop_info = ''
+
+    #call comp funtion
+    new_targ, cur_comps = find_comps(targ, region, sales_comps)
+    #process comps
+    dist_weight = 1
+    valuation_weight = 3
+    
+    cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
+    cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
+    cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
+    cur_comps = cur_comps.sort_values(by=['score'])
+    cur_comps = cur_comps.head(max_comps)
+
+    new_targ = new_targ.round(2)
+    cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
+
+    output = {}
+    new_targ = new_targ.fillna('')
+    cur_comps = cur_comps.fillna('')
+
+    output['target_pin'] = new_targ.to_dict(orient='records')
+    output['comparables'] = cur_comps.to_dict(orient='records') 
+    output['labeled_headers'] = cur_comps.columns.tolist()
+    output['prop_info'] = prop_info
+    output['pinav'] = new_targ.assessed_value.mean()
+
+    return output
+
+def find_comps(targ, region, sales_comps, multiplier=1):
+    try:
+        new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
+    except:
+        raise Exception('bad region comps')
+
+    if(multiplier > 8): #no comps found within maximum search area---hault
+        raise Exception('Comparables not found with given search')
+    elif(cur_comps.shape[0] < 10): #find more comps
+        return find_comps(targ, region, sales_comps, multiplier*1.25)
+    else: # return best comps
+        return new_targ, cur_comps
+
 
 
 def process_comps_input(comp_submit):

@@ -1,21 +1,12 @@
 import time
 from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 import pandas as pd
-import sqlite3
 import uuid
-from .mainfct import process_comps_input, process_input, address_candidates, record_log
+from .mainfct import process_comps_input, process_input, address_candidates, record_log, process_input2
 from flask_cors import CORS
-
-#load data
-data_dict = {}
-data_dict['cook_sf'] =  pd.concat([pd.read_csv('cooksf1.csv', dtype={'PIN':str, 'st_num':str}), 
-                                   pd.read_csv('cooksf2.csv', dtype={'PIN':str, 'st_num':str})])
-data_dict['detroit_sf'] = pd.read_csv('detroit_sf.csv', dtype={'st_num':str})
 
 application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
 CORS(application)
-
-#CON = sqlite3.connect('api/data.sqlite')
 
 @application.route('/')
 def index():
@@ -107,7 +98,7 @@ def get_pin(form_data):
         'cook': 250000
     }
 
-    return address_candidates(form_data, data_dict, cutoff_info)
+    return address_candidates(form_data, cutoff_info)
 
 
 def get_comps(form_data):
@@ -120,7 +111,7 @@ def get_comps(form_data):
         prop_info: 'str' #a string of info to display
     }
     """
-    return process_input(form_data, data_dict)
+    return process_input2(form_data)
 
 def finalize_appeal(form_data):
     '''

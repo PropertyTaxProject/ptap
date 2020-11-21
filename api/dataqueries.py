@@ -1,5 +1,21 @@
+from math import radians, degrees, sin, cos, asin, acos, sqrt
+import pandas as pd
+import sqlite3
+
+con = sqlite3.connect('api/data.sqlite', check_same_thread=False) 
+
+  
+def great_circle(lon1, lat1, lon2, lat2):
+    '''
+    https://medium.com/@petehouston/calculate-distance-of-two-locations-on-earth-using-python-1501b1944d97
+    '''
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    return 3958.756 * (
+        acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon1 - lon2))
+    )
+
 def address_candidates_query(region, st_num):
-    return pd.read_sql('SELECT * FROM ' + region + ' WHERE st_num = ' + st_num, CON)
+    return pd.read_sql('SELECT * FROM ' + region + ' WHERE st_num = ' + st_num, con)
 
 def get_pin(region, pin):
     if region == 'detroit':
@@ -7,34 +23,37 @@ def get_pin(region, pin):
     elif region == 'cook':
         pin_name = 'PIN'
     qs = 'SELECT * FROM ' + region + ' WHERE ' + pin_name + ' = "' + pin + '"'
-    return pd.read_sql(qs, CON)
 
-def query_on(df, col, val, range_val, filter_type, debug=False):
+    return pd.read_sql(qs, con)
+
+def query_on(col, val, range_val, filter_type):
     '''
     type: 
     1 -> categorical
-    2 -> distance
     3 -> continuous 
     '''
-    if debug:
-        print(df.shape)
-    if df.shape[0] == 0:
-        print('cannot filter a dataframe with 0 rows')
-        return df
-    elif (filter_type == 1) & (range_val == 'Match'): #categorical
-        if debug:
-            print('filtering ' + col + ' ' + str(val) + ' on ' + str(range_val))
-        return df[df[col] == val]
-    elif filter_type == 2: #distance
-        if debug:
-            print('filtering on distance less than', str(range_val), 'miles away')
-        df['Distance'] = df.apply(lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1) 
-        return df[df[col] < range_val]
+    if (filter_type == 1) & (range_val == 'Match'): #categorical
+        qs = ' AND "' + col + '" = "' + str(val) + '"'
+        return qs
     elif filter_type == 3: #continuous
-        if debug:
-            print('filtering ' + col + ' ' + str(val) + ' +/- ' + str(range_val))
-        return df[df[col].between(val - range_val, val + range_val)]
+        qs = ' AND "' + col + '" >= ' + str(val - range_val) + ' AND "' + col + '" <= ' + str(val + range_val) 
+        return qs
     else:
-        #throw error
-        print('error')
-        return 
+        raise Exception('Query On Error')
+
+def run_comps_query(query, val, range_val):
+    data = pd.read_sql(query, con)
+    print(data)
+    data['Distance'] = data.apply(lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1) 
+    return data[data['Distance'] < range_val]      
+
+def placeholder():
+    print('placeholder')
+    pass
+
+
+
+
+
+
+

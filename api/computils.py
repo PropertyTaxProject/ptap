@@ -1,5 +1,6 @@
 from math import radians, degrees, sin, cos, asin, acos, sqrt
 from numpy import searchsorted, sort
+from .dataqueries import query_on, run_comps_query
 
 #utility functions
 def ecdf(x):
@@ -147,6 +148,88 @@ def comps_detroit_sf(targ, detroit_sf, multiplier, sales_comps):
         print("~~~")
     
     return(prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps))
+
+def calculate_comps(targ, region, sales_comps, multiplier):
+    ###
+    #constants
+    if region == 'detroit':
+        square_dif = 100 * multiplier
+        acre_dif = .05 * multiplier
+        floor_dif = 50 * multiplier
+        age_dif = 15 * multiplier
+        distance_filter = 1 * multiplier #miles
+        exterior = 'Match' # (1 siding, 2 brick/other, 3 brick, 4 other)
+        basement = 'Match'
+        garage = 'Match'
+        bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
+        height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
+        pin_name = 'parcel_num'
+        sale_name = 'Sale Price'
+        debug = True
+    elif region == 'cook':
+        age_dif = 15 * multiplier
+        build_dif = 0.10 * targ['Building Square Feet'].values[0] * multiplier
+        land_dif = 0.25 * targ['Land Square Feet'].values[0] * multiplier
+        rooms_dif = 1.5 * multiplier
+        bedroom_dif = 1.5 * multiplier
+        av_dif = 0.5 * targ['CERTIFIED'].values[0] * multiplier        
+        wall_material = "Match" #wall material 1=wood, 2=masonry, 3=wood&masonry, 4=stucco
+        stories = "Match" #1, 2, or 3 stories
+        basement = "Match" #1 full, 0 partial
+        garage_ind = "Match" #1 any garage 0 no garage
+        distance_filter = 1 * multiplier #miles
+        pin_name = 'PIN'
+        sale_name = 'Sale Price'
+        debug = True
+
+    ###construct query
+    pin_val = targ[pin_name].values[0]
+    baseq = 'SELECT * FROM ' + region + ' WHERE ' + pin_name + ' != "' + pin_val + '"'
+    
+    if sales_comps:
+        baseq += ' AND "' + sale_name + '" IS NOT NULL'
+
+    if debug:
+        print("~~~" + region + "~~~")
+        print(targ[pin_name].values[0] + " |||| multiplier " + str(multiplier))
+
+    if region == 'detroit':
+        baseq += query_on('year_built', targ['year_built'].values[0], age_dif, 3)
+        baseq += query_on('total_floo', targ['total_floo'].values[0], floor_dif, 3)
+        baseq += query_on('total_acre', targ['total_acre'].values[0], acre_dif, 3)
+        baseq += query_on('total_squa', targ['total_squa'].values[0], square_dif, 3)
+
+        baseq += query_on('heightcat', targ['heightcat'].values[0], height, 1)
+        baseq += query_on('extcat', targ['extcat'].values[0], exterior, 1,)
+        baseq += query_on('bathcat', targ['bathcat'].values[0], bath, 1)
+        baseq += query_on('has_basement', targ['has_basement'].values[0], basement, 1)
+        baseq += query_on('has_garage', targ['has_garage'].values[0], garage, 1)
+    elif region == 'cook':
+        baseq += query_on('Age', targ['Age'].values[0], age_dif, 3)
+        baseq += query_on('Building Square Feet', targ['Building Square Feet'].values[0], build_dif, 3)
+        baseq += query_on('Land Square Feet', targ['Land Square Feet'].values[0], land_dif, 3)
+        baseq += query_on('Rooms', targ['Rooms'].values[0], rooms_dif, 3)
+        baseq += query_on('Bedrooms', targ['Bedrooms'].values[0], bedroom_dif, 3)
+        baseq += query_on('CERTIFIED', targ['CERTIFIED'].values[0], av_dif, 3)
+
+        baseq += query_on('Wall Material', targ['Wall Material'].values[0], wall_material, 1)
+        baseq += query_on('stories_recode', targ['stories_recode'].values[0], stories, 1)
+        baseq += query_on('basement_recode', targ['basement_recode'].values[0], basement, 1)
+        baseq += query_on('Garage indicator', targ['Garage indicator'].values[0], garage_ind, 1)
+
+    if debug:
+        print(baseq)
+    
+    ###run query and distance
+    new = run_comps_query(baseq, (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
+    
+    if debug:
+        print(new.shape)
+    if region == 'detroit':
+        return (prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps))
+    elif region == 'cook':
+        return (prettify_cook(targ, sales_comps), prettify_cook(new, sales_comps))
+
 
 def prettify_cook(data, sales_comps):
     cook_sf_cols = ['PIN', 'Property Address', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
