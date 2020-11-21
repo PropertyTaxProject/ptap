@@ -2,7 +2,7 @@ import time
 from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 import pandas as pd
 import uuid
-from .mainfct import process_comps_input, process_input, address_candidates, record_log, process_input2
+from .mainfct import process_comps_input, process_input, address_candidates, record_log
 from flask_cors import CORS
 
 application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
@@ -111,7 +111,7 @@ def get_comps(form_data):
         prop_info: 'str' #a string of info to display
     }
     """
-    return process_input2(form_data)
+    return process_input(form_data)
 
 def finalize_appeal(form_data):
     '''

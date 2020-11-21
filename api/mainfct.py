@@ -9,8 +9,8 @@ import os
 import json
 import gspread
 from google.oauth2 import service_account
-from .computils import comps_cook_sf, comps_detroit_sf, ecdf, prettify_detroit, prettify_cook, calculate_comps
-from .dataqueries import address_candidates_query, get_pin
+from .computils import prettify_detroit, prettify_cook, calculate_comps
+from .dataqueries import address_candidates_query, get_pin, ecdf
 
 #open connection with google sheets
 credentials = service_account.Credentials.from_service_account_file(
@@ -54,73 +54,7 @@ def address_candidates(input_data, cutoff_info):
 
     return output
 
-def process_input(input_data, data_dict, multiplier=1, sales_comps=False):
-    target_pin = input_data['pin']
-
-
-
-    if input_data['appeal_type'] == "detroit_single_family":
-        data = data_dict['detroit_sf']
-        max_comps = 9
-        sales_comps = True
-        region = 'detroit'
-        targ = get_pin(region, target_pin)
-        if targ.empty:
-            raise Exception('Invalid PIN')
-        targ['Distance'] = 0
-        try:
-            new_targ, cur_comps = comps_detroit_sf(targ, data, multiplier, sales_comps)
-        except:
-            print('Error Finding Comparables')
-        prop_info = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '\nCurrent Homestead Status: ' + targ['homestead_'].to_string(index=False)
-    elif input_data['appeal_type'] == "cook_county_single_family":
-        data = data_dict['cook_sf']
-        max_comps = 9
-        targ = data[data['PIN'] == target_pin].copy(deep=True)
-        if targ.empty:
-            raise Exception('Invalid PIN')
-        targ['Distance'] = 0
-        try:
-            new_targ, cur_comps = comps_cook_sf(targ, data, multiplier, sales_comps)
-        except:
-            print('Error Finding Comparables')
-        prop_info = ''
-
-    if(multiplier > 8): #no comps found within maximum search area---hault
-        raise Exception('Comparables not found with given search')
-    elif(cur_comps.shape[0] < 10): #find more comps
-        return process_input(input_data, data_dict, multiplier*1.25, sales_comps)
-    else: # return best comps
-        try:
-            dist_weight = 1
-            valuation_weight = 3
-            
-            cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
-            cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
-            cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
-            cur_comps = cur_comps.sort_values(by=['score'])
-            cur_comps = cur_comps.head(max_comps)
-
-            new_targ = new_targ.round(2)
-            cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
-
-            output = {}
-            new_targ = new_targ.fillna('')
-            cur_comps = cur_comps.fillna('')
-
-            output['target_pin'] = new_targ.to_dict(orient='records')
-            output['comparables'] = cur_comps.to_dict(orient='records') 
-            output['labeled_headers'] = cur_comps.columns.tolist()
-            output['prop_info'] = prop_info
-            output['pinav'] = new_targ.assessed_value.mean()
-
-            return output
-
-        except:
-            print('Error Producing Comps Output')
-
-
-def process_input2(input_data, sales_comps=False):
+def process_input(input_data, sales_comps=False):
     target_pin = input_data['pin']
 
     #set constants
@@ -185,8 +119,6 @@ def find_comps(targ, region, sales_comps, multiplier=1):
     else: # return best comps
         return new_targ, cur_comps
 
-
-
 def process_comps_input(comp_submit):
     '''
     Input:
@@ -212,7 +144,6 @@ def process_comps_input(comp_submit):
     elif comp_submit['appeal_type'] == "cook_county_single_family":
         return submit_cook_sf(comp_submit)
     
-
 
 def submit_cook_sf(comp_submit):
     '''

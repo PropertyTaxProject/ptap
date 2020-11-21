@@ -1,10 +1,11 @@
 from math import radians, degrees, sin, cos, asin, acos, sqrt
+from numpy import searchsorted, sort
 import pandas as pd
 import sqlite3
 
 con = sqlite3.connect('api/data.sqlite', check_same_thread=False) 
-
   
+# helper functions
 def great_circle(lon1, lat1, lon2, lat2):
     '''
     https://medium.com/@petehouston/calculate-distance-of-two-locations-on-earth-using-python-1501b1944d97
@@ -14,6 +15,15 @@ def great_circle(lon1, lat1, lon2, lat2):
         acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon1 - lon2))
     )
 
+def ecdf(x):
+    x = sort(x)
+    n = len(x)
+    def _ecdf(v):
+        # side='right' because we want Pr(x <= v)
+        return (searchsorted(x, v, side='right') + 1) / n
+    return _ecdf
+
+# sql query things
 def address_candidates_query(region, st_num):
     return pd.read_sql('SELECT * FROM ' + region + ' WHERE st_num = ' + st_num, con)
 
@@ -43,17 +53,7 @@ def query_on(col, val, range_val, filter_type):
 
 def run_comps_query(query, val, range_val):
     data = pd.read_sql(query, con)
-    print(data)
     data['Distance'] = data.apply(lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1) 
     return data[data['Distance'] < range_val]      
-
-def placeholder():
-    print('placeholder')
-    pass
-
-
-
-
-
 
 
