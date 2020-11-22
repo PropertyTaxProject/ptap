@@ -1,10 +1,10 @@
-from math import radians, degrees, sin, cos, asin, acos, sqrt
+from math import radians, sin, cos, acos
+import sqlite3
 from numpy import searchsorted, sort
 import pandas as pd
-import sqlite3
 
-con = sqlite3.connect('api/data.sqlite', check_same_thread=False) 
-  
+con = sqlite3.connect('api/data.sqlite', check_same_thread=False)
+
 # helper functions
 def great_circle(lon1, lat1, lon2, lat2):
     '''
@@ -38,22 +38,22 @@ def get_pin(region, pin):
 
 def query_on(col, val, range_val, filter_type):
     '''
-    type: 
+    type:
     1 -> categorical
-    3 -> continuous 
+    3 -> continuous
     '''
     if (filter_type == 1) & (range_val == 'Match'): #categorical
         qs = ' AND "' + col + '" = "' + str(val) + '"'
         return qs
     elif filter_type == 3: #continuous
-        qs = ' AND "' + col + '" >= ' + str(val - range_val) + ' AND "' + col + '" <= ' + str(val + range_val) 
+        qs = ' AND "' + col + '" >= ' + \
+             str(val - range_val) + ' AND "' + col + '" <= ' + str(val + range_val)
         return qs
     else:
         raise Exception('Query On Error')
 
 def run_comps_query(query, val, range_val):
     data = pd.read_sql(query, con)
-    data['Distance'] = data.apply(lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1) 
-    return data[data['Distance'] < range_val]      
-
-
+    data['Distance'] = data.apply(
+        lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1)
+    return data[data['Distance'] < range_val]

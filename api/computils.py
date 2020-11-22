@@ -23,7 +23,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         land_dif = 0.25 * targ['Land Square Feet'].values[0] * multiplier
         rooms_dif = 1.5 * multiplier
         bedroom_dif = 1.5 * multiplier
-        av_dif = 0.5 * targ['CERTIFIED'].values[0] * multiplier        
+        av_dif = 0.5 * targ['CERTIFIED'].values[0] * multiplier
         wall_material = "Match" #wall material 1=wood, 2=masonry, 3=wood&masonry, 4=stucco
         stories = "Match" #1, 2, or 3 stories
         basement = "Match" #1 full, 0 partial
@@ -36,7 +36,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     ###construct query
     pin_val = targ[pin_name].values[0]
     baseq = 'SELECT * FROM ' + region + ' WHERE ' + pin_name + ' != "' + pin_val + '"'
-    
+
     if sales_comps:
         baseq += ' AND "' + sale_name + '" IS NOT NULL'
 
@@ -72,9 +72,10 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
     if debug:
         print(baseq)
-    
+
     ### run query and distance
-    new = run_comps_query(baseq, (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
+    new = run_comps_query(
+        baseq, (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
 
     if debug:
         print(new.shape)
@@ -85,10 +86,11 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
 
 def prettify_cook(data, sales_comps):
-    cook_sf_cols = ['PIN', 'Property Address', 'Property Class', 'Age', 'Building Square Feet', 'Land Square Feet', 
-    'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode', 'basement_recode', 'Garage indicator',
-    'Distance', 'CERTIFIED']
-    
+    cook_sf_cols = ['PIN', 'Property Address', 'Property Class',
+                    'Age', 'Building Square Feet', 'Land Square Feet',
+                    'Rooms', 'Bedrooms', 'Wall Material', 'stories_recode',
+                    'basement_recode', 'Garage indicator', 'Distance', 'CERTIFIED']
+
     if sales_comps:
         cook_sf_cols = cook_sf_cols + ['Sale Price', 'Sale Year']
 
@@ -126,12 +128,12 @@ def prettify_cook(data, sales_comps):
         data = data.replace({"Exterior": wall_d,
                     "Basement": basement_d,
                     "Garage": garage_d,
-                    }) 
+                    })
     return data
 
 
 def prettify_detroit(data, sales_comps):
-    detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre', 
+    detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre',
                         'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance']
 
@@ -190,5 +192,5 @@ def prettify_detroit(data, sales_comps):
                     "Height": height_d,
                     "Exterior": exterior_d
                     })
-    
+
     return data

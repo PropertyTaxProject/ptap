@@ -1,11 +1,12 @@
 import time
-from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
-import pandas as pd
 import uuid
-from .mainfct import process_comps_input, process_input, address_candidates, record_log
+from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
+from .mainfct import process_comps_input, process_input, address_candidates, record_log
 
-application = Flask(__name__, static_folder='../frontend/build/', template_folder='../frontend/build/')
+application = Flask(__name__,
+                    static_folder='../frontend/build/',
+                    template_folder='../frontend/build/')
 CORS(application)
 
 @application.route('/')
@@ -102,7 +103,7 @@ def get_pin(form_data):
 
 
 def get_comps(form_data):
-    """     
+    """
     Output:
     {
         target_pin : [{char1:val1,...}],
@@ -119,13 +120,13 @@ def finalize_appeal(form_data):
     {
         'target_pin': [{}],
         'comparables': [{},{},{},{}]
-        'appeal_type': '', 
-        'pin': '', 
-        'name': '', 
-        'email': '', 
-        'address': '', 
-        'phone': '', 
-        'city': '', 
+        'appeal_type': '',
+        'pin': '',
+        'name': '',
+        'email': '',
+        'address': '',
+        'phone': '',
+        'city': '',
         'state': '',
         'zip': '',
         'preferred: ''

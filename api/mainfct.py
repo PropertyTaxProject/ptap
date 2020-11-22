@@ -1,12 +1,10 @@
-import pandas as pd
 import pickle
 import time
-from docxtpl import DocxTemplate
 from datetime import datetime
-from fuzzywuzzy import process
 import io
-import os
-import json
+from docxtpl import DocxTemplate
+import pandas as pd
+from fuzzywuzzy import process
 import gspread
 from google.oauth2 import service_account
 from .computils import prettify_detroit, prettify_cook, calculate_comps
@@ -27,7 +25,7 @@ def address_candidates(input_data, cutoff_info):
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
-    
+
     if input_data['appeal_type'] == "detroit_single_family":
         cutoff = cutoff_info['detroit']
         region = 'detroit'
@@ -35,9 +33,9 @@ def address_candidates(input_data, cutoff_info):
     elif input_data['appeal_type'] == "cook_county_single_family":
         cutoff = cutoff_info['cook']
         region = 'cook'
-    
+
     mini = address_candidates_query(region, st_num)
-    candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)    
+    candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)
     selected = mini[mini['st_name'].isin([i for i, _, _ in candidate_matches])].copy()
     selected['Distance'] = 0
 
@@ -66,9 +64,9 @@ def process_input(input_data, sales_comps=False):
         if targ.empty:
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
-        p1 = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) 
-        p2 = 'Current Homestead Status: ' + targ['homestead_'].to_string(index=False)
-        prop_info = p1 +'\n' + p2
+        partone = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False)
+        parttwo = 'Current Homestead Status: ' + targ['homestead_'].to_string(index=False)
+        prop_info = partone +'\n' + parttwo
     elif input_data['appeal_type'] == "cook_county_single_family":
         max_comps = 9
         sales_comps = False
@@ -84,10 +82,11 @@ def process_input(input_data, sales_comps=False):
     #process comps
     dist_weight = 1
     valuation_weight = 3
-    
+
     cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
     cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
-    cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + valuation_weight * cur_comps['val_dist']
+    cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + \
+        valuation_weight * cur_comps['val_dist']
     cur_comps = cur_comps.sort_values(by=['score'])
     cur_comps = cur_comps.head(max_comps)
 
@@ -99,7 +98,7 @@ def process_input(input_data, sales_comps=False):
     cur_comps = cur_comps.fillna('')
 
     output['target_pin'] = new_targ.to_dict(orient='records')
-    output['comparables'] = cur_comps.to_dict(orient='records') 
+    output['comparables'] = cur_comps.to_dict(orient='records')
     output['labeled_headers'] = cur_comps.columns.tolist()
     output['prop_info'] = prop_info
     output['pinav'] = new_targ.assessed_value.mean()
@@ -112,9 +111,9 @@ def find_comps(targ, region, sales_comps, multiplier=1):
     except:
         raise Exception('bad region comps')
 
-    if(multiplier > 8): #no comps found within maximum search area---hault
+    if multiplier > 8: #no comps found within maximum search area---hault
         raise Exception('Comparables not found with given search')
-    elif(cur_comps.shape[0] < 10): #find more comps
+    elif cur_comps.shape[0] < 10: #find more comps
         return find_comps(targ, region, sales_comps, multiplier*1.25)
     else: # return best comps
         return new_targ, cur_comps
@@ -125,14 +124,14 @@ def process_comps_input(comp_submit):
     {
         'target_pin': [{}],
         'comparables': [{},{},{},{}]
-        'appeal_type': '', 
-        'pin': '', 
-        'name': '', 
-        'email': '', 
-        'address': '', 
-        'phone': '', 
-        'city': '', 
-        'state': '', 
+        'appeal_type': '',
+        'pin': '',
+        'name': '',
+        'email': '',
+        'address': '',
+        'phone': '',
+        'city': '',
+        'state': '',
         'zip': '',
         'preferred': ''
     }
@@ -143,7 +142,7 @@ def process_comps_input(comp_submit):
 
     elif comp_submit['appeal_type'] == "cook_county_single_family":
         return submit_cook_sf(comp_submit)
-    
+
 
 def submit_cook_sf(comp_submit):
     '''
@@ -182,7 +181,7 @@ def submit_cook_sf(comp_submit):
     pin_av = t_df.assessed_value[0]
     comps_avg = comps_df.assessed_value.mean()
     pin = t_df.PIN[0]
-    hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:] 
+    hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:]
     comp_csv_name = "api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"
 
     #rename cols
@@ -217,7 +216,7 @@ def submit_cook_sf(comp_submit):
     filer = {}
     filer['attorney_num'] = '123456' #TMP
     filer['attorney_email'] = 'tmp@tmp.com' #TMP
-    filer['owner_name'] = comp_submit['name'] 
+    filer['owner_name'] = comp_submit['name']
     filer['owner_address'] = comp_submit['address']
     filer['owner_zip'] = comp_submit['zip']
     filer['owner_phone'] = comp_submit['phone']
@@ -230,7 +229,7 @@ def submit_cook_sf(comp_submit):
 
     filer_info['begin_appeal'] = begin_appeal
     filer_info['filer'] = filer
-    filer_info['attachments'] = attachments 
+    filer_info['attachments'] = attachments
 
     #save autofiler info to pickle
     with open('api/tmp_data/' + pin + '.pickle', 'wb') as handle:
@@ -247,7 +246,7 @@ def submit_cook_sf(comp_submit):
     doc.save(file_stream) # save to stream
     file_stream.seek(0) # reset pointer to head
     output['file_stream'] = file_stream
-    
+
     return output
 
 def generate_detroit_sf(comp_submit):
@@ -273,7 +272,8 @@ def generate_detroit_sf(comp_submit):
     comps_df = comps_df.rename(columns=rename_dict).drop(['score'], axis=1)
 
     #generate docx
-    output_name = 'api/tmp_data/' + pin + ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
+    output_name = 'api/tmp_data/' + pin + \
+        ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
     doc = DocxTemplate("api/detroit_template.docx")
 
     context = {
@@ -293,14 +293,14 @@ def generate_detroit_sf(comp_submit):
 
     doc.render(context)
     doc.save(output_name)
-    
+
     output = {}
 
     output['success'] = 'true' #add error handling
     output['contention_value'] = '${:,.2f}'.format(comps_avg / 2)
     output['message'] = 'appeal filed successfully' #add error handling
     output['file_loc'] = output_name
-    
+
     # also save a byte object to return
     file_stream = io.BytesIO()
     doc.save(file_stream) # save to stream
@@ -317,7 +317,8 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     new['time'] = time.time()
 
     tmp = pd.DataFrame(new, index=[0])
-    tmp = pd.concat([tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
+    tmp = pd.concat(
+        [tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
     p = 'tmp_log.csv'
 
     tmp.to_csv(p, index=False, mode='a')
