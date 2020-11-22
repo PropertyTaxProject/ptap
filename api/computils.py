@@ -84,6 +84,18 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     elif region == 'cook':
         return (prettify_cook(targ, sales_comps), prettify_cook(new, sales_comps))
 
+def find_comps(targ, region, sales_comps, multiplier=1):
+    try:
+        new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
+    except:
+        raise Exception('bad region comps')
+
+    if multiplier > 8: #no comps found within maximum search area---hault
+        raise Exception('Comparables not found with given search')
+    elif cur_comps.shape[0] < 10: #find more comps
+        return find_comps(targ, region, sales_comps, multiplier*1.25)
+    else: # return best comps
+        return new_targ, cur_comps
 
 def prettify_cook(data, sales_comps):
     cook_sf_cols = ['PIN', 'Property Address', 'Property Class',

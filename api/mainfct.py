@@ -1,27 +1,16 @@
 import pickle
-import time
 from datetime import datetime
 import io
 from docxtpl import DocxTemplate
 import pandas as pd
 from fuzzywuzzy import process
-import gspread
-from google.oauth2 import service_account
-from .computils import prettify_detroit, prettify_cook, calculate_comps
+from .computils import prettify_detroit, prettify_cook, find_comps
 from .dataqueries import address_candidates_query, get_pin, ecdf
 
-#open connection with google sheets
-credentials = service_account.Credentials.from_service_account_file(
-    './.env/ptap-904555bfffb0.json',
-    scopes = ["https://spreadsheets.google.com/feeds",
-          "https://www.googleapis.com/auth/spreadsheets",
-          "https://www.googleapis.com/auth/drive.file",
-          "https://www.googleapis.com/auth/drive"])
-
-client = gspread.authorize(credentials)
-gsheet = client.open("ptap-log").sheet1
-
 def address_candidates(input_data, cutoff_info):
+    """
+    Returns address candidates
+    """
     output = {}
     st_num = input_data['st_num']
     st_name = input_data['st_name']
@@ -52,7 +41,10 @@ def address_candidates(input_data, cutoff_info):
 
     return output
 
-def process_input(input_data, sales_comps=False):
+def comparables(input_data, sales_comps=False):
+    """
+    Returns comparables
+    """
     target_pin = input_data['pin']
 
     #set constants
@@ -79,6 +71,7 @@ def process_input(input_data, sales_comps=False):
 
     #call comp funtion
     new_targ, cur_comps = find_comps(targ, region, sales_comps)
+
     #process comps
     dist_weight = 1
     valuation_weight = 3
@@ -104,19 +97,6 @@ def process_input(input_data, sales_comps=False):
     output['pinav'] = new_targ.assessed_value.mean()
 
     return output
-
-def find_comps(targ, region, sales_comps, multiplier=1):
-    try:
-        new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
-    except:
-        raise Exception('bad region comps')
-
-    if multiplier > 8: #no comps found within maximum search area---hault
-        raise Exception('Comparables not found with given search')
-    elif cur_comps.shape[0] < 10: #find more comps
-        return find_comps(targ, region, sales_comps, multiplier*1.25)
-    else: # return best comps
-        return new_targ, cur_comps
 
 def process_comps_input(comp_submit):
     '''
@@ -308,35 +288,3 @@ def generate_detroit_sf(comp_submit):
     output['file_stream'] = file_stream
 
     return output
-
-def record_log(uuid_val, process_step_id, exception, form_data):
-    new = {}
-    new['uuid'] = uuid_val
-    new['process_step_id'] = process_step_id
-    new['exception'] = repr(exception)
-    new['time'] = time.time()
-
-    tmp = pd.DataFrame(new, index=[0])
-    tmp = pd.concat(
-        [tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
-    p = 'tmp_log.csv'
-
-    tmp.to_csv(p, index=False, mode='a')
-
-    #google sheets log
-    for i, j in form_data.items():
-        if i == 'target_pin':
-            new[i] = j['PIN']
-        elif i == 'comparables':
-            cnt = 1
-            for comp in j:
-                new['comp_' + str(cnt)] = comp['PIN']
-                cnt += 1
-        else:
-            new[i] = j
-
-    test = [list(new.keys())] + [list(new.values())]
-    gsheet.append_rows(test)
-
-    if exception:
-        print(tmp.T)

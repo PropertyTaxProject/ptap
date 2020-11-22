@@ -1,8 +1,8 @@
 import time
-import uuid
 from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
-from .mainfct import process_comps_input, process_input, address_candidates, record_log
+from .mainfct import process_comps_input, comparables, address_candidates
+from .logging import logger
 
 application = Flask(__name__,
                     static_folder='../frontend/build/',
@@ -49,7 +49,6 @@ def handle_form():
 
     return resp
 
-
 @application.route('/api_v1/submit2', methods=['POST'])
 def handle_form2():
     #submit selected comps / finalize appeal / send to summary or complete page
@@ -70,17 +69,9 @@ def handle_form2():
 
     return resp
 
-
-def logger(form_data, process_step_id, exception=''):
-    if process_step_id == 'address_finder': #give uuid
-        uuid_val = uuid.uuid4().urn[9:]
-        record_log(uuid_val, process_step_id, exception, form_data)
-        return uuid_val
-    elif 'uuid' in form_data: #if uuid given
-        record_log(form_data['uuid'], process_step_id, exception, form_data)
-    else: #missing
-        record_log('missing', process_step_id, exception, form_data)
-    return
+@application.errorhandler(404)
+def page_not_found(error):
+    return render_template('index.html')
 
 def get_pin(form_data):
     '''
@@ -112,7 +103,7 @@ def get_comps(form_data):
         prop_info: 'str' #a string of info to display
     }
     """
-    return process_input(form_data)
+    return comparables(form_data)
 
 def finalize_appeal(form_data):
     '''
