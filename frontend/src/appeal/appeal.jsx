@@ -5,7 +5,6 @@ import ComparablesForm from './comparables/comparables';
 import EligibilityRequirements from './homeowner/eligibility-requirements';
 import ReviewPage from './review/review-page';
 
-// TODO: MAKE POST REQUEST TO GRAB NEW COMPARABLE
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
 const Appeal = (props) => {
@@ -42,7 +41,7 @@ const Appeal = (props) => {
             setInfo(info);
             setComparables(response.comparables);
             setHeaders(response.labeled_headers);
-            setTargetProperty(response.target_pin[0]); // TODO: pass value not list
+            setTargetProperty(response.target_pin[0]);
             setPropInfo(response.prop_info)
           } else {
             // TODO: THROW ERROR
@@ -68,7 +67,6 @@ const Appeal = (props) => {
         targetProperty={targetProperty}
         propInfo={propInfo}
         submitAppeal={async () => { 
-          submitAppeal(targetProperty, comparables, userInfo, sessionUuid);
           setReview(true);
         }}
         removeComparable={async (idx) => {
@@ -93,9 +91,8 @@ const Appeal = (props) => {
         userInfo={userInfo}
         comparables={comparables}
         confirmInfo={() => {
-          
+          submitAppeal(targetProperty, comparables, userInfo, sessionUuid);
         }}
-        
         back={() => {
           setReview(null);
         }}
