@@ -3,7 +3,7 @@ import sqlite3
 from numpy import searchsorted, sort
 import pandas as pd
 
-con = sqlite3.connect('api/data.sqlite', check_same_thread=False)
+con = sqlite3.connect('api/database/data.sqlite', check_same_thread=False)
 
 # helper functions
 def great_circle(lon1, lat1, lon2, lat2):
