@@ -2,10 +2,11 @@ frontend/node_modules/*
 api/tmp_data/*
 tmp_log.csv
 __pycache__
+.env
+.ipynb_checkpoints
+*.sqlite
+.googleenv
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-.env
-.ipynb_checkpoints
-*.sqlite
