@@ -1,8 +1,12 @@
 # PTAP Site
 
-## Build sqlite3 database
+Welcome to the property tax appeal project repository. This is a flask/react project designed for deployment to AWS Elastic Beanstalk which files property tax appeals for low-income homeowners in Detroit and Chicago.
 
-Run `api/make_db.py`
+## Deployment Guide
+
+The app requires credentials. api/.env includes SENDGRID_API_KEY and MAIL_DEFAULT_SENDER. api/.googleenv includes google drive service credentials.
+
+To deploy, you need to locally build the sqlite3 database. Run `api/make_db.py` to do this.
 
 ## Deploy flask with current (static) frontend
 

@@ -24,15 +24,6 @@ const CharacteristicsTable = (props) => {
   } = props;
   const data = comparables;
   const [loading, setLoading] = useState(false);
-
-  // const headers = {};
-  // for (let i = 0; i < data.length; i += 1) {
-  //   const property = data[i];
-  //   Object.keys(property).forEach((header) => {
-  //     headers[header] = 1;
-  //   });
-  // }
-
   const Columns = headers.map(
     (header) => <Column title={createTitle(header)} dataIndex={header} key={header} />,
   ).sort();
