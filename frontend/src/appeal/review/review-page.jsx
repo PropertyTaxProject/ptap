@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Button,
   Table,
@@ -80,9 +80,6 @@ const compCols = [
     key: 'Sale Date'
   },
 ];
-
-
-
 
 // displays the review page
 const PropertyInfo2 = (props) => {
