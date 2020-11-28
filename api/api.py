@@ -1,16 +1,33 @@
 import time
+import os
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
+from flask_mail import Mail, Message
 from .mainfct import process_comps_input, comparables, address_candidates
+from .email import submission_email
 from .logging import logger
+
+
+load_dotenv('api/.env')
 
 application = Flask(__name__,
                     static_folder='../frontend/build/',
                     template_folder='../frontend/build/')
+application.config['SECRET_KEY'] = 'averyfunsalt!!!'
+application.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+application.config['MAIL_PORT'] = 587
+application.config['MAIL_USE_TLS'] = True
+application.config['MAIL_USERNAME'] = 'apikey'
+application.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
+application.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+
 CORS(application)
+mail = Mail(application)
 
 @application.route('/')
 def index():
+    test()
     return render_template('index.html')
 
 @application.route('/api_v1/pin-lookup', methods=['POST'])
@@ -131,3 +148,7 @@ def finalize_appeal(form_data):
     }
     '''
     return process_comps_input(form_data)
+
+def test():
+    pass
+    #submission_email(mail, {})

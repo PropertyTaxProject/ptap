@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 
 #open connection with google sheets
 credentials = service_account.Credentials.from_service_account_file(
-    './.env/ptap-904555bfffb0.json',
+    './.googleenv/ptap-904555bfffb0.json',
     scopes = ["https://spreadsheets.google.com/feeds",
           "https://www.googleapis.com/auth/spreadsheets",
           "https://www.googleapis.com/auth/drive.file",
