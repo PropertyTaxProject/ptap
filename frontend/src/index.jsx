@@ -15,7 +15,6 @@ import LandingPage from './landing/landing-page';
 import Appeal from './appeal/appeal';
 import GetStarted from './landing/get-started';
 import SelectRegion from './landing/select-region';
-import Damage from './appeal/damage/damages';
 
 const { Content, Footer } = Layout;
 
@@ -41,10 +40,6 @@ const Page = () => (
             <Route
               path="/selectregion"
               render={() => <SelectRegion />}
-            />
-            <Route
-              path="/test2"
-              render={() => <Damage />}
             />
             <Route 
               path='/completedappeal' 
