@@ -4,7 +4,7 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 
-#open connection with google sheets
+#open connection with google sheets personal log
 credentials = service_account.Credentials.from_service_account_file(
     'api/.googleenv/ptap-904555bfffb0.json',
     scopes = ["https://spreadsheets.google.com/feeds",
@@ -14,6 +14,17 @@ credentials = service_account.Credentials.from_service_account_file(
 
 client = gspread.authorize(credentials)
 gsheet = client.open("ptap-log").sheet1
+
+#open connection with google sheets submission account
+credentials2 = service_account.Credentials.from_service_account_file(
+    'api/.googleenv/ptap-297022-09570cc5b389.json',
+    scopes = ["https://spreadsheets.google.com/feeds",
+          "https://www.googleapis.com/auth/spreadsheets",
+          "https://www.googleapis.com/auth/drive.file",
+          "https://www.googleapis.com/auth/drive"])
+
+client2 = gspread.authorize(credentials2)
+gsheet2 = client2.open("PTAP_Submissions").sheet1
 
 def record_log(uuid_val, process_step_id, exception, form_data):
     new = {}
@@ -37,17 +48,12 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     test = [list(new.keys())] + [list(new.values())]
     gsheet.append_rows(test)
 
-    #csv log, depreciate soon
-    tmp = pd.DataFrame(new, index=[0])
-    tmp = pd.concat(
-        [tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
-    p = 'tmp_log.csv'
-
-    tmp.to_csv(p, index=False, mode='a')
-
-
     if exception:
         print(tmp.T)
+
+def record_final_submission(data):
+    pass
+
 
 def logger(form_data, process_step_id, exception=''):
     if process_step_id == 'address_finder': #give uuid
@@ -59,3 +65,4 @@ def logger(form_data, process_step_id, exception=''):
     else: #missing
         record_log('missing', process_step_id, exception, form_data)
     return
+
