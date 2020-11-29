@@ -29,3 +29,10 @@ yarn start-api
 ```bash
 yarn build
 ```
+
+## Deploy AWS Elastic Beanstalk
+
+```bash
+eb create ptap
+eb deploy
+```
