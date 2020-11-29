@@ -140,7 +140,7 @@ const PropertyInfo2 = (props) => {
           type="primary"
           onClick={confirmInfo}
         >
-          <Link to="/completedappeal">Confirm Information</Link>
+          <Link to="/completedappeal">Finalize Appeal</Link>
         </Button>
       </>
     );

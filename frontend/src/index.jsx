@@ -15,6 +15,7 @@ import LandingPage from './landing/landing-page';
 import Appeal from './appeal/appeal';
 import GetStarted from './landing/get-started';
 import SelectRegion from './landing/select-region';
+import FinalPage from './landing/final-page';
 
 const { Content, Footer } = Layout;
 
@@ -43,6 +44,10 @@ const Page = () => (
             />
             <Route 
               path='/completedappeal' 
+              render={() => <FinalPage />}
+            />
+            <Route 
+              path='/illegalforeclosures' 
               component={() => { 
                 window.location.href = 'https://illegalforeclosures.org/'; return null;}}
             />

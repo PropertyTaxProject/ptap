@@ -74,7 +74,7 @@ const CharacteristicsTable = (props) => {
           type="primary"
           onClick={submitAppeal}
         >
-          Generate Appeal
+          Review Information
         </Button>
       </Space>
     </>
