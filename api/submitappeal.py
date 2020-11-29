@@ -128,7 +128,7 @@ def submit_detroit_sf(comp_submit, mail):
         'Eligibility Flag' : e_flag,
         'SEV' : pin_av / 2,
         'TV' : targ['taxable_va'].to_string(index=False),
-        'CV' : comps_avg / 2
+        'CV' : round(comps_avg / 2, 2)
     }
 
     log_url = record_final_submission(sub_dict)
