@@ -1,5 +1,6 @@
 import time
 import uuid
+import os
 import pandas as pd
 import gspread
 from google.oauth2 import service_account
@@ -54,10 +55,15 @@ def record_log(uuid_val, process_step_id, exception, form_data):
             [tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
         print(tmp.T)
 
-def record_final_submission(data):
+def record_final_submission(sub_dict):
+    #add values
+    gsheet2.append_rows([list(sub_dict.values())])
+    #make url
+    val_list = gsheet2.col_values(1)
+    base_url = 'https://docs.google.com/spreadsheets/d/'
+    sid = os.environ.get('PTAP_SHEET_SID')
 
-    pass
-
+    return base_url + sid + '/edit#gid=0&range=A' + str(len(val_list))
 
 def logger(form_data, process_step_id, exception=''):
     if process_step_id == 'address_finder': #give uuid

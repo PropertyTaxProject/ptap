@@ -5,6 +5,7 @@ from docxtpl import DocxTemplate
 import pandas as pd
 from .email import detroit_submission_email
 from .logging import record_final_submission
+from .dataqueries import get_pin
 
 def submit_cook_sf(comp_submit, mail):
     rename_dict = {
@@ -110,7 +111,28 @@ def submit_detroit_sf(comp_submit, mail):
     output['file_stream'] = file_stream
 
     # update submission log
-    log_url = record_final_submission()
+    targ = get_pin('detroit', pin)
+    if comp_submit['eligibility']:
+        e_flag = 'Eligible'
+    else:
+        e_flag = 'Possible Issues'
+
+    sub_dict = {
+        'Client Name' : comp_submit['name'],
+        'Address' : comp_submit['address'],
+        'Taxpayer of Record' : targ['taxpayer_1'].to_string(index=False),
+        'PIN' : pin,
+        'Phone Number' : comp_submit['phone'],
+        'Email Address' : comp_submit['email'],
+        'Preferred Contact Method' : comp_submit['preferred'],
+        'PRE' : targ['homestead_'].to_string(index=False),
+        'Eligibility Flag' : e_flag,
+        'SEV' : pin_av / 2,
+        'TV' : targ['taxable_va'].to_string(index=False),
+        'CV' : comps_avg / 2
+    }
+
+    log_url = record_final_submission(sub_dict)
     comp_submit['log_url'] = log_url
 
     # send email
