@@ -5,9 +5,7 @@ from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from .mainfct import process_comps_input, comparables, address_candidates
-from .email import submission_email
 from .logging import logger
-
 
 load_dotenv('api/.env')
 
@@ -27,7 +25,6 @@ mail = Mail(application)
 
 @application.route('/')
 def index():
-    test()
     return render_template('index.html')
 
 @application.route('/api_v1/pin-lookup', methods=['POST'])
@@ -72,7 +69,7 @@ def handle_form2():
     print('page 2 submit')
     comps_data = request.json
     try:
-        response_dict = finalize_appeal(comps_data)
+        response_dict = finalize_appeal(comps_data, mail)
         logger(comps_data, 'submit')
         if comps_data['appeal_type'] == "detroit_single_family":
             return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
@@ -122,7 +119,7 @@ def get_comps(form_data):
     """
     return comparables(form_data)
 
-def finalize_appeal(form_data):
+def finalize_appeal(form_data, mail):
     '''
     Input:
     {
@@ -147,8 +144,4 @@ def finalize_appeal(form_data):
         message: txt
     }
     '''
-    return process_comps_input(form_data)
-
-def test():
-    pass
-    #submission_email(mail, {})
+    return process_comps_input(form_data, mail)

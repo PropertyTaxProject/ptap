@@ -1,7 +1,7 @@
 from fuzzywuzzy import process
 from .computils import prettify_detroit, prettify_cook, find_comps
 from .dataqueries import address_candidates_query, get_pin, ecdf
-from .submit import submit_cook_sf, submit_detroit_sf
+from .submitappeal import submit_cook_sf, submit_detroit_sf
 
 def address_candidates(input_data, cutoff_info):
     """
@@ -94,7 +94,7 @@ def comparables(input_data, sales_comps=False):
 
     return output
 
-def process_comps_input(comp_submit):
+def process_comps_input(comp_submit, mail):
     '''
     Input:
     {
@@ -114,7 +114,7 @@ def process_comps_input(comp_submit):
     '''
 
     if comp_submit['appeal_type'] == "detroit_single_family":
-        return submit_detroit_sf(comp_submit)
+        return submit_detroit_sf(comp_submit, mail)
 
     elif comp_submit['appeal_type'] == "cook_county_single_family":
-        return submit_cook_sf(comp_submit)
+        return submit_cook_sf(comp_submit), mail
