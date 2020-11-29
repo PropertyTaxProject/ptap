@@ -1,4 +1,3 @@
-import pickle
 from datetime import datetime
 import io
 from docxtpl import DocxTemplate
@@ -48,7 +47,7 @@ def submit_cook_sf(comp_submit, mail):
     doc.save(file_stream) # save to stream
     file_stream.seek(0) # reset pointer to head
     output['file_stream'] = file_stream
-    
+
     #generate comps csv
     #hypen_pin = pin[0:2] + "-" + pin[2:4] + "-" + pin[4:7] + "-" + pin[7:10] + "-" + pin[10:]
     #comp_csv_name = "api/tmp_data/Comparable PINs for " + hypen_pin + ".csv"

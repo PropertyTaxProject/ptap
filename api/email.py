@@ -16,10 +16,8 @@ def detroit_submission_email(mail, data):
     msg = Message(subj, recipients=recip_ls)
     msg.html = body
     with open(data['output_name'], 'rb') as f:
-        msg.attach(data['output_name'][13:], 
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+        msg.attach(data['output_name'][13:],
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         f.read())
 
     mail.send(msg)
-
-    

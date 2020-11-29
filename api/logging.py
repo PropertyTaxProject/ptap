@@ -68,11 +68,9 @@ def record_final_submission(sub_dict):
 def logger(form_data, process_step_id, exception=''):
     if process_step_id == 'address_finder': #give uuid
         uuid_val = uuid.uuid4().urn[9:]
-        record_log(uuid_val, process_step_id, exception, form_data)
-        return uuid_val
     elif 'uuid' in form_data: #if uuid given
-        record_log(form_data['uuid'], process_step_id, exception, form_data)
+        uuid_val = form_data['uuid']
     else: #missing
-        record_log('missing', process_step_id, exception, form_data)
-    return
-
+        uuid_val = 'missing'
+    record_log(uuid_val, process_step_id, exception, form_data)
+    return uuid_val
