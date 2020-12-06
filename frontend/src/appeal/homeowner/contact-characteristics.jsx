@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Input,
@@ -41,131 +41,159 @@ const tailFormItemLayout = {
   },
 };
 
-const HomeownerInfo = () => (
-  <>
-    <Row>
-      <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-        <h1>Homeowner Information</h1>
-        <p>How should we contact you?</p>
-        <br />
-      </Col>
-    </Row>
-    <Form.Item
-      name="name"
-      label="Full Name"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your full name!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
-    <Form.Item
-      name="email"
-      label="Email"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your Email!',
-          whitespace: true,
-          type: 'email',
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
-  
-    <Form.Item
-      name="phone"
-      label="Phone Number"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your phone number!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
+const HomeownerInfo = (props) => {
+  const [showMailingAddr, updateMailingAddr] = useState(false);
+  return (
+    <>
+      <Row>
+        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
+          <h1>Homeowner Information</h1>
+          <p>How should we contact you?</p>
+          <br />
+        </Col>
+      </Row>
+      <Form.Item
+        name="name"
+        label="Full Name"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your full name!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="email"
+        label="Email"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your Email!',
+            whitespace: true,
+            type: 'email',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+    
+      <Form.Item
+        name="phone"
+        label="Phone Number"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your phone number!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item
-      name="address"
-      label="Street Address"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your street address!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
+      <Form.Item
+        name="address"
+        label="Street Address"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your street address!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item
-      name="city"
-      label="City"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your city!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
+      <Form.Item
+        name="city"
+        label="City"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your city!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item
-      name="state"
-      label="State"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your State!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
+      <Form.Item
+        name="state"
+        label="State"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your State!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item
-      name="zip"
-      label="Zip Code"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your zip code!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
+      <Form.Item
+        name="zip"
+        label="Zip Code"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your zip code!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      
+      <Form.Item
+        name="mailingandstreet"
+        label="My mailing address is the same as my street address"
+        rules={[
+          {
+            required: true,
+            message: 'Please respond!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Radio.Group onChange={e => updateMailingAddr(e.target.value)}>
+          <Radio value={'Yes'}>Yes</Radio>
+          <Radio value={'No'}>No</Radio>
+        </Radio.Group>
+      </Form.Item>
 
-    <Form.Item
-      name="preferred"
-      label="Preferred Contact Method:"
-      rules={[
-        {
-          required: true,
-          message: 'Please mark your preferred method!',
-          whitespace: true,
-        },
-      ]}
-    >
-      <Radio.Group>
-        <Radio value='Phone'>Phone</Radio>
-        <Radio value='Email'>Email</Radio>
-      </Radio.Group>
-    </Form.Item>
-  </>
-);
+      <Form.Item
+        name="mailingaddress"
+        label="Enter your Mailing Address"
+        style={showMailingAddr === 'No' ? { display: ''} : {display: 'none'}}
+      >
+        {showMailingAddr === 'Yes' && <Input placeholder="Please enter your mailing address" />}
+      </Form.Item>
+
+      <Form.Item
+        name="preferred"
+        label="Preferred Contact Method:"
+        rules={[
+          {
+            required: true,
+            message: 'Please mark your preferred method!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Radio.Group>
+          <Radio value='Phone'>Phone</Radio>
+          <Radio value='Email'>Email</Radio>
+        </Radio.Group>
+      </Form.Item>
+    </>
+  )
+};
 
 const PropertyForm = (props) => {
   const [form] = Form.useForm();
@@ -194,18 +222,11 @@ const PropertyForm = (props) => {
       {...formItemLayout}
     >
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-          <h1>Your Information </h1>
-          <p>In order to properly file your appeal, we need your contact information and for you to verify information on your property.</p>
-          <br />
-        </Col>
+        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}></Col>
       </Row>
       <Form.Item noStyle>
-        {/* <PinForm /> */}
-        <HomeownerInfo />
-        {/*<CharacteristicsForm />*/}
+        <HomeownerInfo/>
       </Form.Item>
-
       <Form.Item {...tailFormItemLayout}>
         <Space>
           <Button type="danger" onClick={props.back} >Back</Button>
