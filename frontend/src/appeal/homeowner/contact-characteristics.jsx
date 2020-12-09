@@ -43,6 +43,9 @@ const tailFormItemLayout = {
 
 const HomeownerInfo = (props) => {
   const [showMailingAddr, updateMailingAddr] = useState(false);
+  const [showAltContact, updateAltContact] = useState(false);
+  console.log(showMailingAddr);
+  console.log(showAltContact);
   return (
     <>
       <Row>
@@ -151,7 +154,7 @@ const HomeownerInfo = (props) => {
       </Form.Item>
       
       <Form.Item
-        name="mailingandstreet"
+        name="mailingsame"
         label="My mailing address is the same as my street address"
         rules={[
           {
@@ -172,12 +175,75 @@ const HomeownerInfo = (props) => {
         label="Enter your Mailing Address"
         style={showMailingAddr === 'No' ? { display: ''} : {display: 'none'}}
       >
-        {showMailingAddr === 'Yes' && <Input placeholder="Please enter your mailing address" />}
+        {showMailingAddr === 'No' && <Input placeholder="Please enter your mailing address" />}
+      </Form.Item>
+
+      <Form.Item
+        name="altcontact"
+        label="Did someone help you fill out this form?"
+        rules={[
+          {
+            required: true,
+            message: 'Please respond!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Radio.Group onChange={e => updateAltContact(e.target.value)}>
+          <Radio value={'Yes'}>Yes</Radio>
+          <Radio value={'No'}>No</Radio>
+        </Radio.Group>
+      </Form.Item>
+
+      <Form.Item
+        name="altcontactname"
+        label="Enter their name"
+        style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
+      >
+        {showAltContact === 'Yes' && <Input placeholder="Please enter their name" />}
+      </Form.Item>
+
+      <Form.Item
+        name="altcontactrelationship"
+        label="What is your relationship with them?"
+        style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
+      >
+        {showAltContact === 'Yes' && <Input placeholder="Please enter your relationship" />}
+      </Form.Item>
+
+      <Form.Item
+        name="altcontactemail"
+        label="What is their email address?"
+        style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
+      >
+        {showAltContact === 'Yes' && <Input placeholder="Please enter their email" />}
+      </Form.Item>
+
+      <Form.Item
+        name="altcontactphone"
+        label="What is their phone number?"
+        style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
+      >
+        {showAltContact === 'Yes' && <Input placeholder="Please enter their phone number" />}
+      </Form.Item>
+
+      <Form.Item
+        name="altcontactpreferred"
+        label="What is their preferred contact method?"
+        style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
+      >
+        {showAltContact === 'Yes' && 
+          <Radio.Group>
+            <Radio value='Phone'>Phone</Radio>
+            <Radio value='Email'>Email</Radio>
+            <Radio value='Both'>Both/No Preference</Radio>
+          </Radio.Group>
+        }
       </Form.Item>
 
       <Form.Item
         name="preferred"
-        label="Preferred Contact Method:"
+        label="What is your preferred contact method?"
         rules={[
           {
             required: true,
@@ -189,8 +255,17 @@ const HomeownerInfo = (props) => {
         <Radio.Group>
           <Radio value='Phone'>Phone</Radio>
           <Radio value='Email'>Email</Radio>
+          <Radio value='Both'>Both/No Preference</Radio>
         </Radio.Group>
       </Form.Item>
+
+      <Form.Item
+        name="heardabout"
+        label="How did you hear about us?"
+      >
+        <Input placeholder='Enter how you heard about us.'></Input>
+      </Form.Item>
+
     </>
   )
 };
