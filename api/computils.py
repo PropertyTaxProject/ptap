@@ -156,7 +156,7 @@ def prettify_detroit(data, sales_comps):
         'parcel_num' : 'PIN',
         'total_squa' : 'total_sqft',
         'total_floo' : 'total_floorarea',
-        'heightcat' : 'Height',
+        'heightcat' : 'Stories (not including basements)',
         'extcat': 'Exterior',
         'bathcat': 'Baths',
         'assessed_v' : 'assessed_value',
@@ -201,7 +201,7 @@ def prettify_detroit(data, sales_comps):
         data = data.replace({"Baths": bath_d,
                     "Basement": basement_d,
                     "Garage": garage_d,
-                    "Height": height_d,
+                    "Stories (not including basements)": height_d,
                     "Exterior": exterior_d
                     })
 
