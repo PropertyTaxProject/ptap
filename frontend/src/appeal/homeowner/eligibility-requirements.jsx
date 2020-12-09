@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   Form,
   Input,
-  InputNumber,
   Button,
   Table,
   Radio
@@ -38,24 +37,22 @@ const Lookup = (props) => {
     }
   }
 
+const selectPin = (record) => { //determine eligibility and log pin
+  var eligibility = true;
+  if (form.getFieldValue('residence') !== 'Yes'){
+    alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Residency");
+    eligibility = false;
+  } else if (form.getFieldValue('owner') !== 'Yes'){
+    alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Ownership");
+    eligibility = false;
+  } else if (record.eligibility === false){
+    alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Assessed Value");
+    eligibility = false;
+  }
+  logPin(record.PIN);
+  logEligibility(eligibility);
+};
 
-  const selectPin = (record) => { //determine eligibility and log pin
-    var eligibility = true;
-    if (form.getFieldValue('residence') !== 'Yes'){
-      alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Residency");
-      eligibility = false;
-    } else if (form.getFieldValue('owner') !== 'Yes'){
-      alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Ownership");
-      eligibility = false;
-    } else if (record.eligibility === false){
-      alert("You may not be eligible to receive our services. Please contact our hotline at XXX-XXX-XXXX. Code: Assessed Value");
-      eligibility = false;
-    }
-    logPin(record.PIN);
-    logEligibility(eligibility);
-  };
-
-  // TODO: Centralize this mapping
   let appealType;
   if (city === 'detroit') {
     appealType = 'detroit_single_family';
@@ -85,8 +82,19 @@ const Lookup = (props) => {
 
   return (
     <>
-      <h2>Eligibility Requirements</h2>
-      <p>Let&apos;s begin by determining if you are eligibile for our services.</p>
+      <h2>The Process</h2>
+        <ul>
+          <li>Step 1: Complete this online application by February 10, 2020. If you have any problems with the application, call our hotline or email us (
+            <a href='mailto:law-propertytax@umich.edu?subject=Request for Assistance'>law-propertytax@umich.edu</a>) and our staff can help you.</li>
+          <li>Step 2: Once you complete the application, our team will receive a draft appeal letter.</li>
+          <li>Step 3: Our team will call you to review the appeal letter.</li>
+          <li>Step 4: Our team will send you a “Letter of Authorization,” which you must sign in order for us to represent you and send the appeal in on your behalf.</li>
+          <li>Step 5: On February 15, 2021, our team will submit the necessary documents at the Assessor’s Review (the first stage of the appeal process).</li>
+          <li>Step 6: On March 8, 2021, our team will file the appeal documents at the March Board of Review (the second stage of the appeal process).</li>
+          <li>Step 7: Sometime in March, the City will send you its decision.</li>
+          <li>Step 8: Our team will follow up with you to discuss other housing-related resources.</li>
+        </ul>
+      <h2>Am I eligible for free services?</h2>
 
       <Form
         form={form}
@@ -100,7 +108,7 @@ const Lookup = (props) => {
         <Form.Item 
           name="residence" 
           rules={[{ required: true, message: 'Your response is required.' }]}
-          label="First, is this home your primary residence, meaning the place you live most of the year?"
+          label="Is this home your primary residence, meaning the place you live most of the year?"
         >
           <Radio.Group>
             <Radio value='Yes'>Yes</Radio>
@@ -111,21 +119,12 @@ const Lookup = (props) => {
         <Form.Item 
           name="owner" 
           rules={[{ required: true, message: 'Your response is required.' }]}
-          label = "Second, did you inherit or buy this home?"
+          label = "Do you own this home?"
         >
           <Radio.Group>
             <Radio value='Yes'>Yes</Radio>
             <Radio value='No'>No</Radio>
           </Radio.Group>
-        </Form.Item>
-
-        <p style={{ width: '350px' }}></p>
-        <Form.Item 
-          name="owner_year" 
-          rules={[{ required: true, message: 'Your response is required.' }]}
-          label="Third, what year did you buy or inherit the home? (If you are not sure, it is okay to guess)"
-        >
-          <InputNumber min={1925} max={2021}/>
         </Form.Item>
 
         <p style={{ width: '350px' }}>Finally, enter your street number and street name and select your property from the table.</p>
