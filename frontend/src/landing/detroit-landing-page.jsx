@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const PTAPHeader = () => (
   <>
-    <h1>Welcome to the Property Tax Appeal Project&apos;s automated appeal system.</h1>
+    <h1>Welcome to the Property Tax Appeal Project&apos;s automated appeal system for Detroit, Michigan.</h1>
     <h2>The Tax Foreclosure Crisis</h2>
 
     <ul>
@@ -39,7 +39,7 @@ const PTAPHeader = () => (
       <li>During the 2020 appeals process, 100% of our client’s appeals were successful!</li>
     </ul>
     <Space>
-      <Button type="primary"><Link to="/getstarted">Click here to get started</Link></Button>
+      <Button type="primary"><Link to="/detroitappeal">Click here to get started</Link></Button>
     </Space>
   </>
 );
