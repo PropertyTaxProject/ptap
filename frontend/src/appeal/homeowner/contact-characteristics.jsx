@@ -44,15 +44,12 @@ const tailFormItemLayout = {
 const HomeownerInfo = (props) => {
   const [showMailingAddr, updateMailingAddr] = useState(false);
   const [showAltContact, updateAltContact] = useState(false);
-  console.log(showMailingAddr);
-  console.log(showAltContact);
   return (
     <>
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h1>Homeowner Information</h1>
           <p>How should we contact you?</p>
-          <br />
         </Col>
       </Row>
       <Form.Item
@@ -62,7 +59,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your full name!',
-            whitespace: true,
           },
         ]}
       >
@@ -75,7 +71,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your Email!',
-            whitespace: true,
             type: 'email',
           },
         ]}
@@ -90,7 +85,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your phone number!',
-            whitespace: true,
           },
         ]}
       >
@@ -104,7 +98,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your street address!',
-            whitespace: true,
           },
         ]}
       >
@@ -118,7 +111,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your city!',
-            whitespace: true,
           },
         ]}
       >
@@ -132,7 +124,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your State!',
-            whitespace: true,
           },
         ]}
       >
@@ -146,7 +137,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please input your zip code!',
-            whitespace: true,
           },
         ]}
       >
@@ -160,7 +150,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please respond!',
-            whitespace: true,
           },
         ]}
       >
@@ -185,7 +174,6 @@ const HomeownerInfo = (props) => {
           {
             required: true,
             message: 'Please respond!',
-            whitespace: true,
           },
         ]}
       >
