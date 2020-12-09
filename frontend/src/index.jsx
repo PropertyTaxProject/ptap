@@ -13,7 +13,6 @@ import * as serviceWorker from './serviceWorker';
 
 import DetroitLandingPage from './landing/detroit-landing-page';
 import Appeal from './appeal/appeal';
-import GetStarted from './landing/get-started';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
 
@@ -26,7 +25,6 @@ const Page = () => (
       <Content style={{ padding: '0 3vw' }}>
         <div className="site-layout-content">
           <Switch>
-
             <Route
               path="/detroit"
               render={() => <DetroitLandingPage />}
@@ -38,14 +36,6 @@ const Page = () => (
             <Route
               path="/cook"
               render={() => <Appeal city="chicago" />}
-            />
-            <Route
-              path="/getstarted"
-              render={() => <GetStarted />}
-            />
-            <Route
-              path="/selectregion"
-              render={() => <SelectRegion />}
             />
             <Route 
               path='/completedappeal' 
