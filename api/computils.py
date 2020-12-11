@@ -72,7 +72,6 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
     if debug:
         print(baseq)
-
     ### run query and distance
     new = run_comps_query(
         baseq, (targ['Longitude'].values[0], targ['Latitude'].values[0]), distance_filter)
@@ -87,9 +86,8 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 def find_comps(targ, region, sales_comps, multiplier=1):
     try:
         new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
-    except:
-        raise Exception('bad region comps')
-
+    except Exception as e:
+        raise Exception('error in calc_comps: ' + str(e))
     if multiplier > 8: #no comps found within maximum search area---hault
         raise Exception('Comparables not found with given search')
     elif cur_comps.shape[0] < 10: #find more comps

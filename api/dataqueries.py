@@ -54,6 +54,9 @@ def query_on(col, val, range_val, filter_type):
 
 def run_comps_query(query, val, range_val):
     data = pd.read_sql(query, con)
-    data['Distance'] = data.apply(
-        lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1)
+    if(data.shape[0] > 1):
+        data['Distance'] = data.apply(
+            lambda x: great_circle(val[0], val[1], x.Longitude, x.Latitude), axis=1)
+    else:
+        data['Distance'] = None
     return data[data['Distance'] < range_val]
