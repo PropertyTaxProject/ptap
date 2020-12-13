@@ -115,6 +115,11 @@ def submit_detroit_sf(comp_submit, mail):
         e_flag = 'Eligible'
     else:
         e_flag = 'Possible Issues'
+    
+    if comp_submit['validcharacteristics'] == 'No':
+        c_flag = 'Yes. Homeowner Input: ' + comps_submit['characteristicsinput']
+    else:
+        c_flag = 'No'
 
     sub_dict = {
         'Client Name' : comp_submit['name'],
@@ -126,6 +131,7 @@ def submit_detroit_sf(comp_submit, mail):
         'Preferred Contact Method' : comp_submit['preferred'],
         'PRE' : targ['homestead_'].to_string(index=False),
         'Eligibility Flag' : e_flag,
+        'Characteristics Flag': c_flag,
         'SEV' : pin_av / 2,
         'TV' : targ['taxable_va'].to_string(index=False),
         'CV' : round(comps_avg / 2, 2)
