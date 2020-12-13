@@ -117,7 +117,7 @@ def submit_detroit_sf(comp_submit, mail):
         e_flag = 'Possible Issues'
     
     if comp_submit['validcharacteristics'] == 'No':
-        c_flag = 'Yes. Homeowner Input: ' + comps_submit['characteristicsinput']
+        c_flag = 'Yes. Homeowner Input: ' + comp_submit['characteristicsinput']
     else:
         c_flag = 'No'
 
