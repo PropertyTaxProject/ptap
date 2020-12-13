@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { submitAppeal, submitForm } from '../requests';
-import ContactCharacteristics from './homeowner/contact-characteristics';
+import ContactInfo from './homeowner/contact-info';
+import ReviewProperty from './homeowner/review-property';
 import ComparablesForm from './comparables/comparables';
 import EligibilityRequirements from './homeowner/eligibility-requirements';
 import ReviewPage from './review/review-page';
@@ -10,14 +11,26 @@ const removeComparable = async (properties, idx) => properties.filter((ele, i) =
 const Appeal = (props) => {
   const { city } = props;
   const [comparables, setComparables] = useState([]);
-  const [headers, setHeaders] = useState([]);
+  const [headers, setHeaders] = useState([]); /*headers for comp table*/
   const [targetProperty, setTargetProperty] = useState(null);
-  const [userInfo, setInfo] = useState({});
+  const [userInfo, setInfo] = useState({}); /*inputted user info*/
+  const [userPropInfo, setUserPropInfo] = useState({}); /*inputted user prop info*/
   const [pin, setPin] = useState(null);
-  const [propInfo, setPropInfo] = useState([]);
+  const [propInfo, setPropInfo] = useState([]); /*target property characteristics*/
   const [sessionUuid, setUuid] = useState([]);
-  const [reportedEligibility, setEligibility] = useState([]);
-  const [reviewAppeal, setReview] = useState(null);
+  const [reportedEligibility, setEligibility] = useState([]); /*boolean for elig. status*/
+  const [reviewAppeal, setReview] = useState(null); /*boolean to adv to review page*/
+  const [reviewComps, setReviewComps] = useState(null); /*boolean to adv to comps page*/
+  /*
+  Appeal has a series of pages viewed in seq order
+  
+  1) Eligibility Requirements (Default): Find pin and sets uuid
+  2) Contact Info: Collects Contact Info
+  3) Review Property: Review Selected Property Information
+  4) Comparables: Select Comparables
+  5) Review Page: Review Appeal
+
+  */
 
   let view = (
     <EligibilityRequirements
@@ -30,7 +43,7 @@ const Appeal = (props) => {
 
   if (pin != null) {
     view = (
-      <ContactCharacteristics
+      <ContactInfo
         city={city}
         pin={pin}
         uuid={sessionUuid}
@@ -43,8 +56,6 @@ const Appeal = (props) => {
             setHeaders(response.labeled_headers);
             setTargetProperty(response.target_pin[0]);
             setPropInfo(response.prop_info)
-          } else {
-            // TODO: THROW ERROR
           }
         }}
         back={() => {
@@ -61,6 +72,25 @@ const Appeal = (props) => {
 
   if (targetProperty != null) {
     view = (
+      <ReviewProperty
+        targetProperty={targetProperty}
+        propInfo={propInfo}
+        submitPropReview={async (info) => { 
+          setReviewComps(true);
+          setUserPropInfo(info);
+        }}
+        back={() => {
+          setInfo({});
+          setComparables([]);
+          setHeaders([]);
+          setTargetProperty(null);
+        }}
+      />
+    );
+  }
+
+  if (reviewComps != null) {
+    view = (
       <ComparablesForm
         comparables={comparables}
         headers={headers}
@@ -70,14 +100,14 @@ const Appeal = (props) => {
           setReview(true);
         }}
         removeComparable={async (idx) => {
-          setComparables(await removeComparable(comparables, idx));
-          console.log(`removed ${idx}`);
+          setComparables(await removeComparable(comparables, idx - 1));
+          console.log(`removed ${idx - 1}`);
         }}
         back={() => {
           setInfo({});
           setComparables([]);
           setHeaders([]);
-          setTargetProperty(null);
+          setReviewComps(null);
         }}
       />
     );
@@ -91,7 +121,7 @@ const Appeal = (props) => {
         userInfo={userInfo}
         comparables={comparables}
         confirmInfo={() => {
-          submitAppeal(targetProperty, comparables, userInfo, sessionUuid);
+          submitAppeal(targetProperty, comparables, userInfo, userPropInfo, sessionUuid);
         }}
         back={() => {
           setReview(null);

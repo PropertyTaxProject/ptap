@@ -12,9 +12,9 @@ export const submitForm = async (info) => {
   }
 };
 
-export const submitAppeal = async (targetProperty, comparables, userInfo, uuid) => {
+export const submitAppeal = async (targetProperty, comparables, userInfo, userPropInfo, uuid) => {
   try {
-    const body = { target_pin: targetProperty, comparables, uuid, ...userInfo };
+    const body = { target_pin: targetProperty, comparables, uuid, ...userInfo, ...userPropInfo };
     console.log(body);
     //const detroit = userInfo.appeal_type === 'detroit_single_family'; TEMPORARY DOWNLOAD ALL
     const detroit = true;
