@@ -46,14 +46,13 @@ def record_log(uuid_val, process_step_id, exception, form_data):
         else:
             new[i] = j
 
-    test = [list(new.keys())] + [list(new.values())]
-    gsheet.append_rows(test)
-
     if exception:
         tmp = pd.DataFrame(new, index=[0])
         tmp = pd.concat(
             [tmp, pd.json_normalize(form_data).drop('uuid', axis=1, errors='ignore')], axis=1)
         print(tmp.T)
+    
+    gsheet.append_rows([list(new.keys())] + [list(new.values())])
 
 def record_final_submission(sub_dict):
     #add values
