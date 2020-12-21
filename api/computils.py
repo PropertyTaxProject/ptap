@@ -153,8 +153,8 @@ def prettify_detroit(data, sales_comps):
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
         'total_squa' : 'total_sqft',
-        'total_floo' : 'total_floorarea',
-        'heightcat' : 'Stories (not including basements)',
+        'total_floo' : 'Total Floor Area',
+        'heightcat' : 'Stories (not including basement)',
         'extcat': 'Exterior',
         'bathcat': 'Baths',
         'assessed_v' : 'assessed_value',

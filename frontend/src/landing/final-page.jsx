@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 const PTAPHeader4 = () => (
   <>
     <h2>Your application has now been submitted</h2>
-    <p>What to Expect Next? Our team will contact you before the Feb. 15th deadline to complete your appeal. 
+    <p>What to expect next?</p>
+    <p>Our team will contact you before the Feb. 15th deadline to complete your appeal. 
       In the meantime, if you have any questions you can reach us at our hotline (INSERT NUMBER) or at&nbsp;
       <a href='mailto:law-propertytax@umich.edu?subject=Questions after Submission'>law-propertytax@umich.edu</a>. 
     </p>

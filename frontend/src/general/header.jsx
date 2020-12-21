@@ -11,12 +11,12 @@ const PTAPHeader = () => (
       <Menu.Item key="1"><a href="/">Property Tax Appeal Project</a></Menu.Item>
       <Menu.Item>
         <a href="https://illegalforeclosures.org/" target='_blank' rel="noopener noreferrer">
-          <img height={50} src={coalition} style={{backgroundColor:"White"}}/>
+          <img height={50} alt='Coalition Logo' src={coalition} style={{backgroundColor:"White"}}/>
         </a>
       </Menu.Item>
       <Menu.Item>
         <a href="https://www.law.umich.edu/Pages/default.aspx" target='_blank' rel="noopener noreferrer">
-          <img height={50} src={umls} style={{backgroundColor:"White", padding:'5px'}}/>
+          <img height={50} alt='University of Michigan Law School Logo' src={umls} style={{backgroundColor:"White", padding:'5px'}}/>
         </a>
       </Menu.Item>
     </Menu>

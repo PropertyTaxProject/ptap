@@ -133,7 +133,7 @@ const Characteristics = (props) => {
                
         <Form.Item
         name="valueestimate"
-        label="How much do you think your house would sell for right now, as is?"
+        label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide a guesstimate)"
         rules={[
           {
             required: true,
@@ -141,7 +141,7 @@ const Characteristics = (props) => {
           },
         ]}
         >
-          <Input placeholder='It is ok to enter unsure if you do not know.' />
+          <Input placeholder='Your best estimate.' />
         </Form.Item>
                
         <Form.Item>

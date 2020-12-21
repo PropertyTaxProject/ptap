@@ -52,9 +52,9 @@ def comparables(input_data, sales_comps=False):
         if targ.empty:
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
-        partone = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False)
-        parttwo = 'Current Homestead Status: ' + targ['homestead_'].to_string(index=False)
-        prop_info = partone +'\n' + parttwo
+        partone = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '. '
+        parttwo = 'Current Homestead Exemption Status: ' + targ['homestead_'].to_string(index=False) + '%.'
+        prop_info = partone + parttwo
     elif input_data['appeal_type'] == "cook_county_single_family":
         max_comps = 9
         sales_comps = False
