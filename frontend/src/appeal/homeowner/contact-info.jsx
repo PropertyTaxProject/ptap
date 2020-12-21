@@ -185,7 +185,7 @@ const HomeownerInfo = (props) => {
 
       <Form.Item
         name="altcontactname"
-        label="Enter their name"
+        label={<p>Enter <strong><i>their</i></strong> name</p>}
         style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
       >
         {showAltContact === 'Yes' && <Input placeholder="Please enter their name" />}
@@ -193,7 +193,7 @@ const HomeownerInfo = (props) => {
 
       <Form.Item
         name="altcontactrelationship"
-        label="What is your relationship with them?"
+        label={<p>What is your relationship with <strong><i>them</i></strong>?</p>}
         style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
       >
         {showAltContact === 'Yes' && <Input placeholder="Please enter your relationship" />}
@@ -201,7 +201,7 @@ const HomeownerInfo = (props) => {
 
       <Form.Item
         name="altcontactemail"
-        label="What is their email address?"
+        label={<p>What is <strong><i>their</i></strong> email address?</p>}
         style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
       >
         {showAltContact === 'Yes' && <Input placeholder="Please enter their email" />}
@@ -209,7 +209,7 @@ const HomeownerInfo = (props) => {
 
       <Form.Item
         name="altcontactphone"
-        label="What is their phone number?"
+        label={<p>What is <strong><i>their</i></strong> phone number?</p>}
         style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
       >
         {showAltContact === 'Yes' && <Input placeholder="Please enter their phone number" />}
@@ -217,7 +217,7 @@ const HomeownerInfo = (props) => {
 
       <Form.Item
         name="altcontactpreferred"
-        label="What is their preferred contact method?"
+        label={<p>What is <strong><i>their</i></strong> preferred contact method?</p>}
         style={showAltContact === 'Yes' ? { display: ''} : {display: 'none'}}
       >
         {showAltContact === 'Yes' && 

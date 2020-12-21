@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const PTAPHeader = () => (
   <>
     <h1>Welcome to the Property Tax Appeal Project&apos;s automated appeal system for Detroit, Michigan.</h1>
+    <p>This is a free legal service provided by the University of Michigan Law School and the Coalition for Property Tax Justice.</p>
     <h2>The Tax Foreclosure Crisis</h2>
 
     <ul>
@@ -19,7 +20,7 @@ const PTAPHeader = () => (
         <a href='https://www.detroitnews.com/story/news/local/detroit-city/housing/2020/01/09/detroit-homeowners-overtaxed-600-million/2698518001/'
            target='_blank' rel="noopener noreferrer">$600 million</a> and one out of every 3 homes went through property tax foreclosure.
       </li>
-      <li><a href='https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3202860' target='_blank' rel="noopener noreferrer">25% of the property tax foreclosures</a> of homes 
+      <li><a href='https://scholarship.law.uci.edu/ucilr/vol9/iss4/3/' target='_blank' rel="noopener noreferrer">25% of the property tax foreclosures</a> of homes 
       lower in value would not have happened without these illegally inflated property tax assessments</li>
     </ul>
     <p>Check out a short video below and visit the <a href='https://illegalforeclosures.org/' target='_blank' rel="noopener noreferrer">
@@ -34,7 +35,6 @@ const PTAPHeader = () => (
     </ul>
     <h2>What is the Property Tax Appeal Project?</h2>
     <ul>
-      <li>It is a free legal service provided by the Coalition for Property Tax Justice and the University of Michigan Law School.</li>
       <li>Our team is here both to help you file the appeal and to understand the appeal process.</li>
       <li>During the 2020 appeals process, 100% of our client’s appeals were successful!</li>
     </ul>
