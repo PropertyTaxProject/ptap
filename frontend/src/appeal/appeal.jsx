@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { submitAppeal, submitForm } from '../requests';
 import ContactInfo from './homeowner/contact-info';
 import ReviewProperty from './homeowner/review-property';
@@ -18,9 +19,10 @@ const Appeal = (props) => {
   const [pin, setPin] = useState(null);
   const [propInfo, setPropInfo] = useState([]); /*target property characteristics*/
   const [sessionUuid, setUuid] = useState([]);
-  const [reportedEligibility, setEligibility] = useState([]); /*boolean for elig. status*/
+  const [reportedEligibility, setEligibility] = useState(null); /*boolean for elig. status*/
   const [reviewAppeal, setReview] = useState(null); /*boolean to adv to review page*/
   const [reviewComps, setReviewComps] = useState(null); /*boolean to adv to comps page*/
+  const history = useHistory(); /*allow redirects*/
   /*
   Appeal has a series of pages viewed in seq order
   
@@ -41,7 +43,7 @@ const Appeal = (props) => {
     />
   );
 
-  if (pin != null) {
+  if (reportedEligibility != null && reportedEligibility === true) {
     view = (
       <ContactInfo
         city={city}
@@ -65,6 +67,7 @@ const Appeal = (props) => {
           setHeaders([]);
           setTargetProperty(null);
           setPropInfo([]);
+          setEligibility(null);
         }}
       />
     );
@@ -128,6 +131,10 @@ const Appeal = (props) => {
         }}
       />
     );
+  }
+
+  if (reportedEligibility != null && reportedEligibility === false) {
+    history.push("/illegalforeclosures");
   }
 
   return view;
