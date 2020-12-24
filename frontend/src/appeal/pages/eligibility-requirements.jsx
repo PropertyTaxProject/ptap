@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { lookupPin } from '../../requests';
 import {
   Form,
   Input,
@@ -8,17 +8,7 @@ import {
   Radio
 } from 'antd';
 
-import axios from 'axios';
-
 var submitted = false;
-
-const lookupPin = async (data) => {
-  try {
-    return (await (axios.post('/api_v1/pin-lookup', data))).data.response;
-  } catch (err) {
-    return [];
-  }
-};
 
 const theProcess = (
   <ul>
@@ -40,7 +30,6 @@ const PinLookup = (props) => {
   const { logPin, city, logUuid, setRecord } = props;
 
   const selectPin = (record) => { //log pin
-    console.log(record);
     logPin(record.PIN);
     setPin([record])
     setRecord(record);
@@ -185,8 +174,6 @@ const Lookup = (props) => {
         
         <Button type="primary" htmlType="submit">Determine Eligibility</Button>
       </Form>
-
-
     </>
   );
 };
