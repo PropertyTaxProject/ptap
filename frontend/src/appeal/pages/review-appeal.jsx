@@ -2,18 +2,10 @@ import React from 'react';
 import {
   Button,
   Table,
-  Row,
-  Col,
-  Space,
   Divider,
-  Card,
 } from 'antd';
 import { Link } from 'react-router-dom';
-
-
-const re = /(\b[a-z](?!\s))/g;
-const createTitle = (title) => title.replace('_', ' ').replace(re, (x) => x.toUpperCase());
-
+import PropertyInfo from '../shared/property-info';
 
 const userCols = [
   {
@@ -85,44 +77,14 @@ const compCols = [
 const PropertyInfo2 = (props) => {
     const {
         confirmInfo,
-        cols,
         propInfo,
         userInfo,
         comparables,
-        targetProperty,
         back,
       } = props;
 
-    const gridStyle = {
-      width: `${Math.round(100 / cols)}%`,
-      textAlign: 'center',
-    };
-    const characteristics = Object.entries(targetProperty).filter(([title, description]) => (
-      title !== '' && description !== ''
-    ));
-    characteristics.sort(([title1], [title2]) => {
-      const t1 = title1.toLowerCase();
-      const t2 = title2.toLowerCase();
-      if (t1 > t2) { return 1; }
-      if (t1 < t2) { return -1; }
-      return 0;
-    });
     return (
       <>
-        <Row>
-          <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-            <h1>Your Appeal</h1>
-            <p>Below is the data that we will use to construct your appeal.</p>
-            <Space/>
-            <h3>Your Property Information</h3>
-          </Col>
-        </Row>
-        {characteristics.map(([title, description]) => (
-          <Card.Grid hoverable={false} style={gridStyle}>
-            <Row><b>{createTitle(title)}</b></Row>
-            <Row><p>{description}</p></Row>
-          </Card.Grid>
-        ))}
         <Divider/>
         <h3>Your Information</h3>
         <Table dataSource={[userInfo]} columns={userCols}/>
@@ -146,7 +108,7 @@ const PropertyInfo2 = (props) => {
     );
   };
   
-const ReviewForm = (props) => {
+const ReviewAppeal = (props) => {
     const {
         targetProperty,
         propInfo,
@@ -155,20 +117,22 @@ const ReviewForm = (props) => {
         confirmInfo,
         back,
     } = props;
-    console.log(comparables);
     return (
-        <>
+        <>  <h1>Your Appeal</h1>
+            <PropertyInfo 
+              targetProperty={targetProperty} 
+              cols={5}
+              propInfo={propInfo}
+            />
             <PropertyInfo2
-                targetProperty={targetProperty} 
-                cols={5}
+                confirmInfo={confirmInfo}
                 propInfo={propInfo} 
                 userInfo={userInfo}
                 comparables={comparables}
-                confirmInfo={confirmInfo}
                 back={back}
             />
         </>
     );
 };
   
-export default ReviewForm;
+export default ReviewAppeal;
