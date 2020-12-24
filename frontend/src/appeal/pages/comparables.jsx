@@ -33,10 +33,11 @@ const CharacteristicsTable = (props) => {
   if(selectedComparables.length > 0 && showSelected === false){
     setShowSelected(true); //show selected once one is selected
   }
-  // block from adding more than five,
-
-  
+ 
   const advancePage = () => {//add up to exactly five on advance, update on submit
+    while(selectedComparables.length < 5){
+      selectedComparables.push(comparablesPool.shift())
+    } 
     logComparables(selectedComparables);
   };
 
@@ -88,8 +89,12 @@ const CharacteristicsTable = (props) => {
           <Button 
             primary
             onClick={() => {
-              setCandidates(candidates.filter(candidate => candidate.PIN !== record.PIN));
-              setSelected(selectedComparables.concat(record));
+              if(selectedComparables.length >= 5){
+                alert('You may only add up to 5 comparables. In order to continue adding this property, you must remove one you have already added.')
+              } else{
+                setCandidates(candidates.filter(candidate => candidate.PIN !== record.PIN));
+                setSelected(selectedComparables.concat(record));
+              }
             }}
           >
             Add
