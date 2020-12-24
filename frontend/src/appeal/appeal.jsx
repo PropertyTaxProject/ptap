@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { submitAppeal, submitForm } from '../requests';
-import ContactInfo from './homeowner/contact-info';
-import ReviewProperty from './homeowner/review-property';
-import ComparablesForm from './comparables/comparables';
-import EligibilityRequirements from './homeowner/eligibility-requirements';
-import ReviewPage from './review/review-page';
+import HomeownerInfo from './pages/contact-info';
+import ReviewProperty from './pages/review-property';
+import ComparablesForm from './pages/comparables';
+import EligibilityRequirements from './pages/eligibility-requirements';
+import ReviewAppeal from './pages/review-appeal';
 
 const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
 
@@ -30,7 +30,7 @@ const Appeal = (props) => {
   2) Contact Info: Collects Contact Info
   3) Review Property: Review Selected Property Information
   4) Comparables: Select Comparables
-  5) Review Page: Review Appeal
+  5) Review Appeal: Review Appeal
 
   */
 
@@ -45,7 +45,7 @@ const Appeal = (props) => {
 
   if (reportedEligibility != null && reportedEligibility === true) {
     view = (
-      <ContactInfo
+      <HomeownerInfo
         city={city}
         pin={pin}
         uuid={sessionUuid}
@@ -118,7 +118,7 @@ const Appeal = (props) => {
 
   if (reviewAppeal != null) {
     view = (
-      <ReviewPage 
+      <ReviewAppeal 
         targetProperty={targetProperty} 
         propInfo={propInfo} 
         userInfo={userInfo}

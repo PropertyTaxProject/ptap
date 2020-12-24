@@ -41,7 +41,7 @@ const tailFormItemLayout = {
   },
 };
 
-const HomeownerInfo = () => {
+const ContactInfo = () => {
   const [form] = Form.useForm();
 
   const [showMailingAddr, updateMailingAddr] = useState(false);
@@ -264,7 +264,7 @@ const HomeownerInfo = () => {
   )
 };
 
-const PropertyForm = (props) => {
+const HomeownerInfo = (props) => {
   const [form] = Form.useForm();
   const { submitForm, city, pin, eligibility, uuid } = props;
 
@@ -294,7 +294,7 @@ const PropertyForm = (props) => {
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}></Col>
       </Row>
       <Form.Item noStyle>
-        <HomeownerInfo/>
+        <ContactInfo/>
       </Form.Item>
       <Form.Item {...tailFormItemLayout}>
         <Space>
@@ -306,4 +306,4 @@ const PropertyForm = (props) => {
   );
 };
 
-export default PropertyForm;
+export default HomeownerInfo;
