@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Button,
+  Divider,
   Table,
 } from 'antd';
 import { Link } from 'react-router-dom';
@@ -112,19 +113,21 @@ const ReviewAppeal = (props) => {
         back,
     } = props;
     return (
-        <>  <h1>Your Appeal</h1>
-            <PropertyInfo 
-              targetProperty={targetProperty} 
-              cols={5}
-              propInfo={propInfo}
-            />
-            <OtherInfo
-              confirmInfo={confirmInfo}
-              propInfo={propInfo} 
-              userInfo={userInfo}
-              comparables={comparables}
-              back={back}
-            />
+        <>  
+        <h1>Your Appeal</h1>
+        <PropertyInfo 
+          targetProperty={targetProperty} 
+          cols={5}
+          propInfo={propInfo}
+        />
+        <Divider/>
+        <OtherInfo
+          confirmInfo={confirmInfo}
+          propInfo={propInfo} 
+          userInfo={userInfo}
+          comparables={comparables}
+          back={back}
+        />
         </>
     );
 };

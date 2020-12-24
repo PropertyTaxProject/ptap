@@ -7,11 +7,10 @@ import ComparablesForm from './pages/comparables';
 import EligibilityRequirements from './pages/eligibility-requirements';
 import ReviewAppeal from './pages/review-appeal';
 
-const removeComparable = async (properties, idx) => properties.filter((ele, i) => (i !== idx));
-
 const Appeal = (props) => {
   const { city } = props;
-  const [comparables, setComparables] = useState([]);
+  const [comparables, setComparables] = useState([]); /*selected comparables*/
+  const [comparablesPool, setComparablesPool] = useState([]); /*pool of possible comparables*/
   const [headers, setHeaders] = useState([]); /*headers for comp table*/
   const [targetProperty, setTargetProperty] = useState(null);
   const [userInfo, setInfo] = useState({}); /*inputted user info*/
@@ -54,7 +53,7 @@ const Appeal = (props) => {
           const response = await submitForm(info);
           if (response != null) {
             setInfo(info);
-            setComparables(response.comparables);
+            setComparablesPool(response.comparables);
             setHeaders(response.labeled_headers);
             setTargetProperty(response.target_pin[0]);
             setPropInfo(response.prop_info)
@@ -63,7 +62,7 @@ const Appeal = (props) => {
         back={() => {
           setInfo({});
           setPin(null);
-          setComparables([]);
+          setComparablesPool([]);
           setHeaders([]);
           setTargetProperty(null);
           setPropInfo([]);
@@ -84,7 +83,7 @@ const Appeal = (props) => {
         }}
         back={() => {
           setInfo({});
-          setComparables([]);
+          setComparablesPool([]);
           setHeaders([]);
           setTargetProperty(null);
         }}
@@ -95,16 +94,13 @@ const Appeal = (props) => {
   if (reviewComps != null) {
     view = (
       <ComparablesForm
-        comparables={comparables}
+        comparablesPool={comparablesPool}
         headers={headers}
         targetProperty={targetProperty}
         propInfo={propInfo}
         submitAppeal={async () => { 
           setReview(true);
-        }}
-        removeComparable={async (idx) => {
-          setComparables(await removeComparable(comparables, idx - 1));
-          console.log(`removed ${idx - 1}`);
+          //setComparables(data);
         }}
         back={() => {
           setInfo({});
