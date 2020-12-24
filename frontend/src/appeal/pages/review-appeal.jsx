@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Button,
   Table,
-  Divider,
 } from 'antd';
 import { Link } from 'react-router-dom';
 import PropertyInfo from '../shared/property-info';
@@ -73,11 +72,9 @@ const compCols = [
   },
 ];
 
-// displays the review page
-const PropertyInfo2 = (props) => {
+const OtherInfo = (props) => {
     const {
         confirmInfo,
-        propInfo,
         userInfo,
         comparables,
         back,
@@ -85,13 +82,10 @@ const PropertyInfo2 = (props) => {
 
     return (
       <>
-        <Divider/>
-        <h3>Your Information</h3>
+        <h1>Your Information</h1>
         <Table dataSource={[userInfo]} columns={userCols}/>
-        <Divider/>
-        <h3>Your Comparables</h3>
+        <h1>Your Comparables</h1>
         <Table dataSource={comparables} columns={compCols}/>
-        <p>{propInfo}</p>
         <Button
           type="danger"
           onClick={back}
@@ -124,12 +118,12 @@ const ReviewAppeal = (props) => {
               cols={5}
               propInfo={propInfo}
             />
-            <PropertyInfo2
-                confirmInfo={confirmInfo}
-                propInfo={propInfo} 
-                userInfo={userInfo}
-                comparables={comparables}
-                back={back}
+            <OtherInfo
+              confirmInfo={confirmInfo}
+              propInfo={propInfo} 
+              userInfo={userInfo}
+              comparables={comparables}
+              back={back}
             />
         </>
     );
