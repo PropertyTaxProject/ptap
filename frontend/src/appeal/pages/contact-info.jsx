@@ -41,11 +41,12 @@ const tailFormItemLayout = {
   },
 };
 
-const ContactInfo = () => {
+const ContactInfo = (props) => {
   const [form] = Form.useForm();
-
+  const { onFinish, back } = props;
   const [showMailingAddr, updateMailingAddr] = useState(false);
   const [showAltContact, updateAltContact] = useState(false);
+
   return (
     <>
       <Row>
@@ -56,6 +57,11 @@ const ContactInfo = () => {
       </Row>
       <Form
       form={form}
+      name="Housing Information"
+      onFinish={onFinish}
+      labelAlign="left"
+      scrollToFirstError
+      autoComplete="off"
       {...formItemLayout}
       >
         <Form.Item
@@ -259,14 +265,20 @@ const ContactInfo = () => {
         >
           <Input placeholder='Enter how you heard about us.'></Input>
         </Form.Item>
+
+        <Form.Item {...tailFormItemLayout}>
+          <Space>
+            <Button type="danger" onClick={back} >Back</Button>
+            <Button type="primary" htmlType="submit">Submit</Button>
+          </Space>
+        </Form.Item>
       </Form>
     </>
   )
 };
 
 const HomeownerInfo = (props) => {
-  const [form] = Form.useForm();
-  const { submitForm, city, pin, eligibility, uuid } = props;
+  const { submitForm, city, pin, eligibility, uuid, back } = props;
 
   const onFinish = (values) => {
     let appealType;
@@ -281,28 +293,11 @@ const HomeownerInfo = (props) => {
   };
 
   return (
-    <Form
-      form={form}
-      name="Housing Information"
+    <ContactInfo
       onFinish={onFinish}
-      labelAlign="left"
-      scrollToFirstError
-      autoComplete="off"
-      {...formItemLayout}
-    >
-      <Row>
-        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}></Col>
-      </Row>
-      <Form.Item noStyle>
-        <ContactInfo/>
-      </Form.Item>
-      <Form.Item {...tailFormItemLayout}>
-        <Space>
-          <Button type="danger" onClick={props.back} >Back</Button>
-          <Button type="primary" htmlType="submit">Submit</Button>
-        </Space>
-      </Form.Item>
-    </Form>
+      back={back}
+
+    />
   );
 };
 
