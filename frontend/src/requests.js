@@ -29,3 +29,11 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
     console.error(e);
   }
 };
+
+export const lookupPin = async (data) => {
+  try {
+    return (await (axios.post('/api_v1/pin-lookup', data))).data.response;
+  } catch (err) {
+    return [];
+  }
+};
