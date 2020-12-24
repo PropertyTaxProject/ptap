@@ -18,16 +18,13 @@ const CharacteristicsTable = (props) => {
   const {
     comparablesPool,
     headers,
-    submitAppeal,
+    logComparables,
     back,
   } = props;
 
   const [candidates, setCandidates] = useState([]);
   const [selectedComparables, setSelected] = useState([]);
   const [showSelected, setShowSelected] = useState(false);
-
-  console.log(candidates)
-  console.log(selectedComparables)
 
   if((candidates === undefined || candidates.length === 0) && selectedComparables.length === 0){
     setCandidates(comparablesPool); //initialize comparables pool
@@ -36,8 +33,13 @@ const CharacteristicsTable = (props) => {
   if(selectedComparables.length > 0 && showSelected === false){
     setShowSelected(true); //show selected once one is selected
   }
+  // block from adding more than five,
 
-  // block from adding more than five, add up to exactly five on advance, update on submit
+  
+  const advancePage = () => {//add up to exactly five on advance, update on submit
+    logComparables(selectedComparables);
+  };
+
 
   const Columns = headers.map(
     (header) => <Column title={createTitle(header)} dataIndex={header} key={header} />,
@@ -98,7 +100,7 @@ const CharacteristicsTable = (props) => {
       <Space>
         <Button type="danger" onClick={back}>Back</Button>
         {showSelected && 
-        <Button type="primary" onClick={submitAppeal}>Submit Comparables &amp; Review Information</Button>
+        <Button type="primary" onClick={advancePage}>Submit Comparables &amp; Review Information</Button>
         }
       </Space>
     </>
@@ -111,7 +113,7 @@ const Characteristics = (props) => {
     headers,
     targetProperty,
     propInfo,
-    submitAppeal,
+    logComparables,
     back,
   } = props;
 
@@ -133,7 +135,7 @@ const Characteristics = (props) => {
       <CharacteristicsTable
         comparablesPool={comparablesPool}
         headers={headers}
-        submitAppeal={submitAppeal}
+        logComparables={logComparables}
         back={back}
       />
     </>

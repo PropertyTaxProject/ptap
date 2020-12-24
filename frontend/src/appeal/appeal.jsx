@@ -98,10 +98,7 @@ const Appeal = (props) => {
         headers={headers}
         targetProperty={targetProperty}
         propInfo={propInfo}
-        submitAppeal={async () => { 
-          setReview(true);
-          //setComparables(data);
-        }}
+        logComparables={(selectedComparables) => { setComparables(selectedComparables); setReview(true); }}
         back={() => {
           setInfo({});
           setComparables([]);
