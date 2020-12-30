@@ -53,7 +53,7 @@ const Page = () => (
           </Switch>
         </div>
       </Content>
-      <Footer style={{ textAlign: 'center' }}>Property Tax Appeal Project</Footer>
+      <Footer style={{ textAlign: 'center' }}>Call 313-438-8698 with any questions. Please leave a message if we don't pick up and we will return your call within 48 hours.</Footer>
     </Layout>
   </Router>
 );

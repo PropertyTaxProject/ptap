@@ -20,8 +20,8 @@ const PTAPHeader = () => (
         <a href='https://www.detroitnews.com/story/news/local/detroit-city/housing/2020/01/09/detroit-homeowners-overtaxed-600-million/2698518001/'
            target='_blank' rel="noopener noreferrer">$600 million</a> and one out of every 3 homes went through property tax foreclosure.
       </li>
-      <li><a href='https://scholarship.law.uci.edu/ucilr/vol9/iss4/3/' target='_blank' rel="noopener noreferrer">25% of the property tax foreclosures</a> of homes 
-      lower in value would not have happened without these illegally inflated property tax assessments</li>
+      <li><a href='https://scholarship.law.uci.edu/ucilr/vol9/iss4/3/' target='_blank' rel="noopener noreferrer">25% of the property tax foreclosures</a>
+       of the lowest-valued homes would not have happened without these illegally inflated property tax assessments</li>
     </ul>
     <p>Check out a short video below and visit the <a href='https://illegalforeclosures.org/' target='_blank' rel="noopener noreferrer">
       Coalition for Property Tax Justice website</a> for more information!</p>
