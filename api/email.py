@@ -28,7 +28,7 @@ def detroit_submission_email(mail, data):
 
     body = "Dear " + name + ',<br><br>' + \
         "The Property Tax Appeal Project has received a submission for " + addr + "." + \
-        "An advocate will reach out to you to finalize your application. If you have any questions until then, " + \
+        " An advocate will reach out to you to finalize your application. If you have any questions until then, " + \
         "please contact us via phone at 313-438-8698 or via email at law-propertytax@umich.edu. <br><br> Thank you, <br><br>The Property Tax Appeal Project Automated System"
     
     msg2 = Message(subj, recipients=recip_ls)
