@@ -83,6 +83,12 @@ def submit_detroit_sf(comp_submit, mail):
     comp_submit['output_name'] = output_name
     doc = DocxTemplate("api/template_files/detroit_template.docx")
 
+    allinfo = ''
+    skip_ls = ['target_pin', 'comparables', 'output_name']
+    for key, val in comp_submit.items():
+        if key not in skip_ls:
+            allinfo += str(key) + ': ' + str(val) + "<w:br/>"
+
     context = {
         'pin' : pin,
         'owner' : comp_submit['name'],
@@ -95,9 +101,10 @@ def submit_detroit_sf(comp_submit, mail):
         'target_labels' : list(t_df.columns),
         'target_contents' : t_df.to_numpy().tolist(),
         'comp_labels' : list(comps_df.columns),
-        'comp_contents' : comps_df.to_numpy().tolist()
+        'comp_contents' : comps_df.to_numpy().tolist(),
+        'allinfo' : allinfo
             }
-
+        
     doc.render(context)
     doc.save(output_name)
 
@@ -132,9 +139,9 @@ def submit_detroit_sf(comp_submit, mail):
         'PRE' : targ['homestead_'].to_string(index=False),
         'Eligibility Flag' : e_flag,
         'Characteristics Flag': c_flag,
-        'SEV' : pin_av / 2,
+        'SEV' : str(pin_av),
         'TV' : targ['taxable_va'].to_string(index=False),
-        'CV' : round(comps_avg / 2, 2)
+        'CV' : str(comps_avg)
     }
 
     log_url = record_final_submission(sub_dict)
