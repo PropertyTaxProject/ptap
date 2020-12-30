@@ -41,10 +41,16 @@ const CharacteristicsTable = (props) => {
     logComparables(selectedComparables);
   };
 
+  const excludeColumns = ['PIN', 'total_sqft', 'total_acre', 'Total Floor Area',
+                          'score'];
 
-  const Columns = headers.map(
-    (header) => <Column title={createTitle(header)} dataIndex={header} key={header} />,
-  ).sort();
+  let Columns = [];
+  for (const header of headers) {
+    if( excludeColumns.includes(header) === false ){
+      Columns.push(<Column title={createTitle(header)} dataIndex={header} key={header} />)
+    }
+  }
+  Columns = Columns.sort();
 
   return (
     <>
@@ -75,7 +81,7 @@ const CharacteristicsTable = (props) => {
           )}
         />
       </Table>
-      <h3>Pool of Comparables Candidates</h3>
+      <h3>Properties Recently Sold Near You</h3>
       <p>This table includes properties which might be similar to yours. Click 'Add' to add the property to your selected comparables.</p>
       <Table 
         dataSource={candidates} 
@@ -105,7 +111,7 @@ const CharacteristicsTable = (props) => {
       <Space>
         <Button type="danger" onClick={back}>Back</Button>
         {showSelected && 
-        <Button type="primary" onClick={advancePage}>Submit Comparables &amp; Review Information</Button>
+        <Button type="primary" onClick={advancePage}>Next Page</Button>
         }
       </Space>
     </>
