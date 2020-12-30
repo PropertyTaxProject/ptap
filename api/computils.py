@@ -194,6 +194,7 @@ def prettify_detroit(data, sales_comps):
         2:"1.5 to 2.5",
         3:"3+",
     }
+
     if data.shape[0] != 0:
         data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
         data = data.replace({"Baths": bath_d,
@@ -202,5 +203,7 @@ def prettify_detroit(data, sales_comps):
                     "Stories (not including basements)": height_d,
                     "Exterior": exterior_d
                     })
+        if sales_comps:
+            data['Sale Price'] = data['Sale Price'].apply(lambda x: "${:0,.2f}".format(x))
 
     return data
