@@ -1,3 +1,4 @@
+import string
 from fuzzywuzzy import process
 from .computils import prettify_detroit, prettify_cook, find_comps
 from .dataqueries import address_candidates_query, get_pin, ecdf
@@ -52,8 +53,9 @@ def comparables(input_data, sales_comps=False):
         if targ.empty:
             raise Exception('Invalid PIN')
         targ['Distance'] = 0
-        partone = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '. '
-        parttwo = 'Current Homestead Exemption Status: ' + targ['homestead_'].to_string(index=False) + '%.'
+        partone = 'Taxpayer of Record: ' + targ['taxpayer_1'].to_string(index=False) + '.'
+        partone = string.capwords(partone)
+        parttwo = ' Current Principal Residence Exemption (PRE)  Exemption Status: ' + targ['homestead_'].to_string(index=False) + '%.'
         prop_info = partone + parttwo
     elif input_data['appeal_type'] == "cook_county_single_family":
         max_comps = 9
