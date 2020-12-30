@@ -200,6 +200,8 @@ const Lookup = (props) => {
         
         <Button type="primary" htmlType="submit">Next Page</Button>
       </Form>
+      <br></br>
+      <p>Page 1 of 5</p>
     </>
   );
 };

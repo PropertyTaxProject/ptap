@@ -318,11 +318,13 @@ const HomeownerInfo = (props) => {
   };
 
   return (
+    <>
     <ContactInfo
       onFinish={onFinish}
       back={back}
-
     />
+    <p>Page 2 of 5</p>
+    </>
   );
 };
 

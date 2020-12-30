@@ -109,6 +109,7 @@ const Characteristics = (props) => {
           </Space>
         </Form.Item>
       </Form>
+      <p>Page 3 of 5</p>
     </>
   );
 };

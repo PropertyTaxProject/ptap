@@ -149,6 +149,8 @@ const Characteristics = (props) => {
         logComparables={logComparables}
         back={back}
       />
+      <br></br>
+      <p>Page 4 of 5</p>
     </>
   );
 };

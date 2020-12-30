@@ -128,6 +128,8 @@ const ReviewAppeal = (props) => {
           comparables={comparables}
           back={back}
         />
+        <br></br>
+        <p>Page 5 of 5</p>
         </>
     );
 };
