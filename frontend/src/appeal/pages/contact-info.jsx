@@ -7,7 +7,10 @@ import {
   Row,
   Col,
   Space,
+  Select,
 } from 'antd';
+
+const { Option } = Select;
 
 const formItemLayout = {
   labelCol: {
@@ -46,6 +49,7 @@ const ContactInfo = (props) => {
   const { onFinish, back } = props;
   const [showMailingAddr, updateMailingAddr] = useState(false);
   const [showAltContact, updateAltContact] = useState(false);
+  const [showReferral, updateReferral] = useState(false);
 
   return (
     <>
@@ -157,7 +161,7 @@ const ContactInfo = (props) => {
         
         <Form.Item
           name="mailingsame"
-          label="My mailing address is the same as my street address"
+          label="Is your mailing address is the same as your street address?"
           rules={[
             {
               required: true,
@@ -262,14 +266,35 @@ const ContactInfo = (props) => {
         <Form.Item
           name="heardabout"
           label="How did you hear about us?"
+          rules={[
+            {
+              required: true,
+              message: 'Please select from the dropdown options!',
+            },
+          ]}
         >
-          <Input placeholder='Enter how you heard about us.'></Input>
+          <Select onChange={e => updateReferral(e)}>
+            <Option value='google'>Google Advertisement</Option>
+            <Option value='social media'>Social Media (Facebook, Instagram, or Twitter)</Option>
+            <Option value='text'>Text Message Advertisement</Option>
+            <Option value='newspaper'>Newspaper Article</Option>
+            <Option value='referral'>Referral</Option>
+            <Option value='other'>Other</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="referralinput"
+          label="Who referred you?"
+          style={showReferral === 'referral' ? { display: ''} : {display: 'none'}}
+        >
+          {showReferral === 'referral' && <Input placeholder="Please enter who referred you" />}
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout}>
           <Space>
             <Button type="danger" onClick={back} >Back</Button>
-            <Button type="primary" htmlType="submit">Submit</Button>
+            <Button type="primary" htmlType="submit">Next Page</Button>
           </Space>
         </Form.Item>
       </Form>
