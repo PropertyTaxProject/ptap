@@ -73,7 +73,7 @@ const Characteristics = (props) => {
         <Form.Item 
           name="validcharacteristics" 
           rules={[{ required: true, message: 'Your response is required.' }]}
-          label = "Are these characteristics correct?"
+          label = "Is this information about your property correct?"
         >
           <Radio.Group onChange={e => updateCharInput(e.target.value)}>
             <Radio value='Yes'>Yes</Radio>
@@ -83,7 +83,7 @@ const Characteristics = (props) => {
 
         <Form.Item
           name="characteristicsinput"
-          label="What about these characteristics is incorrect?"
+          label="What about this information is incorrect?"
           style={showCharInput === 'No' ? { display: ''} : {display: 'none'}}
         >
           {showCharInput === 'No' && <TextArea placeholder="Please provide as much information as you can." rows={4}/>}
@@ -91,7 +91,7 @@ const Characteristics = (props) => {
                
         <Form.Item
         name="valueestimate"
-        label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide a guesstimate)"
+        label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide an estimate)"
         rules={[
           {
             required: true,
@@ -105,7 +105,7 @@ const Characteristics = (props) => {
         <Form.Item>
           <Space>
             <Button type="danger" onClick={back} >Back</Button>
-            <Button type="primary" htmlType="submit">Submit</Button>
+            <Button type="primary" htmlType="submit">Next Page</Button>
           </Space>
         </Form.Item>
       </Form>
