@@ -16,15 +16,14 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
   try {
     const body = { target_pin: targetProperty, comparables, uuid, ...userInfo, ...userPropInfo };
     console.log(body);
-    //const detroit = userInfo.appeal_type === 'detroit_single_family'; TEMPORARY DOWNLOAD ALL
-    const detroit = true;
-    const resp = await axios.post('/api_v1/submit2', body, { responseType: detroit ? 'blob' : 'json' }); // detroit downloads file, chicago returns json
-    if (detroit) {
+    //const detroit = userInfo.appeal_type === 'detroit_single_family';
+    const download = true;
+    const resp = await axios.post('/api_v1/submit2', body, { responseType: download ? 'blob' : 'json' });
+    if (download) {
       saveAs(resp.data, `${userInfo.name.split(' ').join('-').toLowerCase()}-appeal.docx`);
     } else {
       console.log(resp);
     }
-    // TRIGGER SUBMISSION PAGE
   } catch (e) {
     console.error(e);
   }

@@ -60,6 +60,8 @@ def submit_detroit_sf(comp_submit, mail):
     Output:
     Word Document
     '''
+    download = False #boolean to turn download on/off
+
     rename_dict = {
         'PIN' : 'Parcel ID',
         'assessed_value' : 'Assessed Value',
@@ -109,19 +111,15 @@ def submit_detroit_sf(comp_submit, mail):
     doc.save(output_name)
 
     output = {}
-
-    # also save a byte object to return
-    file_stream = io.BytesIO()
-    doc.save(file_stream) # save to stream
-    file_stream.seek(0) # reset pointer to head
-    output['file_stream'] = file_stream
+    if download:
+        # also save a byte object to return
+        file_stream = io.BytesIO()
+        doc.save(file_stream) # save to stream
+        file_stream.seek(0) # reset pointer to head
+        output['file_stream'] = file_stream
 
     # update submission log
     targ = get_pin('detroit', pin)
-    if comp_submit['eligibility']:
-        e_flag = 'Eligible'
-    else:
-        e_flag = 'Possible Issues'
     
     if comp_submit['validcharacteristics'] == 'No':
         c_flag = 'Yes. Homeowner Input: ' + comp_submit['characteristicsinput']
@@ -137,7 +135,7 @@ def submit_detroit_sf(comp_submit, mail):
         'Email Address' : comp_submit['email'],
         'Preferred Contact Method' : comp_submit['preferred'],
         'PRE' : targ['homestead_'].to_string(index=False),
-        'Eligibility Flag' : e_flag,
+        'Eligibility Flag' : comp_submit['eligibility'],
         'Characteristics Flag': c_flag,
         'SEV' : str(pin_av),
         'TV' : targ['taxable_va'].to_string(index=False),
