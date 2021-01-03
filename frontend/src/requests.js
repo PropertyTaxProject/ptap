@@ -17,7 +17,7 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
     const body = { target_pin: targetProperty, comparables, uuid, ...userInfo, ...userPropInfo };
     console.log(body);
     //const detroit = userInfo.appeal_type === 'detroit_single_family';
-    const download = true;
+    const download = false;
     const resp = await axios.post('/api_v1/submit2', body, { responseType: download ? 'blob' : 'json' });
     if (download) {
       saveAs(resp.data, `${userInfo.name.split(' ').join('-').toLowerCase()}-appeal.docx`);

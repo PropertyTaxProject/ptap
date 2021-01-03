@@ -68,12 +68,11 @@ def handle_form2():
     #submit selected comps / finalize appeal / send to summary or complete page
     print('page 2 submit')
     comps_data = request.json
+    download = False
     try:
         response_dict = finalize_appeal(comps_data, mail)
         logger(comps_data, 'submit')
-        if comps_data['appeal_type'] == "detroit_single_family":
-            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
-        elif comps_data['appeal_type'] == "cook_county_single_family": #temp serve file
+        if download:
             return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
