@@ -86,6 +86,7 @@ const OtherInfo = (props) => {
         <h1>Your Information</h1>
         <Table dataSource={[userInfo]} columns={userCols}/>
         <h1>Your Comparables</h1>
+        <p>We automatically include comparables until five are selected here. This can be changed later.</p>
         <Table dataSource={comparables} columns={compCols}/>
         <Button
           type="danger"
