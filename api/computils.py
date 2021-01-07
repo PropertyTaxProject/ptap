@@ -202,6 +202,6 @@ def prettify_detroit(data, sales_comps):
                     "Exterior": exterior_d
                     })
         if sales_comps:
-            data['Sale Price'] = data['Sale Price'].apply(lambda x: "${:0,.2f}".format(x))
+            data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,.2f}".format(x))
 
     return data
