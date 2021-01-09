@@ -9,7 +9,7 @@ import {
   Route,
 } from 'react-router-dom';
 import ReactGA from 'react-ga';
-import createHistory from 'history/createBrowserHistory'
+import createHistory from 'history/createBrowserHistory';
 
 import Header from './general/header';
 import DetroitLandingPage from './landing/detroit-landing-page';
@@ -17,18 +17,17 @@ import Appeal from './appeal/appeal';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
 
-ReactGA.initialize('G-373ZM6K899');
-const history = createHistory()
-history.listen(location => {
-    ReactGA.set({ page: location.pathname })
-    ReactGA.pageview(location.pathname)
-})
 const { Content, Footer } = Layout;
 
+/* google analytics */
+ReactGA.initialize('G-373ZM6K899');
+const history = createHistory();
+history.listen(location => {
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
+});
+
 const Page = () => (
-  componentDidMount() {
-		ReactGA.pageview(window.location.pathname)
-	}
   <Router history={history}>
     <Layout className="layout">
       <Header />
