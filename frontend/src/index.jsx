@@ -8,18 +8,28 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import Header from './general/header';
-import * as serviceWorker from './serviceWorker';
+import ReactGA from 'react-ga';
+import createHistory from 'history/createBrowserHistory'
 
+import Header from './general/header';
 import DetroitLandingPage from './landing/detroit-landing-page';
 import Appeal from './appeal/appeal';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
 
+ReactGA.initialize('G-373ZM6K899');
+const history = createHistory()
+history.listen(location => {
+    ReactGA.set({ page: location.pathname })
+    ReactGA.pageview(location.pathname)
+})
 const { Content, Footer } = Layout;
 
 const Page = () => (
-  <Router>
+  componentDidMount() {
+		ReactGA.pageview(window.location.pathname)
+	}
+  <Router history={history}>
     <Layout className="layout">
       <Header />
       <Content style={{ padding: '0 3vw' }}>
@@ -64,8 +74,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
