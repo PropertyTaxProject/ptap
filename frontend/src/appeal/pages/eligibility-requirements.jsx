@@ -13,15 +13,13 @@ var selected = false;
 
 const theProcess = (
   <ul>
-    <li>Step 1: Complete this online application by February 10, 2020. If you have any problems with the application, call our hotline or email us (
-      <a href='mailto:law-propertytax@umich.edu?subject=Request for Assistance'>law-propertytax@umich.edu</a>) and our staff can help you.</li>
-    <li>Step 2: Once you complete the application, our team will receive a draft appeal letter.</li>
-    <li>Step 3: Our team will call you to review the appeal letter.</li>
-    <li>Step 4: Our team will send you a “Letter of Authorization,” which you must sign in order for us to represent you and send the appeal in on your behalf.</li>
-    <li>Step 5: On February 15, 2021, which is the deadline, our team will submit the necessary documents at the Assessor’s Review (the first stage of the appeal process).</li>
-    <li>Step 6: On March 8, 2021, our team will file the appeal documents at the March Board of Review (the second stage of the appeal process).</li>
-    <li>Step 7: Sometime before June, the City will send you its decision.</li>
-    <li>Step 8: Our team will follow up with you to discuss other housing-related resources.</li>
+    <li><b>Step 1</b>: Complete this online application by <b>February 15, 2020</b>. If you are unable to complete the Application or have questions, call or text our hotline (313-438-8698) or email us &nbsp; 
+      <a href='mailto:law-propertytax@umich.edu?subject=Request for Assistance'>(law-propertytax@umich.edu)</a>.</li>
+    <li><b>Step 2</b>: An advocate will call you to review your Application and will let you know whether we can help you.</li>
+    <li><b>Step 3</b>: If your Application is accepted, an advocate will work with you to complete your appeal documents.</li>
+    <li><b>Step 4</b>: Your advocate will submit your documents to the Assessor’s Review by <b>February 22, 2021</b></li>
+    <li><b>Step 5</b>: Your advocate will submit your documents to the March Board of Review by <b>March 8, 2021</b></li>
+    <li><b>Step 6</b>: Before <b>June of 2021</b>, the Board of Review will send you a letter notifying you whether your home's assessed value is reduced because of your appeal.</li>
   </ul>
 );
 
@@ -156,11 +154,18 @@ const Lookup = (props) => {
 
   return (
     <>
-      <h2>The Process</h2>  
+      <h2>The Appeals Process</h2>  
+      <p>
+      The below outlines a  general overview of the appeals process. 
+      Completing this Application does not guarantee that our Project will be able to help you. 
+      The information you provide as part of the Application process will help us determine whether we can assist you. 
+      </p>
       {theProcess}
-      <h2>Am I eligible for free services?</h2> 
-      <p>We only service owner occupied single family homes.</p>
-      <p>This page collects information necessary for us to determine whether we can provide free services to you. Once you complete the application, an advocate will call you to confirm your eligibility.</p>
+      <h2>Who is Eligible for the Project's Services?</h2> 
+      <p>
+        We only serve owner-occupied, single-family homes. 
+        We also prioritize helping homeowners of low-value homes, i.e. homes worth $50,000 and less. 
+      </p>
       <PinLookup
         city={city}
         logPin={logPin}

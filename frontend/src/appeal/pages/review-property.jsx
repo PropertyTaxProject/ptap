@@ -36,7 +36,6 @@ const formItemLayout = {
 const Characteristics = (props) => {
   const {
     targetProperty,
-    propInfo,
     submitPropReview,
     back,
   } = props;
@@ -54,7 +53,6 @@ const Characteristics = (props) => {
       <PropertyInfo 
         targetProperty={targetProperty} 
         cols={5}
-        propInfo={propInfo}
       />
       <Divider />
 
@@ -92,12 +90,6 @@ const Characteristics = (props) => {
         <Form.Item
         name="valueestimate"
         label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide an estimate)"
-        rules={[
-          {
-            required: true,
-            message: 'Please enter a response!',
-          },
-        ]}
         >
           <Input placeholder='Your best estimate.' />
         </Form.Item>

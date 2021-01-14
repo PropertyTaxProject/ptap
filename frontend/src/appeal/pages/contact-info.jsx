@@ -70,7 +70,7 @@ const ContactInfo = (props) => {
       >
         <Form.Item
           name="name"
-          label="Full Name"
+          label="Full Name (First, Middle, Last)"
           rules={[
             {
               required: true,
@@ -82,7 +82,7 @@ const ContactInfo = (props) => {
         </Form.Item>
         <Form.Item
           name="email"
-          label="Email"
+          label="Email Address"
           rules={[
             {
               required: true,
@@ -105,6 +105,23 @@ const ContactInfo = (props) => {
           ]}
         >
           <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="phonetype"
+          label="Is this a cell phone or home phone number?"
+          rules={[
+            {
+              required: true,
+              message: 'Please mark your phone type!',
+              whitespace: true,
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio value='Home'>Home</Radio>
+            <Radio value='Cell'>Cell</Radio>
+          </Radio.Group>
         </Form.Item>
 
         <Form.Item
@@ -161,7 +178,7 @@ const ContactInfo = (props) => {
         
         <Form.Item
           name="mailingsame"
-          label="Is your mailing address is the same as your street address?"
+          label="Is your mailing address is the same as your home address?"
           rules={[
             {
               required: true,
@@ -247,7 +264,7 @@ const ContactInfo = (props) => {
 
         <Form.Item
           name="preferred"
-          label="What is your preferred contact method?"
+          label="How would you like us to contact you?"
           rules={[
             {
               required: true,
@@ -289,6 +306,14 @@ const ContactInfo = (props) => {
           style={showReferral === 'referral' ? { display: ''} : {display: 'none'}}
         >
           {showReferral === 'referral' && <Input placeholder="Please enter who referred you" />}
+        </Form.Item>
+
+        <Form.Item
+          name="otherheardaboutinput"
+          label="Please enter how you heard about us"
+          style={showReferral === 'other' ? { display: ''} : {display: 'none'}}
+        >
+          {showReferral === 'other' && <Input placeholder="Please how you heard about us" />}
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout}>

@@ -11,7 +11,6 @@ const createTitle = (title) => title.replace('_', ' ').replace(re, (x) => x.toUp
 // displays the target property information
 const PropertyInfo = (props) => {
     const { targetProperty } = props;
-    const { propInfo } = props;
     const { cols } = props;
     const gridStyle = {
       width: `${Math.round(100 / cols)}%`,
@@ -33,7 +32,6 @@ const PropertyInfo = (props) => {
           <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
             <h1>Your Property Information</h1>
             <p>Below is the data that the City of Detroit has on file for your property.</p>
-            <p>{propInfo}</p>
             <br />
           </Col>
         </Row>

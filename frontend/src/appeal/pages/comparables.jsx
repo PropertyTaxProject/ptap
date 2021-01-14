@@ -114,7 +114,7 @@ const CharacteristicsTable = (props) => {
         <Button type="primary" onClick={advancePage}>Next Page</Button>
         }
         {showSelected === false && 
-        <Button type="primary" onClick={advancePage}>I would prefer to discuss this with a PTAP team member before making a selection.</Button>
+        <Button type="primary" onClick={advancePage}>Skip this step</Button>
         }
       </Space>
     </>
@@ -141,8 +141,12 @@ const Characteristics = (props) => {
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h1>Pick the 5 properties that are the most similar to your property.</h1>
-          <p>It is okay if you are unsure, your advocate will talk with you about this more. Do your best to pick the 5 properties that seem most similar to yours.</p>
-          <p>Below is an automatically generated list of homes in your area that have recently sold. This information is part of what the City uses to determine the “Assessed Value” on your property tax bill. It is really important the City only consider recent home sale values of properties that are the most similar to yours.</p>
+          <p>It is okay if you are unsure, your advocate will talk with you about this in more detail.</p>
+          <p>
+          Below is a list of homes in your area that have recently sold. 
+          Pick the 5 that are most similar to your home. 
+          Select properties by clicking the “Add” button on the far right.
+          </p>
         </Col>
       </Row>
       <CharacteristicsTable

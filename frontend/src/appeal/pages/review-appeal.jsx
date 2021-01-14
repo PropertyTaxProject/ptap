@@ -98,7 +98,7 @@ const OtherInfo = (props) => {
           type="primary"
           onClick={confirmInfo}
         >
-          <Link to="/completedappeal">Finalize Appeal</Link>
+          <Link to="/completedappeal">Finalize Application</Link>
         </Button>
       </>
     );
@@ -116,6 +116,13 @@ const ReviewAppeal = (props) => {
     return (
         <>  
         <h1>Your Appeal</h1>
+        <p>
+        Below is the information you submitted as part of your Application. 
+        If the information is correct, please click the blue button to finalize your Application.
+        </p>
+        <p>
+        If you need to make changes to any of this information please use the “back button” to make those changes. 
+        </p>
         <PropertyInfo 
           targetProperty={targetProperty} 
           cols={5}
