@@ -16,7 +16,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
         pin_name = 'parcel_num'
         sale_name = 'Sale Price'
-        debug = True
+        debug = False
     elif region == 'cook':
         age_dif = 15 * multiplier
         build_dif = 0.10 * targ['Building Square Feet'].values[0] * multiplier
