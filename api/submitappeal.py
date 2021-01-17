@@ -96,10 +96,14 @@ def submit_detroit_sf(comp_submit, mail):
     doc = DocxTemplate("api/template_files/detroit_template_2021.docx")
 
     allinfo = []
+    propinfo = []
     skip_ls = ['target_pin', 'comparables', 'output_name']
     for key, val in comp_submit.items():
         if key not in skip_ls:
             allinfo.append([key, val])
+
+    for i, j in get_pin('detroit', pin).to_dict(orient='records')[0].items():
+        propinfo.append([i, j])
 
     context = {
         'pin' : pin,
@@ -110,11 +114,12 @@ def submit_detroit_sf(comp_submit, mail):
         'current_faircash' : '${:,.0f}'.format(pin_av * 2),
         'contention_sev' : '{:,.0f}'.format(comps_avg / 2),
         'contention_faircash' : '${:,.0f}'.format(comps_avg),
-        'target_labels' : target_cols,
-        'target_contents' : t_df[target_cols].to_numpy().tolist(),
+        'target_labels' : ['Beds'] + target_cols,
+        'target_contents' : [['XXX'] + t_df[target_cols].to_numpy().tolist()[0]],
         'comp_labels' : comp_cols,
         'comp_contents' : comps_df[comp_cols].to_numpy().tolist(),
-        'allinfo' : allinfo
+        'allinfo' : allinfo,
+        'propinfo' : propinfo
             }
         
     doc.render(context)
