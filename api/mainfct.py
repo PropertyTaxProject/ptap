@@ -119,13 +119,6 @@ def process_comps_input(comp_submit, mail):
         'zip': '',
         'preferred': ''
     }
-
-    #add to property info page
-    From “Age” to “Year Home was Built”
-Dollar sign and comma for the AV 
-Total floor area -- add “(not including basement)”
-Total Square Feet -- add “(including basement)”
-
     '''
     #add property info to allinfo
     if comp_submit['appeal_type'] == "detroit_single_family":
