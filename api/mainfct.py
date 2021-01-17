@@ -71,6 +71,12 @@ def comparables(input_data, sales_comps=False):
     new_targ, cur_comps = find_comps(targ, region, sales_comps)
 
     #process comps
+
+    #add weights based on Cook PINS AA-SS-BBB-PPP-UUUU
+    #pos 7 high
+    #6 medium
+    #5 low
+
     dist_weight = 1
     valuation_weight = 3
 
@@ -113,8 +119,15 @@ def process_comps_input(comp_submit, mail):
         'zip': '',
         'preferred': ''
     }
-    '''
 
+    #add to property info page
+    From “Age” to “Year Home was Built”
+Dollar sign and comma for the AV 
+Total floor area -- add “(not including basement)”
+Total Square Feet -- add “(including basement)”
+
+    '''
+    #add property info to allinfo
     if comp_submit['appeal_type'] == "detroit_single_family":
         return submit_detroit_sf(comp_submit, mail)
 
