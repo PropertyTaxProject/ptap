@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const PTAPHeader = () => (
   <>
-    <h3>Welcome the Application for services with the Property Tax Appeal Project.</h3>
+    <h3>Welcome to the Application for services with the Property Tax Appeal Project.</h3>
     <h1>What is the Property Tax Appeal Project?</h1>
     <p>The Property Tax Appeal Project is a free legal service provided by the University of Michigan Law School 
       and the Coalition for Property Tax Justice. The Project's trained legal advocates can help you 
