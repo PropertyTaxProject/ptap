@@ -46,7 +46,7 @@ def comparables(input_data, sales_comps=False):
 
     #set constants
     if input_data['appeal_type'] == "detroit_single_family":
-        max_comps = 9
+        max_comps = 15
         sales_comps = True
         region = 'detroit'
         targ = get_pin(region, target_pin)
