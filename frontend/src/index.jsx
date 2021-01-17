@@ -8,8 +8,8 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import ReactGA from 'react-ga';
 import createHistory from 'history/createBrowserHistory';
+import ReactGA from 'react-ga';
 
 import Header from './general/header';
 import DetroitLandingPage from './landing/detroit-landing-page';
@@ -20,7 +20,7 @@ import FinalPage from './landing/final-page';
 const { Content, Footer } = Layout;
 
 /* google analytics */
-ReactGA.initialize('G-373ZM6K899');
+ReactGA.initialize('UA-178459008-2');
 const history = createHistory();
 history.listen(location => {
     ReactGA.set({ page: location.pathname });
