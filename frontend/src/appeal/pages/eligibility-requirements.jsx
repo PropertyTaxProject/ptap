@@ -203,7 +203,8 @@ const Lookup = (props) => {
           </Radio.Group>
         </Form.Item>
         
-        <Button type="primary" htmlType="submit">Next Page</Button>
+        {selected && <Button type="primary" htmlType="submit">Next Page</Button>}
+        {!selected && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
       </Form>
       <br></br>
       <p>Page 1 of 5</p>
