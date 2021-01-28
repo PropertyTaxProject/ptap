@@ -1,4 +1,4 @@
-# PTAP Site
+# The Property Tax Appeal Project
 
 Welcome to the property tax appeal project repository. This is a flask/react project designed for deployment to AWS Elastic Beanstalk which files property tax appeals for low-income homeowners in Detroit and Chicago.
 
