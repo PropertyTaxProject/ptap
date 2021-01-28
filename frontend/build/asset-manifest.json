@@ -1,27 +1,25 @@
 {
   "files": {
-    "main.css": "/static/css/main.37196b54.chunk.css",
-    "main.js": "/static/js/main.9ea1fc28.chunk.js",
-    "main.js.map": "/static/js/main.9ea1fc28.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.2fa8e35c.js",
-    "runtime-main.js.map": "/static/js/runtime-main.2fa8e35c.js.map",
-    "static/css/2.67731326.chunk.css": "/static/css/2.67731326.chunk.css",
-    "static/js/2.e6becda9.chunk.js": "/static/js/2.e6becda9.chunk.js",
-    "static/js/2.e6becda9.chunk.js.map": "/static/js/2.e6becda9.chunk.js.map",
+    "main.css": "/static/css/main.85262a98.chunk.css",
+    "main.js": "/static/js/main.a9f094c8.chunk.js",
+    "main.js.map": "/static/js/main.a9f094c8.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.1943ec20.js",
+    "runtime-main.js.map": "/static/js/runtime-main.1943ec20.js.map",
+    "static/css/2.f3f01324.chunk.css": "/static/css/2.f3f01324.chunk.css",
+    "static/js/2.4807fe3e.chunk.js": "/static/js/2.4807fe3e.chunk.js",
+    "static/js/2.4807fe3e.chunk.js.map": "/static/js/2.4807fe3e.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.dd58c77f1433ed220767407d00b0b0d6.js": "/precache-manifest.dd58c77f1433ed220767407d00b0b0d6.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.67731326.chunk.css.map": "/static/css/2.67731326.chunk.css.map",
-    "static/css/main.37196b54.chunk.css.map": "/static/css/main.37196b54.chunk.css.map",
-    "static/js/2.e6becda9.chunk.js.LICENSE.txt": "/static/js/2.e6becda9.chunk.js.LICENSE.txt",
-    "static/media/UMLS_logo.jfif": "/static/media/UMLS_logo.7ba97bdc.jfif",
-    "static/media/coalition_logo.png": "/static/media/coalition_logo.83375895.png"
+    "static/css/2.f3f01324.chunk.css.map": "/static/css/2.f3f01324.chunk.css.map",
+    "static/css/main.85262a98.chunk.css.map": "/static/css/main.85262a98.chunk.css.map",
+    "static/js/2.4807fe3e.chunk.js.LICENSE.txt": "/static/js/2.4807fe3e.chunk.js.LICENSE.txt",
+    "static/media/UMLS_logo.62ab2c69.jfif": "/static/media/UMLS_logo.62ab2c69.jfif",
+    "static/media/coalition_logo.ca4270b5.png": "/static/media/coalition_logo.ca4270b5.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.2fa8e35c.js",
-    "static/css/2.67731326.chunk.css",
-    "static/js/2.e6becda9.chunk.js",
-    "static/css/main.37196b54.chunk.css",
-    "static/js/main.9ea1fc28.chunk.js"
+    "static/js/runtime-main.1943ec20.js",
+    "static/css/2.f3f01324.chunk.css",
+    "static/js/2.4807fe3e.chunk.js",
+    "static/css/main.85262a98.chunk.css",
+    "static/js/main.a9f094c8.chunk.js"
   ]
 }
