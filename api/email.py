@@ -6,7 +6,7 @@ def detroit_submission_email(mail, data):
     name = data['name']
     addr = data['target_pin']['Address']
     submit_email = [data['email']]
-    ptap = [os.environ.get('MAIL_DEFAULT_SENDER')]
+    ptap = [os.environ.get('PTAP_MAIL')]
     uofm = [os.environ.get('UOFM_MAIL')]
 
     subj = 'Property Tax Appeal Project Submission: ' + name + ' (' + addr + ')'
@@ -37,8 +37,9 @@ def detroit_submission_email(mail, data):
         <li><b>Step 5</b>: Your advocate will submit your documents to the March Board of Review by <b>March 8, 2021</b></li>
         <li><b>Step 6</b>: Before <b>June of 2021</b>, the Board of Review will send you a letter notifying you whether your home's assessed value is reduced because of your appeal.</li>
         </ul>""" + \
-        "<br><br> Thank you, <br><br>The Property Tax Appeal Project Automated System"
-    msg2 = Message(subj, recipients=submit_email, reply_to=uofm[0], cc=uofm, bcc=ptap)
+        "<br><br> Thank you, <br><br>The Property Tax Appeal Project Automated System<br><br>" + \
+        "Replies to this email address are not monitored."
+    msg2 = Message(subj, recipients=submit_email, reply_to=uofm[0])
     msg2.html = body
     mail.send(msg2)
     print('emailed')

@@ -7,7 +7,7 @@ const PTAPHeader4 = () => (
     <h2>Your application has now been submitted.</h2>
     <p><b>What to expect next?</b></p>
     <p>Our team will contact you before the Feb. 15th deadline to complete your appeal. 
-      In the meantime, if you have any questions you can reach us at our hotline (INSERT NUMBER) or at&nbsp;
+      In the meantime, if you have any questions you can reach us at our hotline 313-438-8698 or at&nbsp;
       <a href='mailto:law-propertytax@umich.edu?subject=Questions after Submission'>law-propertytax@umich.edu</a>. 
     </p>
     <ul>
