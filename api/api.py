@@ -99,7 +99,7 @@ def get_pin(form_data):
     }
     '''
     cutoff_info = {
-        'detroit': 25000,
+        'detroit': 60000,
         'cook': 250000
     }
 
