@@ -31,11 +31,11 @@ def address_candidates(input_data, cutoff_info):
         selected = prettify_cook(selected, False)
 
     selected['eligible'] = selected.assessed_value <= cutoff
+    selected.dropna(axis=0, inplace=True)
     output['candidates'] = selected.to_dict(orient='records')
 
     if len(output['candidates']) == 0: #if none found raise
         raise Exception('No Matches Found')
-
     return output
 
 def comparables(input_data, sales_comps=False):
@@ -72,7 +72,6 @@ def comparables(input_data, sales_comps=False):
 
     #process comps
 
-    #add weights based on Cook PINS AA-SS-BBB-PPP-UUUU
     #pos 7 high
     #6 medium
     #5 low
