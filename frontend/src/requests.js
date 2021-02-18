@@ -31,7 +31,8 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
 
 export const lookupPin = async (data) => {
   try {
-    return (await (axios.post('/api_v1/pin-lookup', data))).data.response;
+    const resp = await axios.post('/api_v1/pin-lookup', data)
+    return resp.data.response;
   } catch (err) {
     return [];
   }
