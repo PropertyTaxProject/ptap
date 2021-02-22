@@ -5,6 +5,11 @@ import { Link } from 'react-router-dom';
 const PTAPHeader = () => (
   <>
     <h3>Welcome to the Application for services with the Property Tax Appeal Project.</h3>
+
+    <h1><b>At this time the appeal window for Detroit has closed. If you want to be contacted when the next appeal window opens, please fill out our <a href='https://illegalforeclosures.org/contactus'>Contact Form </a>
+     <a href='https://illegalforeclosures.org/contactus'>(https://illegalforeclosures.org/contactus).</a> </b></h1>
+
+
     <h1>What is the Property Tax Appeal Project?</h1>
     <p>The Property Tax Appeal Project is a free legal service provided by the University of Michigan Law School 
       and the Coalition for Property Tax Justice. The Project's trained legal advocates can help you 
@@ -51,9 +56,12 @@ const PTAPHeader = () => (
     <iframe title="Illegal Foreclosures" width="560" height="315" src="https://www.youtube.com/embed/J1wlRYB3p7E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <h1>How to protest your property tax assessment</h1>
     <p>Click the button below to get started on your Application with the Property Tax Appeal Project. </p>
+    {/*
     <Space>
       <Button type="primary"><Link to="/detroitappeal">Click here to get started</Link></Button>
     </Space>
+    */}
+
   </>
 );
 

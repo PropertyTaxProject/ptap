@@ -42,9 +42,14 @@ const Page = () => {
             path="/detroit"
             render={() => <DetroitLandingPage />}
           />
+          {/*          
           <Route
             path="/detroitappeal"
             render={() => <Appeal city="detroit" />}
+          /> */}
+          <Route
+            path="/detroitappeal"
+            render={() => <DetroitLandingPage />}
           />
           <Route
             path="/cook"
