@@ -2,3 +2,4 @@
 __pycache__*
 frontend/node_modules/
 api/database/.csv*
+.git/
