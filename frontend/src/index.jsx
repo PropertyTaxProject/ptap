@@ -50,6 +50,10 @@ const Page = () => {
           <Route
             path="/detroitappeal"
             render={() => <DetroitLandingPage />}
+          />        
+          <Route
+            path="/internaldetroitappeal"
+            render={() => <Appeal city="detroit" />}
           />
           <Route
             path="/cook"
