@@ -1,5 +1,6 @@
 from datetime import datetime
 import io
+import os
 from docxtpl import DocxTemplate
 import pandas as pd
 from .email import detroit_submission_email, cook_submission_email
@@ -114,7 +115,7 @@ def submit_cook_sf(comp_submit, mail):
     log_url = record_final_submission(sub_dict)
     comp_submit['log_url'] = log_url
     '''
-    comp_submit['log_url'] = 'tmp'
+    comp_submit['log_url'] = 'https://docs.google.com/spreadsheets/d/' + os.environ.get('PTAP_SHEET_SID')
 
 
     # send email

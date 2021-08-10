@@ -59,7 +59,7 @@ def cook_submission_email(mail, data):
         "Submission Info: <a href='" + \
         data['log_url'] + "'>Link</a>"
 
-    msg = Message(subj, recipients=ptap)#, cc=ptap)
+    msg = Message(subj, recipients=submit_email, cc=ptap)
     msg.html = body
     with open(data['output_name'], 'rb') as f:
         msg.attach(data['output_name'][13:],
