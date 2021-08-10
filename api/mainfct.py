@@ -72,9 +72,10 @@ def comparables(input_data, sales_comps=False):
 
     #process comps
 
-    #pos 7 high
-    #6 medium
-    #5 low
+    ##add weights based on Cook PINS AA-SS-BBB-PPP-UUUU
+    ##pos 7 high
+    ##6 medium
+    ##5 low
 
     dist_weight = 1
     valuation_weight = 3
@@ -124,4 +125,4 @@ def process_comps_input(comp_submit, mail):
         return submit_detroit_sf(comp_submit, mail)
 
     elif comp_submit['appeal_type'] == "cook_county_single_family":
-        return submit_cook_sf(comp_submit), mail
+        return submit_cook_sf(comp_submit, mail)
