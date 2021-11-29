@@ -1,4 +1,5 @@
 import string
+import pandas as pd
 from fuzzywuzzy import process
 from .computils import prettify_detroit, prettify_cook, find_comps
 from .dataqueries import address_candidates_query, get_pin, ecdf
@@ -101,6 +102,36 @@ def comparables(input_data, sales_comps=False):
     output['pinav'] = new_targ.assessed_value.mean()
 
     return output
+
+def estimate(form_data):
+    mini_output = comparables(form_data)
+    comps_df = pd.DataFrame(mini_output['comparables'])
+    comps_df['Sale Price2'] = comps_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))
+    comps_df = comps_df.nlargest(5, 'Sale Price2')
+    comps_avg = comps_df['Sale Price2'].mean()
+    av = mini_output['pinav']
+
+    sales_cnt = str(len(comps_df.index))
+    delta = (comps_avg / 2) - av
+    d_str = '{:,.0f}'.format(abs(delta))
+    tax_bill = .06*delta
+    tax_str = '{:,.0f}'.format(abs(tax_bill))
+    comps_str = '{:,.0f}'.format(comps_avg)
+
+    if delta < 0:
+        d_str2 = " less" #overassessed
+    else:
+        d_str2 = " greater" #underassessed
+
+    l1 = "We found " + sales_cnt + " recent sales in your area worth $" + comps_str + "."
+    l2 = "Since assessments should be no more than 50 percent of a properties value, "
+    l3 = "a more accurate assessment could be " + '{:,.0f}'.format(comps_avg / 2) + ","
+    l4 = " which is " + d_str + d_str2 + " than the current assessment. Based on current tax rates, "
+    l5 = "the resulting tax bill would be about $" + tax_str + d_str2 + "."
+    output = {}
+    output['estimate'] = l1 + " " + l2 + l3 + l4 + l5
+    return output
+
 
 def process_comps_input(comp_submit, mail):
     '''

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
 from flask_mail import Mail, Message
-from .mainfct import process_comps_input, comparables, address_candidates
+from .mainfct import process_comps_input, comparables, address_candidates, estimate
 from .logging import logger
 
 load_dotenv('api/.env')
@@ -82,6 +82,24 @@ def handle_form2():
 
     return resp
 
+@application.route('/api_v1/estimate', methods=['POST'])
+def handle_form3():
+    #owner information submit / get comps / send to comps select page
+    print('estimate')
+    targ_data = request.json
+    print('PAGE DATA', request.json)
+    print('REQUEST OBJECT', request)
+    try:
+        response_dict = get_estimate(targ_data)
+        logger(targ_data, 'get_estimate')
+        resp = jsonify({'request_status': time.time(),
+        'response': response_dict})
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        logger(targ_data, 'get_estimate', e)
+
+    return resp
+
 @application.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')
@@ -117,6 +135,15 @@ def get_comps(form_data):
     }
     """
     return comparables(form_data)
+
+def get_estimate(form_data):
+    """
+    Output:
+    {
+        estimate : 'str #a string of info to display
+    }
+    """
+    return estimate(form_data)
 
 def finalize_appeal(form_data, mail):
     '''
