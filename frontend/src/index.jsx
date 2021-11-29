@@ -16,7 +16,7 @@ import DetroitLandingPage from './landing/detroit-landing-page';
 import Appeal from './appeal/appeal';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
-import Lookup from './appeal/pages/overassessment-estimator';
+import Estimator from './estimator/estimator';
 
 const { Content, Footer } = Layout;
 
@@ -49,7 +49,7 @@ const Page = () => {
           />        
           <Route
             path="/estimate"
-            render={() => <Lookup />}
+            render={() => <Estimator city="detroit"/>}
           />        
           <Route
             path="/internaldetroitappeal"
