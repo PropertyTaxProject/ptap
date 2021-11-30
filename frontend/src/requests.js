@@ -37,3 +37,12 @@ export const lookupPin = async (data) => {
     return [];
   }
 };
+
+export const estimatePin = async (data) => {
+  try {
+    const resp = await axios.post('api_v1/estiamte', data)
+    return resp.data.responses;
+  } catch (err) {
+    return [];
+  }
+}
