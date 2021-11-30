@@ -1,5 +1,7 @@
 .git*
 __pycache__*
-frontend/node_modules/
-api/database/.csv*
+frontend/node_modules/*
+api/database/*.csv
+frontend/node_modules/.*
 .git/
+.ipynb_checkpoints/
