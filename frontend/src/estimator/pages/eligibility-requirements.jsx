@@ -133,6 +133,7 @@ const Lookup = (props) => {
         <br />
         <br />
         *Other factors may impact your tax bill such as exemptions or caps on your property's taxable value.
+        To qualify for services, you must live in an owner occupied home and your home must be assessed at $100,000 or less.
       </body>
     </div>
   );
