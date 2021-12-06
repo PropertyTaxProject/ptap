@@ -11,3 +11,4 @@ __pycache__
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 *.ipynb
+.vscode*

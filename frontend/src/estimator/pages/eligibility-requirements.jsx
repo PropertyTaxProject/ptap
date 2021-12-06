@@ -124,6 +124,19 @@ const Lookup = (props) => {
   const [targRecord, setRecord] = useState([]);
   const [estimate, setEstimate] = useState([]);
 
+  const ptapLanguage = (
+    <div>
+      <body>
+        <br />
+        If you want FREE help protesting your property tax assessment, contact the <b>Property Tax Appeal Project 
+        <a href ="https://actionnetwork.org/forms/property-tax-assessment-appeal-interest-form?source=estimator_app"> here. </a></b>
+        <br />
+        <br />
+        *Other factors may impact your tax bill such as exemptions or caps on your property's taxable value.
+      </body>
+    </div>
+  );
+
   return (
     <>
       <h2>Detroit Over-Assessment Estimator</h2>  
@@ -160,6 +173,7 @@ const Lookup = (props) => {
         {selected && <Button type="primary" htmlType="submit">Get Estimate</Button>}
         {working && <p>Generating your estimate please wait...</p>}
         {showresult && <div>{estimate}</div>}
+        {showresult && ptapLanguage}
       </Form>
     </>
   );

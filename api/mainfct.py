@@ -123,13 +123,15 @@ def estimate(form_data):
     else:
         d_str2 = " greater" #underassessed
 
-    l1 = "We found " + sales_cnt + " recent sales in your area worth $" + comps_str + "."
-    l2 = "Since assessments should be no more than 50 percent of a properties value, "
-    l3 = "a more accurate assessment could be " + '{:,.0f}'.format(comps_avg / 2) + ","
-    l4 = " which is " + d_str + d_str2 + " than the current assessment. Based on current tax rates, "
-    l5 = "the resulting tax bill would be about $" + tax_str + d_str2 + "."
+    l1 = "We found " + sales_cnt + " recent home sales in your area. The average sale price was $" + comps_str + "."
+    l2 = "Michigan law requires that property assessments be no more than 50 percent of a property's value. "
+    l3 = "In 2021, the City assessed your home at " + '{:,.0f}'.format(av) + ". "
+    l4 = "A more accurate assessment would be " + '{:,.0f}'.format(comps_avg / 2) + ","
+    l5 = " which is " + d_str + d_str2 + " than the City's current assessment. Based on current tax rates, "
+    l6 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
+    
     output = {}
-    output['estimate'] = l1 + " " + l2 + l3 + l4 + l5
+    output['estimate'] = l1 + " " + l2 + l3 + l4 + l5 + l6
     return output
 
 
