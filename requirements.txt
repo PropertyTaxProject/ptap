@@ -10,7 +10,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 lxml==4.6.3
 MarkupSafe==1.1.1
-numpy==1.19.1
+numpy==1.21.0
 pandas==1.0.5
 python-dateutil==2.8.1
 python-docx==0.8.10
