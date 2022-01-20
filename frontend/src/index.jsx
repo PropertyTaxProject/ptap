@@ -41,7 +41,7 @@ const Page = () => {
         <Switch>
           <Route
             path="/detroit"
-            render={() => <DetroitLandingPage />}
+            render={() => <Appeal city="detroit" />}
           />
           <Route
             path="/detroitappeal"

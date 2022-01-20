@@ -6,8 +6,7 @@ const PTAPHeader = () => (
   <>
     <h3>Welcome to the Application for services with the Property Tax Appeal Project.</h3>
 
-    <h1><b>The appeal window will open soon. If you want to be contacted when it opens, please fill out our <a href='https://illegalforeclosures.org/contactus'>Contact Form </a>
-     <a href='https://illegalforeclosures.org/contactus'>(https://illegalforeclosures.org/contactus).</a> </b></h1>
+    <h1><b>The appeal window will open soon. Pre-filing appeals is now available.</b></h1>
 
 
     <h1>What is the Property Tax Appeal Project?</h1>
