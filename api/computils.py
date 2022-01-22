@@ -148,16 +148,15 @@ def prettify_cook(data, sales_comps):
 
 def prettify_detroit(data, sales_comps):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre',
-                        'total_floo', 'year_built', 'heightcat', 'extcat', 'bathcat',
+                        'total_floor_area', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance']
-
     if sales_comps:
         detroit_sf_cols = detroit_sf_cols + ['Sale Price', 'Sale Date']
 
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
         'total_squa' : 'total_sqft',
-        'total_floo' : 'Total Floor Area',
+        'total_floor_area' : 'Total Floor Area',
         'heightcat' : 'Stories (not including basement)',
         'extcat': 'Exterior',
         'bathcat': 'Baths',
