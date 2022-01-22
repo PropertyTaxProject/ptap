@@ -50,7 +50,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
     if region == 'detroit':
         baseq += query_on('year_built', targ['year_built'].values[0], age_dif, 3)
-        baseq += query_on('total_floo', targ['total_floo'].values[0], floor_dif, 3)
+        baseq += query_on('total_floor_area', targ['total_floor_area'].values[0], floor_dif, 3)
         baseq += query_on('Longitude', targ['Longitude'].values[0], lon_dif, 3)
         baseq += query_on('Latitude', targ['Latitude'].values[0], lat_dif, 3)
 
