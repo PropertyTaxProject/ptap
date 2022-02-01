@@ -55,7 +55,10 @@ const ContactInfo = (props) => {
     <>
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-          <h1>Homeowner Information</h1>
+          <h1>Homeowner Contact Information</h1>
+          <p>We will try to contact you three times after you fill out this form. 
+            If we do not hear from you within 48 hours of our last attempt, we will remove you from our list. 
+            The appeals season is very short which means you must communicate promptly.</p>
           <p>How should we contact you?</p>
         </Col>
       </Row>
@@ -263,20 +266,22 @@ const ContactInfo = (props) => {
         </Form.Item>
 
         <Form.Item
-          name="preferred"
-          label="How would you like us to contact you?"
+          name="phonetime"
+          label="What time of day are you usually available to talk on the phone?"
           rules={[
             {
               required: true,
-              message: 'Please mark your preferred method!',
+              message: 'Please mark your time!',
               whitespace: true,
             },
           ]}
         >
           <Radio.Group>
-            <Radio value='Phone'>Phone</Radio>
-            <Radio value='Email'>Email</Radio>
-            <Radio value='Both'>Both/No Preference</Radio>
+            <Radio value='morning'>Morning (before 11 a.m.)</Radio>
+            <Radio value='midday'>Midday (between 11 a.m. and 2 p.m.)</Radio>
+            <Radio value='afternoon'>Afternoon (between 2 p.m. and 6 p.m.)</Radio>
+            <Radio value='evening'>Evening (between 6 p.m. and 8 p.m.)</Radio>
+            <Radio value='anytime'>Anytime</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -291,6 +296,11 @@ const ContactInfo = (props) => {
           ]}
         >
           <Select onChange={e => updateReferral(e)}>
+            <Option value='macc'>MACC Development</Option>
+            <Option value='wayne metro'>Wayne Metro</Option>
+            <Option value='uchc'>UCHC</Option>
+            <Option value='new era'>New Era Detroit</Option>
+            <Option value='peoples forum'>The People’s Forum Event</Option>
             <Option value='google'>Google Advertisement</Option>
             <Option value='social media'>Social Media (Facebook, Instagram, or Twitter)</Option>
             <Option value='text'>Text Message Advertisement</Option>
