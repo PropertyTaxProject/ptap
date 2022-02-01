@@ -11,7 +11,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         lat_dif = 0.02 * multiplier
         lon_dif = 0.02 * multiplier
         distance_filter = 2 * multiplier #miles
-        #exterior = 'Match' # (1 siding, 2 brick/other, 3 brick, 4 other)
+        exterior = 'Match' # (1 siding, 2 brick/other, 3 brick, 4 other)
         basement = 'Match'
         #garage = 'Match'
         #bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
@@ -41,7 +41,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
     if sales_comps:
         baseq += ' AND "' + sale_name + '" IS NOT NULL'
-        baseq += ' AND "' + sale_name + '" <= ' + str(targ['assessed_v'].values[0] * 2 + 1000 * multiplier)
+        baseq += ' AND "' + sale_name + '" <= ' + str(targ['assessed_v'].values[0] * 3 + 1000 * multiplier)
         baseq += ' AND "SALE_YEAR" >= 2019'
         baseq += ' AND "' + sale_name + '" > 500'
     if debug:
@@ -57,7 +57,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         #baseq += query_on('total_acre', targ['total_acre'].values[0], acre_dif, 3)
         #baseq += query_on('total_squa', targ['total_squa'].values[0], square_dif, 3)
         #baseq += query_on('heightcat', targ['heightcat'].values[0], height, 1)
-        #baseq += query_on('extcat', targ['extcat'].values[0], exterior, 1,)
+        baseq += query_on('extcat', targ['extcat'].values[0], exterior, 1,)
         #baseq += query_on('bathcat', targ['bathcat'].values[0], bath, 1)
         #baseq += query_on('has_basement', targ['has_basement'].values[0], basement, 1)
         #baseq += query_on('has_garage', targ['has_garage'].values[0], garage, 1)
@@ -149,7 +149,7 @@ def prettify_cook(data, sales_comps):
 def prettify_detroit(data, sales_comps):
     detroit_sf_cols = ['parcel_num', 'address', 'total_squa', 'total_acre',
                         'total_floor_area', 'year_built', 'heightcat', 'extcat', 'bathcat',
-                        'has_garage', 'has_basement', 'assessed_v', 'Distance']
+                        'has_garage', 'has_basement', 'assessed_v', 'Distance', 'Neighborhood']
     if sales_comps:
         detroit_sf_cols = detroit_sf_cols + ['Sale Price', 'Sale Date']
 
@@ -208,5 +208,6 @@ def prettify_detroit(data, sales_comps):
                     })
         if sales_comps:
             data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,.2f}".format(x))
+            data['Sale Date'] = data['Sale Date'].str.slice(0, 10)
 
     return data
