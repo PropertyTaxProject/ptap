@@ -221,7 +221,7 @@ def submit_detroit_sf(comp_submit, mail):
         'PIN' : pin,
         'Phone Number' : comp_submit['phone'],
         'Email Address' : comp_submit['email'],
-        'Preferred Contact Method' : comp_submit['preferred'],
+        'Phone Contact Time' : comp_submit['phonetime'],
         'PRE' : targ['homestead_'].to_string(index=False),
         'Eligibility Flag' : comp_submit['eligibility'],
         'Characteristics Flag': c_flag,
