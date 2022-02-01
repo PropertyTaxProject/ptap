@@ -5,7 +5,7 @@ from docxtpl import DocxTemplate
 import pandas as pd
 from .email import detroit_submission_email, cook_submission_email
 from .logging import record_final_submission
-from .dataqueries import get_pin
+from .dataqueries import get_pin, avg_ecf
 
 def submit_cook_sf(comp_submit, mail):
     '''
@@ -153,15 +153,18 @@ def submit_detroit_sf(comp_submit, mail):
 
     #tbl cols
     target_cols = ['Baths', 'Square Footage (Abv. Ground)', 'Year Built', \
-        'Exterior Material', 'Number of Stories']
+        'Exterior Material', 'Number of Stories', 'Neighborhood']
     
     comp_cols = ['Address', 'Dist.', 'Sale Price', 'Sale Date'] + target_cols
+
+    #avg ecf price
+    avg_ecf_price = avg_ecf(t_df['Neighborhood'].values[0])
 
     #generate docx
     output_name = 'api/tmp_data/' + pin + \
         ' Protest Letter Updated ' +  datetime.today().strftime('%m_%d_%y') + '.docx'
     comp_submit['output_name'] = output_name
-    doc = DocxTemplate("api/template_files/detroit_template_2021.docx")
+    doc = DocxTemplate("api/template_files/detroit_template_2022.docx")
 
     allinfo = []
     propinfo = []
@@ -169,6 +172,8 @@ def submit_detroit_sf(comp_submit, mail):
     for key, val in comp_submit.items():
         if key not in skip_ls:
             allinfo.append([key, val])
+        
+    allinfo.append(['Average Price Per Sqft in ECF', round(avg_ecf_price, 3)])
 
     for i, j in get_pin('detroit', pin).to_dict(orient='records')[0].items():
         propinfo.append([i, j])
