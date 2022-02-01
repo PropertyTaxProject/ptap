@@ -7,20 +7,14 @@ const { Header } = Layout;
 
 const PTAPHeader = () => (
   <Header>
-    <Menu theme="dark" mode="horizontal">
+    <Menu mode="horizontal">
       <Menu.Item key="1"><a href="/">Property Tax Appeal Project</a></Menu.Item>
       <Menu.Item>
         <a href="https://illegalforeclosures.org/" target='_blank' rel="noopener noreferrer">
-          <img height={50} alt='Coalition Logo' src={coalition} style={{backgroundColor:"White"}}/>
+          <img height={50} alt='Coalition Logo' src={coalition}/>
         </a>
       </Menu.Item>
-      {/*
-      <Menu.Item>
-        <a href="https://www.law.umich.edu/Pages/default.aspx" target='_blank' rel="noopener noreferrer">
-          <img height={50} alt='University of Michigan Law School Logo' src={umls} style={{backgroundColor:"White", padding:'5px'}}/>
-        </a>
-      </Menu.Item>
-      */}
+      <Menu.Item disabled={true}><span style={{color:'black'}}>Call 313-438-8698 or email us at law-propertytax@umich.edu</span></Menu.Item>
     </Menu>
   </Header>
 );
