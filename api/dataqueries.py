@@ -18,9 +18,12 @@ def great_circle(lon1, lat1, lon2, lat2):
 def ecdf(x):
     x = sort(x)
     n = len(x)
-    def _ecdf(v):
+    def _ecdf(v, reverse=False):
         # side='right' because we want Pr(x <= v)
-        return (searchsorted(x, v, side='right') + 1) / n
+        prob = (searchsorted(x, v, side='right') + 1) / n
+        if reverse:
+            return 1 - prob
+        return prob
     return _ecdf
 
 # sql query things
@@ -60,3 +63,8 @@ def run_comps_query(query, val, range_val):
     else:
         data['Distance'] = None
     return data[data['Distance'] < range_val]
+
+def avg_ecf(neighborhood):
+    data = pd.read_sql('SELECT "total_squa", "Sale Price" FROM detroit WHERE "Sale Price" is not null and Neighborhood = "' + neighborhood + '"', con)
+    data['price_per_sqft'] = data['Sale Price'] / data['total_squa']
+    return data['price_per_sqft'].mean()
