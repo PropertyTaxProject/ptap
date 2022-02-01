@@ -18,3 +18,7 @@ code {
   /* header is 64px, footer is 70px */
   min-height: calc(100vh - 134px);
 }
+
+.ant-menu {
+  background-color: #FFDE52;
+}
