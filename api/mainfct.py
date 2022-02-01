@@ -2,7 +2,7 @@ import string
 import pandas as pd
 from fuzzywuzzy import process
 from .computils import prettify_detroit, prettify_cook, find_comps
-from .dataqueries import address_candidates_query, get_pin, ecdf
+from .dataqueries import address_candidates_query, get_pin, ecdf, avg_ecf
 from .submitappeal import submit_cook_sf, submit_detroit_sf
 
 def address_candidates(input_data, cutoff_info):
@@ -81,15 +81,22 @@ def comparables(input_data, sales_comps=False):
     dist_weight = 1
     valuation_weight = 3
 
-    cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance)
-    cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value)
+    cur_comps['dist_dist'] = ecdf(cur_comps.Distance)(cur_comps.Distance, True)
+    cur_comps['val_dist'] = ecdf(cur_comps.assessed_value)(cur_comps.assessed_value, True)
     cur_comps['score'] = dist_weight * cur_comps['dist_dist'] + \
         valuation_weight * cur_comps['val_dist']
-    cur_comps = cur_comps.sort_values(by=['score'])
-    cur_comps = cur_comps.head(max_comps)
 
+    if input_data['appeal_type'] == "detroit_single_family": #neighborhood bonus
+        cur_comps['neigborhoodmatch'] = cur_comps['Neighborhood'] == targ['Neighborhood'].values[0]
+        cur_comps['neigborhoodmatch'] = cur_comps['neigborhoodmatch'].astype(int)
+        cur_comps['score'] = cur_comps['score'] + 1 * cur_comps['neigborhoodmatch']
+        cur_comps = cur_comps.drop(['neigborhoodmatch'], axis=1)
+
+    cur_comps = cur_comps.sort_values(by=['score'], ascending=False)
+    cur_comps = cur_comps.head(max_comps)
     new_targ = new_targ.round(2)
     cur_comps = cur_comps.round(2).drop(['dist_dist', 'val_dist'], axis=1)
+
 
     output = {}
     new_targ = new_targ.fillna('')
