@@ -1,12 +1,10 @@
 import React from 'react';
-import { Button, Space } from 'antd';
-import { Link } from 'react-router-dom';
 
 const PTAPHeader = () => (
   <>
     <h3>Welcome to the Application for services with the Property Tax Appeal Project.</h3>
 
-    <h1><b>The appeal window will open soon. Pre-filing appeals is now available.</b></h1>
+    <h1><b>The appeal window for 2022 is now closed. The appeal window for 2023 will open in January. To be contacted when the window opens fill out our contact form <a href='https://illegalforeclosures.org/contactus' target='_blank' rel="noopener noreferrer">here.</a></b></h1>
 
 
     <h1>What is the Property Tax Appeal Project?</h1>
@@ -53,13 +51,6 @@ const PTAPHeader = () => (
     <p>Check out a short video below and visit the <a href='https://illegalforeclosures.org/' target='_blank' rel="noopener noreferrer">
       Coalition for Property Tax Justice website</a> for more information!</p>
     <iframe title="Illegal Foreclosures" width="560" height="315" src="https://www.youtube.com/embed/J1wlRYB3p7E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    <h1>How to protest your property tax assessment</h1>
-    <p>Click the button below to get started on your Application with the Property Tax Appeal Project. </p>
-    {/*
-    <Space>
-      <Button type="primary"><Link to="/detroitappeal">Click here to get started</Link></Button>
-    </Space>
-    */}
 
   </>
 );
