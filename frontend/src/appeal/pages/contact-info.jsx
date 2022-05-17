@@ -56,9 +56,9 @@ const ContactInfo = (props) => {
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h1>Homeowner Contact Information</h1>
-          <p>We will try to contact you three times after you fill out this form. 
-            If we do not hear from you within 48 hours of our last attempt, we will remove you from our list. 
-            The appeals season is very short which means you must communicate promptly.</p>
+          <p>We will try to contact you three times on three separate days after you fill out this form. 
+            If we do not hear from you within 72 hours of our last attempt, we will remove you from our list. 
+            Please note: when deadlines are approaching, we may only try to contact you once or twice. The appeals season is very short which means you must communicate promptly.</p>
           <p>How should we contact you?</p>
         </Col>
       </Row>
@@ -112,7 +112,7 @@ const ContactInfo = (props) => {
 
         <Form.Item
           name="phonetype"
-          label="Is this a cell phone or home phone number?"
+          label="Can we text you at this number?"
           rules={[
             {
               required: true,
@@ -122,8 +122,8 @@ const ContactInfo = (props) => {
           ]}
         >
           <Radio.Group>
-            <Radio value='Home'>Home</Radio>
-            <Radio value='Cell'>Cell</Radio>
+            <Radio value='Cell'>Yes</Radio>
+            <Radio value='Home'>No</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -296,14 +296,9 @@ const ContactInfo = (props) => {
           ]}
         >
           <Select onChange={e => updateReferral(e)}>
-            <Option value='macc'>MACC Development</Option>
-            <Option value='wayne metro'>Wayne Metro</Option>
-            <Option value='uchc'>UCHC</Option>
-            <Option value='new era'>New Era Detroit</Option>
-            <Option value='peoples forum'>The People’s Forum Event</Option>
-            <Option value='google'>Google Advertisement</Option>
+            <Option value='local'>Local Organization</Option>
             <Option value='social media'>Social Media (Facebook, Instagram, or Twitter)</Option>
-            <Option value='text'>Text Message Advertisement</Option>
+            <Option value='text'>Text Message</Option>
             <Option value='newspaper'>Newspaper Article</Option>
             <Option value='referral'>Referral</Option>
             <Option value='other'>Other</Option>

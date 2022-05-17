@@ -62,6 +62,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         #baseq += query_on('has_basement', targ['has_basement'].values[0], basement, 1)
         #baseq += query_on('has_garage', targ['has_garage'].values[0], garage, 1)
     elif region == 'cook':
+        baseq += query_on('Property Class', targ['Property Class'].values[0], "Match", 1)
         baseq += query_on('Age', targ['Age'].values[0], age_dif, 3)
         baseq += query_on('Building Square Feet', targ['Building Square Feet'].values[0], build_dif, 3)
         baseq += query_on('Land Square Feet', targ['Land Square Feet'].values[0], land_dif, 3)

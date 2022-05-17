@@ -143,7 +143,7 @@ const Characteristics = (props) => {
           <h1>Pick the 5 properties that are the most similar to your property.</h1>
           <p>It is okay if you are unsure, your advocate will talk with you about this in more detail.</p>
           <p>
-          Below is a list of homes in your area that have recently sold. 
+          Below is a list of homes in your area that we have identified as possibly similar to your home.
           Pick the 5 that are most similar to your home. 
           Select properties by clicking the “Add” button on the far right.
           </p>

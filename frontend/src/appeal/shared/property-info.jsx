@@ -31,7 +31,7 @@ const PropertyInfo = (props) => {
         <Row>
           <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
             <h1>Your Property Information</h1>
-            <p>Below is the data that the City of Detroit has on file for your property.</p>
+            <p>Below is the data that the Assessor has on file for your property.</p>
             <br />
           </Col>
         </Row>

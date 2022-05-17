@@ -118,7 +118,7 @@ def get_pin(form_data):
     '''
     cutoff_info = {
         'detroit': 60000,
-        'cook': 250000
+        'cook': 225000
     }
 
     return address_candidates(form_data, cutoff_info)
