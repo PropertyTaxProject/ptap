@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-axios.defaults.baseURL = '127.0.0.1:8000';
 
 export const submitForm = async (info) => {
   try {
