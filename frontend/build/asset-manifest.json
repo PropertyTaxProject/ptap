@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/static/css/main.2f305736.css",
-    "main.js": "/static/js/main.91f827b0.js",
+    "main.js": "/static/js/main.d0dd7831.js",
     "static/media/UMLS_logo.jfif": "/static/media/UMLS_logo.62ab2c69cb1540929daa.jfif",
     "static/media/coalition_logo.png": "/static/media/coalition_logo.ca4270b58475c6c286cf.png",
     "index.html": "/index.html",
     "main.2f305736.css.map": "/static/css/main.2f305736.css.map",
-    "main.91f827b0.js.map": "/static/js/main.91f827b0.js.map"
+    "main.d0dd7831.js.map": "/static/js/main.d0dd7831.js.map"
   },
   "entrypoints": [
     "static/css/main.2f305736.css",
-    "static/js/main.91f827b0.js"
+    "static/js/main.d0dd7831.js"
   ]
 }
