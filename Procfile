@@ -1,1 +1,1 @@
-web: gunicorn -b 127.0.0.1:5000 -w 1 -k gthread --thread=4 application:application
+web: gunicorn -b 127.0.0.1:8000 -w 1 -k gthread --thread=4 application:application
