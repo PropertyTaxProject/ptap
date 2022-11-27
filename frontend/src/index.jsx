@@ -1,4 +1,4 @@
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import './index.css';
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom';
