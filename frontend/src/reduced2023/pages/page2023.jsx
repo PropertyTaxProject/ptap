@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { lookupPin, estimatePin } from '../../requests';
+import { estimatePin } from '../../requests';
 import {
   Form,
   Input,
@@ -8,19 +8,14 @@ import {
 } from 'antd';
 
 import PinLookup from './pinlookup';
+import Comparables from './comparables';
 
-
-
-var submitted = false;
-var selected = false;
 let appealType = 'detroit_single_family';
-
-
 
 
 const CompsLookup = (props) => {
   const [form] = Form.useForm();
-  const { targRecord, setEstimate, set1, set2 } = props;
+  const { targRecord, setEstimate, set1, set2, selected, setSelect, appealType } = props;
 
   return (
     <>
@@ -29,7 +24,7 @@ const CompsLookup = (props) => {
           name="Eligibility"
           layout='vertical'
           onFinish={async () => {
-            selected = false;
+            setSelect(false);
             var pin = targRecord.PIN;
             const response = await estimatePin({ appeal_type: appealType, pin });
             if (response != null) {
@@ -42,7 +37,6 @@ const CompsLookup = (props) => {
           scrollToFirstError
           autoComplete="off"
         > 
-        {submitted && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
         {selected && <Button type="primary" htmlType="submit">Get Estimate</Button>}
       </Form>
     </>
@@ -72,6 +66,7 @@ const TheShow = (props) => {
   const [show1, set1] = useState(true);
   const [show2, set2] = useState(false);
   const [show3, set3] = useState(false);
+  const [selected, setSelect] = useState(false);
 
   return (
     <>
@@ -89,12 +84,17 @@ const TheShow = (props) => {
         logPin={logPin}
         logUuid={logUuid}
         setRecord={setRecord}
+        setSelect={setSelect}
+        appealType={appealType}
       />}
       <CompsLookup
         targRecord={targRecord}
         setEstimate={setEstimate}
         set1={set1}
         set2={set2}
+        selected={selected}
+        setSelect={setSelect}
+        appealType={appealType}
       />
       {show2 && <div><h2>Select Comparables (2)</h2>{estimate}</div>}
       {show2 && ptapLanguage}

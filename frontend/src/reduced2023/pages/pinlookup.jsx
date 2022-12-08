@@ -1,13 +1,27 @@
+import React, { useState } from 'react';
+import { lookupPin } from '../../requests';
+import {
+  Form,
+  Input,
+  Button,
+  Table,
+} from 'antd';
+
+var submitted = false;
+var selected = false;
+
+
 const PinLookup = (props) => {
     const [form] = Form.useForm();
     const [pins, setPin] = useState([]);
-    const { logPin, logUuid, setRecord } = props;
+    const { logPin, logUuid, setRecord, setSelect, appealType } = props;
   
     const selectPin = (record) => { //log pin
       logPin(record.PIN);
       setPin([record])
       setRecord(record);
       selected = true;
+      setSelect(true);
       submitted = false;
     };
   
@@ -96,6 +110,7 @@ const PinLookup = (props) => {
             </>
           )
           : (submitted ? 'Your property could not be found. Please try searching again.' : null))}
+        {submitted && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
       </>
     );
   

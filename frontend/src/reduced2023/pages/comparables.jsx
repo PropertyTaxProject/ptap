@@ -6,7 +6,7 @@ import {
   Col,
   Divider,
 } from 'antd';
-import PropertyInfo from '../shared/property-info';
+import PropertyInfo from '../../appeal/shared/property-info';
 
 const { Column } = Table;
 const re = /(\b[a-z](?!\s))/g;
