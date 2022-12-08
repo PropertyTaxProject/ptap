@@ -36,3 +36,8 @@ yarn build
 eb create ptap
 eb deploy
 ```
+
+
+Pick 3 comps, paired reweighting using delta of homes same but in one characteristic
+
+Square footage smaller than it is current 

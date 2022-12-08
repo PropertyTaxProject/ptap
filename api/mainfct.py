@@ -137,9 +137,8 @@ def estimate(form_data):
     l5 = " which is " + d_str + d_str2 + " than the City's current assessment. Based on current tax rates, "
     l6 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
     
-    output = {}
-    output['estimate'] = l1 + " " + l2 + l3 + l4 + l5 + l6
-    return output
+    mini_output['estimate'] = l1 + " " + l2 + l3 + l4 + l5 + l6
+    return mini_output
 
 
 def process_comps_input(comp_submit, mail):
