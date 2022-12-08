@@ -17,6 +17,7 @@ import Appeal from './appeal/appeal';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
 import Estimator from './estimator/estimator';
+import Reduced2023 from './reduced2023/reduced2023';
 
 const { Content, Footer } = Layout;
 
@@ -42,6 +43,10 @@ const Page = () => {
           <Route
             path="/detroit"
             render={() => <DetroitLandingPage />}
+          />
+          <Route
+            path="/detroit2023"
+            render={() => <Reduced2023 />}
           />
           <Route
             path="/estimate"
