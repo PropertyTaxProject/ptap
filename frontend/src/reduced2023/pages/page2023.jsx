@@ -15,11 +15,12 @@ let appealType = 'detroit_single_family';
 
 const CompsLookup = (props) => {
   const [form] = Form.useForm();
-  const { targRecord, setEstimate, set1, set2, selected, setSelect, appealType } = props;
+  const { targRecord, setEstimate, setStep, selected, setSelect, appealType, setComparablesPool, setHeaders,
+    setTargetProperty, setPropInfo } = props;
 
   return (
     <>
-      <Form //this form submits select property and receives reponse back
+      <Form //this mini-form submits select property and receives reponse back
           form={form}
           name="Eligibility"
           layout='vertical'
@@ -28,9 +29,12 @@ const CompsLookup = (props) => {
             var pin = targRecord.PIN;
             const response = await estimatePin({ appeal_type: appealType, pin });
             if (response != null) {
-              set1(false);
-              set2(true);
               setEstimate(response.estimate);
+              setComparablesPool(response.comparables);
+              setHeaders(response.labeled_headers);
+              setTargetProperty(response.target_pin[0]);
+              setPropInfo(response.prop_info)
+              setStep(2);
             }
           }}
           labelAlign="left"
@@ -63,10 +67,19 @@ const TheShow = (props) => {
   const [targRecord, setRecord] = useState([]);
   const [estimate, setEstimate] = useState([]);
 
-  const [show1, set1] = useState(true);
-  const [show2, set2] = useState(false);
-  const [show3, set3] = useState(false);
+  const [step, setStep] = useState(1);
   const [selected, setSelect] = useState(false);
+
+  const [headers, setHeaders] = useState([]); /*headers for comp table*/
+  const [comparablesPool, setComparablesPool] = useState([]); /*pool of possible comparables*/
+  const [comparables, setComparables] = useState([]); /*selected comparable*/
+
+  const [targetProperty, setTargetProperty] = useState(null);
+  const [propInfo, setPropInfo] = useState([]); /*target property characteristics*/
+
+  
+  
+
 
   return (
     <>
@@ -78,8 +91,8 @@ const TheShow = (props) => {
         Second, among the five comparable properties, select the one property which is most similar. 
         Finally, you may choose to download a document which summarizes the comparables and estimated valuation.
       </p>
-      {show1 && <h2>Property Search (1)</h2>}
-      {show1 && <PinLookup
+      {step == 1 && <h2>Property Search (1)</h2>}
+      {step == 1 && <PinLookup
         city={city}
         logPin={logPin}
         logUuid={logUuid}
@@ -90,14 +103,24 @@ const TheShow = (props) => {
       <CompsLookup
         targRecord={targRecord}
         setEstimate={setEstimate}
-        set1={set1}
-        set2={set2}
+        setStep={setStep}
         selected={selected}
         setSelect={setSelect}
         appealType={appealType}
+        setHeaders={setHeaders}
+        setComparablesPool={setComparablesPool}
+        setTargetProperty={setTargetProperty}
+        setPropInfo={setPropInfo}
       />
-      {show2 && <div><h2>Select Comparables (2)</h2>{estimate}</div>}
-      {show2 && ptapLanguage}
+      {step == 2 && <div><h2>Select Comparables (2)</h2>{estimate}</div>}
+      {step == 2 && ptapLanguage}
+      {step == 2 && 
+      <Comparables
+      comparablesPool={comparablesPool}
+      headers={headers}
+      targetProperty={targetProperty}
+      propInfo={propInfo}
+      />}
     
 
     </>
