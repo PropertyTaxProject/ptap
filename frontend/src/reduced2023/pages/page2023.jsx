@@ -65,16 +65,16 @@ const ptapLanguage = (
 );
 
 const TheShow = (props) => {
-  const { logPin, city, logUuid } = props;
+  const { logPin, city } = props;
   const [targRecord, setRecord] = useState([]);
   const [estimate, setEstimate] = useState([]);
+  const [Uuid, logUuid] = useState([]);
 
   const [step, setStep] = useState(1);
   const [selected, setSelect] = useState(false);
 
   const [headers, setHeaders] = useState([]); /*headers for comp table*/
   const [comparablesPool, setComparablesPool] = useState([]); /*pool of possible comparables*/
-  const [comparables, setComparables] = useState([]); /*selected comparable*/
 
   const [targetProperty, setTargetProperty] = useState(null);
   const [propInfo, setPropInfo] = useState([]); /*target property characteristics*/
@@ -113,10 +113,10 @@ const TheShow = (props) => {
       {step == 2 && 
       <Comparables
       comparablesPool={comparablesPool}
-      setComparables={setComparables}
       headers={headers}
       targetProperty={targetProperty}
       propInfo={propInfo}
+      Uuid={Uuid}
       />}
       {step == 3 && ptapLanguage}
       {step == 3 && estimate}

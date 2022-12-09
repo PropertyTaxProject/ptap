@@ -82,6 +82,7 @@ def handle_form2():
 
     return resp
 
+
 @application.route('/api_v1/estimate', methods=['POST'])
 def handle_form3():
     #owner information submit / get comps / send to comps select page
@@ -97,6 +98,26 @@ def handle_form3():
     except Exception as e:
         resp = jsonify({'error': str(e)})
         logger(targ_data, 'get_estimate', e)
+
+    return resp
+
+@application.route('/api_v1/submit3', methods=['POST'])
+def handle_form4():
+    #submit estimate and receive response
+    print('estimate submit')
+    est_data = request.json
+    download = False
+    print(est_data)
+    try:
+        response_dict = finalize_estimate(est_data)
+        logger(est_data, 'est_submit')
+        if download:
+            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % est_data['name'].lower().replace(' ', '-'))
+        resp = jsonify({'request_status': time.time(),
+        'response': response_dict})
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        #logger(est_data, 'submit', e)
 
     return resp
 
@@ -171,3 +192,6 @@ def finalize_appeal(form_data, mail):
     }
     '''
     return process_comps_input(form_data, mail)
+
+def finalize_estimate(form_data):
+    pass

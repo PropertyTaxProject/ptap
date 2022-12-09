@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitEstimate } from '../../requests';
 import {
   Form,
   Button,
@@ -11,13 +12,13 @@ const re = /(\b[a-z](?!\s))/g;
 const createTitle = (title) => title.replace('_', ' ').replace(re, (x) => x.toUpperCase());
 
 //show comparables
-const CharacteristicsTable = (props) => {
+const ComparablesTable = (props) => {
   const {
     comparablesPool,
     headers,
     propInfo,
     targetProperty,
-    setComparables
+    Uuid
   } = props;
 
   const [candidates, setCandidates] = useState([]);
@@ -61,6 +62,32 @@ const CharacteristicsTable = (props) => {
       {propInfo}
       <Divider/>
       <h1>Step 2: Select Comparable Property</h1>
+      {!showSelected && <p>This table includes properties which might be similar to yours. Click 'Add' on the property which is most similar.</p>}
+      <Table 
+        dataSource={candidates} 
+        scroll={{ x: true }}
+        style={!showSelected ? { display: ''} : {display: 'none'}}
+      >
+        {Columns}
+        <Column
+          title="Action"
+          key="action"
+          render={(record) => (
+          <Button 
+            onClick={() => {
+              if(selectedComparables.length >= 1){
+                alert('You may only select 1 comparable. In order to continue adding this property, you must remove one you have already added.')
+              } else{
+                setCandidates(candidates.filter(candidate => candidate.PIN !== record.PIN));
+                setSelected(selectedComparables.concat(record));
+              }
+            }}
+          >
+            Add
+          </Button>
+          )}
+        />
+      </Table>
       {showSelected && 
       <>
         <h3>Your Selected Comparable</h3>
@@ -88,71 +115,44 @@ const CharacteristicsTable = (props) => {
           )}
         />
       </Table>
-      <Form
+      {showSelected && <Form
           form={form}
           name="Get Comps Final"
           layout='vertical'
-          onFinish={async (data) => { /*logResponse(await lookupPin({ appeal_type: appealType, ...data })); */ }}
+          onFinish={async () => { submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables );  }} 
           labelAlign="left"
           scrollToFirstError
           autoComplete="off"
         >
 
-          <Form.Item compact>
-            <Button type="primary" htmlType="submit">General Comparable Letter</Button>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">Generate Comparable Letter</Button>
           </Form.Item>
-      </Form>
-      {!showSelected && <p>This table includes properties which might be similar to yours. Click 'Add' on the property which is most similar.</p>}
-      <Table 
-        dataSource={candidates} 
-        scroll={{ x: true }}
-        style={!showSelected ? { display: ''} : {display: 'none'}}
-      >
-        {Columns}
-        <Column
-          title="Action"
-          key="action"
-          render={(record) => (
-          <Button 
-            onClick={() => {
-              if(selectedComparables.length >= 1){
-                alert('You may only select 1 comparable. In order to continue adding this property, you must remove one you have already added.')
-              } else{
-                setCandidates(candidates.filter(candidate => candidate.PIN !== record.PIN));
-                setSelected(selectedComparables.concat(record));
-              }
-            }}
-          >
-            Add
-          </Button>
-          )}
-        />
-      </Table>
+      </Form>}
     </>
   );
 };
 
-const Characteristics = (props) => {
+const Comparables = (props) => {
   const {
     comparablesPool,
     headers,
     targetProperty,
     propInfo,
-    setComparables
+    Uuid
   } = props;
 
   return (
     <>
-      <p></p>
-      <CharacteristicsTable
+      <ComparablesTable
         propInfo={propInfo}
         targetProperty={targetProperty}
         comparablesPool={comparablesPool}
         headers={headers}
-        setComparables={setComparables}
+        Uuid={Uuid}
       />
     </>
   );
 };
 
-export default Characteristics;
+export default Comparables;

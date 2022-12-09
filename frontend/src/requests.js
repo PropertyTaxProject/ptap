@@ -29,6 +29,24 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
   }
 };
 
+export const submitEstimate = async (targetProperty, selectedComparables, comparablesPool, uuid) => {
+  let today = new Date()
+  let date = today.getDate() + '-' + parseInt(today.getMonth() + 1) + '-' + today.getFullYear()
+  try {
+    const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
+    console.log(body);
+    const download = true;
+    const resp = await axios.post('/api_v1/submit3', body, { responseType: download ? 'blob' : 'json' });
+    if (download === true) {
+      saveAs(resp.data, `${targetProperty.Address + ' ' + date} Appendix.docx`);
+    } else {
+      console.log(resp);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const lookupPin = async (data) => {
   try {
     const resp = await axios.post('/api_v1/pin-lookup', data)
