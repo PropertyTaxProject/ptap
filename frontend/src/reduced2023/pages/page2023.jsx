@@ -5,6 +5,7 @@ import {
   Input,
   Button,
   Table,
+  Divider,
 } from 'antd';
 
 import PinLookup from './pinlookup';
@@ -35,7 +36,8 @@ const CompsLookup = (props) => {
               setPropInfo(response.prop_info)
               setStep(2);
             }
-          }}
+          }
+        }
           labelAlign="left"
           scrollToFirstError
           autoComplete="off"
@@ -48,7 +50,7 @@ const CompsLookup = (props) => {
   };
 
 const ptapLanguage = (
-  <div>
+  <>
     <body>
       <br />
       If you want FREE help protesting your property tax assessment, contact the <b>Property Tax Appeal Project 
@@ -58,7 +60,8 @@ const ptapLanguage = (
       *Other factors may impact your tax bill such as exemptions or caps on your property's taxable value.
       To qualify for services, you must live in an owner occupied home and your home must be assessed at $100,000 or less.
     </body>
-  </div>
+  </>
+
 );
 
 const TheShow = (props) => {
@@ -82,11 +85,11 @@ const TheShow = (props) => {
       <p>
       This tool finds possible comparables and estimates the likelihood that your property is over-assessed. This page will not file an appeal on your behalf.
       </p>
-      <p>There are three steps here to generate your comparables. First, search and select the property in the table below. 
+      <p>There are two steps to generate your comparables. First, search and select the property in the table below. 
         Second, among the five comparable properties, select the one property which is most similar. 
-        Finally, you may choose to download a document which summarizes the comparables and estimated valuation.
+        Finally, you may choose to download a document which summarizes the comparables and estimated valuation to assist in filing an appeal.
       </p>
-      {step == 1 && <h2>Property Search (1)</h2>}
+      <Divider/>
       {step == 1 && <PinLookup
         city={city}
         logPin={logPin}
@@ -107,17 +110,16 @@ const TheShow = (props) => {
         setTargetProperty={setTargetProperty}
         setPropInfo={setPropInfo}
       />
-      {step == 2 && <div><h2>Select Comparables (2)</h2>{estimate}</div>}
-      {step == 2 && ptapLanguage}
       {step == 2 && 
       <Comparables
       comparablesPool={comparablesPool}
+      setComparables={setComparables}
       headers={headers}
       targetProperty={targetProperty}
       propInfo={propInfo}
       />}
-    
-
+      {step == 3 && ptapLanguage}
+      {step == 3 && estimate}
     </>
   );
 };

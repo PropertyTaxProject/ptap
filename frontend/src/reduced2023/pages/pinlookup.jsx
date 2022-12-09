@@ -80,6 +80,7 @@ const PinLookup = (props) => {
   
     return (
       <>
+        <h1>Step 1: Property Search</h1>
         <Form
           form={form}
           name="Pin Lookup"
@@ -98,7 +99,7 @@ const PinLookup = (props) => {
             <Form.Item style={{ width: '300px' }} name="st_name" rules={[{ required: true, message: 'Street name is required.' }]}>
               <Input placeholder="street" />
             </Form.Item>
-            <Button htmlType="submit">Search</Button>
+            <Button type="primary" htmlType="submit">Search</Button>
           </Input.Group>
         </Form>
   
@@ -106,7 +107,7 @@ const PinLookup = (props) => {
           ? (
             <>
               <br />
-              <Table columns={columns} dataSource={pins} />
+              <Table key={pins.PIN} columns={columns} dataSource={pins} />
             </>
           )
           : (submitted ? 'Your property could not be found. Please try searching again.' : null))}
