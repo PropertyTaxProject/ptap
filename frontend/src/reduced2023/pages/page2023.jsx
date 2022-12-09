@@ -12,7 +12,6 @@ import Comparables from './comparables';
 
 let appealType = 'detroit_single_family';
 
-
 const CompsLookup = (props) => {
   const [form] = Form.useForm();
   const { targRecord, setEstimate, setStep, selected, setSelect, appealType, setComparablesPool, setHeaders,
@@ -76,10 +75,6 @@ const TheShow = (props) => {
 
   const [targetProperty, setTargetProperty] = useState(null);
   const [propInfo, setPropInfo] = useState([]); /*target property characteristics*/
-
-  
-  
-
 
   return (
     <>

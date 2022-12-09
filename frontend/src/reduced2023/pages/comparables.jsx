@@ -17,6 +17,7 @@ const CharacteristicsTable = (props) => {
   const {
     comparablesPool,
     headers,
+    propInfo
   } = props;
 
   const [candidates, setCandidates] = useState([]);
@@ -44,9 +45,22 @@ const CharacteristicsTable = (props) => {
 
   return (
     <>
+      <h2>Your Property Information</h2>
+      <p>Below is the data that the Assessor has on file for your property.</p>
+      <Table 
+        dataSource={propInfo} 
+        scroll={{ x: true }}
+      >
+        {Columns}
+        <Column
+          title="Action"
+          key="action"
+        />
+      </Table>
+      <Divider/>
       {showSelected && 
       <>
-        <h3>Your Selected Comparable</h3>
+        <h2>Your Selected Comparable</h2>
         <p>This table includes the property you have selected as comparables to yours. Click 'Delete' to remove the property from your selection.</p>
       </>
       }
@@ -112,11 +126,6 @@ const Characteristics = (props) => {
 
   return (
     <>
-      <PropertyInfo 
-        targetProperty={targetProperty} 
-        cols={5}
-        propInfo={propInfo} />
-      <Divider />
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
           <h1>Pick the property that is the most similar to your property.</h1>
@@ -129,6 +138,7 @@ const Characteristics = (props) => {
         </Col>
       </Row>
       <CharacteristicsTable
+        propInfo={propInfo}
         comparablesPool={comparablesPool}
         headers={headers}
       />
