@@ -114,7 +114,7 @@ def comparables(input_data, sales_comps=False):
 
     return output
 
-def process_estimate(form_data):
+def process_estimate(form_data, download):
     '''
     {
         'target_pin': [{}],
@@ -154,96 +154,60 @@ def process_estimate(form_data):
         'Exterior Material', 'Number of Stories', 'Neighborhood']
     
     comp_cols = ['Address', 'Dist.', 'Sale Price', 'Sale Date'] + target_cols
+    output = {}
+
 
     #generate docx
-    output_name = 'api/tmp_data/' + pin + \
-        datetime.today().strftime('%m_%d_%y') + '.docx'
+    if download:
+        output_name = 'api/tmp_data/' + pin + \
+            datetime.today().strftime('%m_%d_%y') + '.docx'
 
-    doc = DocxTemplate("api/template_files/detroit_template_2023.docx")
+        doc = DocxTemplate("api/template_files/detroit_template_2023.docx")
 
-    context = {
-        'pin' : pin,
-        'address' : t_df.Address[0],
-        'comp_address' : c_df.Address[0],
-        'current_sev' : '{:,.0f}'.format(pin_av),
-        'current_faircash' : '${:,.0f}'.format(pin_av * 2),
-        'contention_sev' : '{:,.0f}'.format(comps_avg / 2),
-        'contention_faircash' : '${:,.0f}'.format(comps_avg),
-        'target_labels' : target_cols,
-        'target_contents' : [t_df[target_cols].to_numpy().tolist()[0]],
-        'target_contents2' : [c_df[target_cols].to_numpy().tolist()[0]],
-        'comp_labels' : comp_cols,
-        'comp_contents' : comps_df[comp_cols].to_numpy().tolist(),
-        }
+        context = {
+            'pin' : pin,
+            'address' : t_df.Address[0],
+            'comp_address' : c_df.Address[0],
+            'current_sev' : '{:,.0f}'.format(pin_av),
+            'current_faircash' : '${:,.0f}'.format(pin_av * 2),
+            'contention_sev' : '{:,.0f}'.format(comps_avg / 2),
+            'contention_faircash' : '${:,.0f}'.format(comps_avg),
+            'target_labels' : target_cols,
+            'target_contents' : [t_df[target_cols].to_numpy().tolist()[0]],
+            'target_contents2' : [c_df[target_cols].to_numpy().tolist()[0]],
+            'comp_labels' : comp_cols,
+            'comp_contents' : comps_df[comp_cols].to_numpy().tolist(),
+            }
 
-    doc.render(context)
-    doc.save(output_name)
+        doc.render(context)
+        doc.save(output_name)
 
-    output = {}
-    # also save a byte object to return
-    file_stream = io.BytesIO()
-    doc.save(file_stream) # save to stream
-    file_stream.seek(0) # reset pointer to head
-    output['file_stream'] = file_stream
-    output['output_name'] = output_name
-    '''
-    # update submission log
-    targ = get_pin('detroit', pin)
-    
-    if form_data['validcharacteristics'] == 'No':
-        c_flag = 'Yes. Homeowner Input: ' + form_data['characteristicsinput']
+        # also save a byte object to return
+        file_stream = io.BytesIO()
+        doc.save(file_stream) # save to stream
+        file_stream.seek(0) # reset pointer to head
+        output['file_stream'] = file_stream
+        output['output_name'] = output_name
     else:
-        c_flag = 'No'
+        #serve information for website display
+        delta = (comps_avg / 2) - pin_av
+        d_str = '{:,.0f}'.format(abs(delta))
+        tax_bill = .06*delta
+        tax_str = '{:,.0f}'.format(abs(tax_bill))
 
-    sub_dict = {
-        'Client Name' : form_data['name'],
-        'Address' : form_data['address'],
-        'Taxpayer of Record' : targ['taxpayer_1'].to_string(index=False),
-        'PIN' : pin,
-        'Phone Number' : form_data['phone'],
-        'Email Address' : form_data['email'],
-        'Phone Contact Time' : form_data['phonetime'],
-        'PRE' : targ['homestead_'].to_string(index=False),
-        'Eligibility Flag' : form_data['eligibility'],
-        'Characteristics Flag': c_flag,
-        'SEV' : str(pin_av),
-        'TV' : targ['taxable_va'].to_string(index=False),
-        'CV' : str(comps_avg)
-    }
+        if delta < 0:
+            d_str2 = " less" #overassessed
+        else:
+            d_str2 = " greater" #underassessed
 
-    log_url = record_final_submission(sub_dict)
-    form_data['log_url'] = log_url
-    '''
-    '''
-    #serve information for website display
-    mini_output = comparables(form_data)
-    comps_df = pd.DataFrame(mini_output['comparables'])
-    comps_df['Sale Price2'] = comps_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))
-    comps_df = comps_df.nlargest(5, 'Sale Price2')
-    comps_avg = comps_df['Sale Price2'].mean()
-    av = mini_output['pinav']
+        l1 = "Michigan law requires that property assessments be no more than 50 percent of a property's value. "
+        l2 = "In 2022, the City assessed your home at " + '{:,.0f}'.format(pin_av) + ". "
+        l3 = "A more accurate assessment would be " + '{:,.0f}'.format(comps_avg / 2) + ","
+        l4 = " which is " + d_str + d_str2 + " than the City's current assessment. Based on estimated current tax rates, "
+        l5 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
+        
+        output['estimate'] = l1 + l2 + l3 + l4 + l5
 
-    sales_cnt = str(len(comps_df.index))
-    delta = (comps_avg / 2) - av
-    d_str = '{:,.0f}'.format(abs(delta))
-    tax_bill = .06*delta
-    tax_str = '{:,.0f}'.format(abs(tax_bill))
-    comps_str = '{:,.0f}'.format(comps_avg)
-
-    if delta < 0:
-        d_str2 = " less" #overassessed
-    else:
-        d_str2 = " greater" #underassessed
-
-    l1 = "We found " + sales_cnt + " recent home sales in your area. The average sale price was $" + comps_str + "."
-    l2 = "Michigan law requires that property assessments be no more than 50 percent of a property's value. "
-    l3 = "In 2021, the City assessed your home at " + '{:,.0f}'.format(av) + ". "
-    l4 = "A more accurate assessment would be " + '{:,.0f}'.format(comps_avg / 2) + ","
-    l5 = " which is " + d_str + d_str2 + " than the City's current assessment. Based on current tax rates, "
-    l6 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
-    
-    mini_output['estimate'] = l1 + " " + l2 + l3 + l4 + l5 + l6
-    '''
     return output
 
 

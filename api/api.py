@@ -87,17 +87,29 @@ def handle_form3():
     #given pin and select comp, generate estimate/appendix file
     print('estimate submit')
     est_data = request.json
-    download = True
     try:
-        response_dict = finalize_estimate(est_data)
+        response_dict = finalize_estimate(est_data, True)
         logger(est_data, 'est_submit')
-        if download:
-            return send_file(response_dict['file_stream'], as_attachment=True, download_name = 'test.docx')
+        return send_file(response_dict['file_stream'], as_attachment=True, download_name = 'test.docx')
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        logger(est_data, 'submit_estimate', e)
+
+    return resp
+
+@application.route('/api_v1/estimates2', methods=['POST'])
+def handle_form4():
+    #given pin and select comp, generate estimate/appendix file
+    print('estimate submit')
+    est_data = request.json
+    try:
+        response_dict = finalize_estimate(est_data, False)
+        logger(est_data, 'est_submit')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        logger(est_data, 'submit_estimate', e)
+        logger(est_data, 'submit_estimate2', e)
 
     return resp
 
@@ -164,7 +176,7 @@ def finalize_appeal(form_data, mail):
     '''
     return process_comps_input(form_data, mail)
 
-def finalize_estimate(form_data):
+def finalize_estimate(form_data, download=True):
     '''
     Input:
     {
@@ -175,10 +187,9 @@ def finalize_estimate(form_data):
     }
        
     Output:
+    word document OR 
     {
-        success: bool,
-        contention_value: val,
-        message: txt
+        TBD   
     }
     '''
-    return process_estimate(form_data)
+    return process_estimate(form_data, download)

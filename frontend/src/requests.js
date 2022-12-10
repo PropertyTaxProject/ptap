@@ -4,7 +4,6 @@ import { saveAs } from 'file-saver';
 export const submitForm = async (info) => {
   try {
     const resp = await axios.post('/api_v1/submit', info);
-    console.log(resp);
     return resp.data.response;
   } catch (e) {
     console.error(e);
@@ -15,7 +14,6 @@ export const submitForm = async (info) => {
 export const submitAppeal = async (targetProperty, comparables, userInfo, userPropInfo, uuid) => {
   try {
     const body = { target_pin: targetProperty, comparables, uuid, ...userInfo, ...userPropInfo };
-    console.log(body);
     //const detroit = userInfo.appeal_type === 'detroit_single_family';
     const download = false;
     const resp = await axios.post('/api_v1/submit2', body, { responseType: download ? 'blob' : 'json' });
@@ -45,6 +43,18 @@ export const submitEstimate = async (targetProperty, uuid, comparablesPool, sele
     console.error(e);
   }
 };
+
+export const submitEstimate2 = async (targetProperty, uuid, comparablesPool, selectedComparables) => {
+  try {
+    const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
+    const resp = await axios.post('/api_v1/estimates2', body);
+    return resp.data.response;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+
 
 export const lookupPin = async (data) => {
   try {

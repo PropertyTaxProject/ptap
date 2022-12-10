@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { submitForm } from '../../requests';
 import {
   Form,
-  Input,
   Button,
-  Table,
   Divider,
 } from 'antd';
 
@@ -15,7 +13,7 @@ let appealType = 'detroit_single_family';
 
 const CompsLookup = (props) => {
   const [form] = Form.useForm();
-  const { targRecord, setEstimate, setStep, selected, setSelect, appealType, setComparablesPool, setHeaders,
+  const { targRecord, setStep, selected, setSelect, appealType, setComparablesPool, setHeaders,
     setTargetProperty, setPropInfo } = props;
 
   return (
@@ -29,7 +27,6 @@ const CompsLookup = (props) => {
             var pin = targRecord.PIN;
             const response = await submitForm({ appeal_type: appealType, pin });
             if (response != null) {
-              setEstimate(response.estimate);
               setComparablesPool(response.comparables);
               setHeaders(response.labeled_headers);
               setTargetProperty(response.target_pin[0]);
@@ -49,20 +46,30 @@ const CompsLookup = (props) => {
 
   };
 
-const ptapLanguage = (
-  <>
-    <body>
-      <br />
-      If you want FREE help protesting your property tax assessment, contact the <b>Property Tax Appeal Project 
+const PtapLanguage = (props) => {
+  const {estimate} = props;
+  return(
+    <>
+      <h1>Next Steps</h1>
+      <h2>Summary</h2>
+      {estimate}
+      <h3>File with Us</h3>
+      <p>
+      If you want FREE* help protesting your property tax assessment, contact the <b>Property Tax Appeal Project 
       <a href ="https://actionnetwork.org/forms/property-tax-assessment-appeal-interest-form?source=estimator_app"> here. </a></b>
-      <br />
+      </p>
+      <h3>Self File</h3>
+      <p>
+      This appendix can be used as evidence in your appeal. Forms to file can be found 
+      <a href="https://detroitmi.gov/departments/office-chief-financial-officer/ocfo-divisions/office-assessor/property-assessment-appeal-information"> here.</a>
+      </p>
       <br />
       *Other factors may impact your tax bill such as exemptions or caps on your property's taxable value.
       To qualify for services, you must live in an owner occupied home and your home must be assessed at $100,000 or less.
-    </body>
   </>
+  );
 
-);
+};
 
 const TheShow = (props) => {
   const { logPin, city } = props;
@@ -100,7 +107,6 @@ const TheShow = (props) => {
       />}
       <CompsLookup
         targRecord={targRecord}
-        setEstimate={setEstimate}
         setStep={setStep}
         selected={selected}
         setSelect={setSelect}
@@ -113,13 +119,17 @@ const TheShow = (props) => {
       {step == 2 && 
       <Comparables
       comparablesPool={comparablesPool}
+      setEstimate={setEstimate}
       headers={headers}
       targetProperty={targetProperty}
       propInfo={propInfo}
       Uuid={Uuid}
+      setStep={setStep}
       />}
-      {step == 3 && ptapLanguage}
-      {step == 3 && estimate}
+      {step == 3 && 
+      <PtapLanguage 
+      estimate={estimate}
+      />}
     </>
   );
 };

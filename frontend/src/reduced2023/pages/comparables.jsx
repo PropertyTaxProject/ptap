@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { submitEstimate } from '../../requests';
+import { submitEstimate, submitEstimate2 } from '../../requests';
 import {
   Form,
   Button,
@@ -18,7 +18,9 @@ const ComparablesTable = (props) => {
     headers,
     propInfo,
     targetProperty,
-    Uuid
+    Uuid,
+    setStep,
+    setEstimate
   } = props;
 
   const [candidates, setCandidates] = useState([]);
@@ -120,7 +122,12 @@ const ComparablesTable = (props) => {
           name="Get Comps Final"
           layout='vertical'
           onFinish={async () => { 
-            const resp = await submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables ); 
+            const resp = await submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables );
+            setStep(3);
+            const resp2 = await submitEstimate2( targetProperty, Uuid, comparablesPool, selectedComparables );
+            if (resp2 != null) {
+              setEstimate(resp2.estimate);
+            }
           }} 
           labelAlign="left"
           scrollToFirstError
@@ -140,7 +147,9 @@ const Comparables = (props) => {
     headers,
     targetProperty,
     propInfo,
-    Uuid
+    Uuid,
+    setStep,
+    setEstimate
   } = props;
 
   return (
@@ -151,6 +160,8 @@ const Comparables = (props) => {
         comparablesPool={comparablesPool}
         headers={headers}
         Uuid={Uuid}
+        setStep={setStep}
+        setEstimate={setEstimate}
       />
     </>
   );
