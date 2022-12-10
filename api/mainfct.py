@@ -176,7 +176,6 @@ def process_estimate(form_data):
         'comp_contents' : comps_df[comp_cols].to_numpy().tolist(),
         }
 
-    print(context)
     doc.render(context)
     doc.save(output_name)
 
@@ -186,8 +185,7 @@ def process_estimate(form_data):
     doc.save(file_stream) # save to stream
     file_stream.seek(0) # reset pointer to head
     output['file_stream'] = file_stream
-
-    print(output)
+    output['output_name'] = output_name
     '''
     # update submission log
     targ = get_pin('detroit', pin)

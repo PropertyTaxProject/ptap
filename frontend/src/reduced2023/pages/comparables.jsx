@@ -121,14 +121,11 @@ const ComparablesTable = (props) => {
           layout='vertical'
           onFinish={async () => { 
             const resp = await submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables ); 
-            console.log(resp);
-            console.log('test')
           }} 
           labelAlign="left"
           scrollToFirstError
           autoComplete="off"
         >
-
           <Form.Item>
             <Button type="primary" htmlType="submit">Generate Comparable Letter</Button>
           </Form.Item>

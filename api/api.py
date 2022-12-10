@@ -87,13 +87,12 @@ def handle_form3():
     #given pin and select comp, generate estimate/appendix file
     print('estimate submit')
     est_data = request.json
-    download = False
-    print(est_data)
+    download = True
     try:
         response_dict = finalize_estimate(est_data)
         logger(est_data, 'est_submit')
         if download:
-            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % est_data['name'].lower().replace(' ', '-'))
+            return send_file(response_dict['file_stream'], as_attachment=True, download_name = 'test.docx')
         resp = jsonify({'request_status': time.time(),
         'response': response_dict})
     except Exception as e:
