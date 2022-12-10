@@ -119,7 +119,11 @@ const ComparablesTable = (props) => {
           form={form}
           name="Get Comps Final"
           layout='vertical'
-          onFinish={async () => { submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables );  }} 
+          onFinish={async () => { 
+            const resp = await submitEstimate( targetProperty, Uuid, comparablesPool, selectedComparables ); 
+            console.log(resp);
+            console.log('test')
+          }} 
           labelAlign="left"
           scrollToFirstError
           autoComplete="off"

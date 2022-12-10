@@ -29,12 +29,11 @@ export const submitAppeal = async (targetProperty, comparables, userInfo, userPr
   }
 };
 
-export const submitEstimate = async (targetProperty, selectedComparables, comparablesPool, uuid) => {
+export const submitEstimate = async (targetProperty, uuid, comparablesPool, selectedComparables) => {
   let today = new Date()
   let date = today.getDate() + '-' + parseInt(today.getMonth() + 1) + '-' + today.getFullYear()
   try {
     const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
-    console.log(body);
     const download = true;
     const resp = await axios.post('/api_v1/estimates', body, { responseType: download ? 'blob' : 'json' });
     if (download === true) {

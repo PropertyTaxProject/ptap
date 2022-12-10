@@ -82,10 +82,9 @@ def handle_form2():
 
     return resp
 
-
 @application.route('/api_v1/estimates', methods=['POST'])
-def handle_form4():
-    #submit estimate and receive response
+def handle_form3():
+    #given pin and select comp, generate estimate/appendix file
     print('estimate submit')
     est_data = request.json
     download = False
@@ -167,4 +166,20 @@ def finalize_appeal(form_data, mail):
     return process_comps_input(form_data, mail)
 
 def finalize_estimate(form_data):
+    '''
+    Input:
+    {
+        'target_pin': [{}],
+        'comparablesPool': [{},{},{},{}]
+        'uuid': '',
+        'selectedComparables': [{}]
+    }
+       
+    Output:
+    {
+        success: bool,
+        contention_value: val,
+        message: txt
+    }
+    '''
     return process_estimate(form_data)
