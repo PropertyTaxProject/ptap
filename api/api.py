@@ -98,7 +98,7 @@ def handle_form3():
         'response': response_dict})
     except Exception as e:
         resp = jsonify({'error': str(e)})
-        #logger(est_data, 'submit', e)
+        logger(est_data, 'submit_estimate', e)
 
     return resp
 

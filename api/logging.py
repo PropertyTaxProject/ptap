@@ -35,11 +35,11 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     new['time'] = time.time()
 
     #google sheets log
+    cnt = 1
     for i, j in form_data.items():
         if i == 'target_pin':
             new[i] = j['PIN']
-        elif i == 'comparables':
-            cnt = 1
+        elif i in ['comparables', 'comparablesPool', 'selectedComparables']:
             for comp in j:
                 new['comp_' + str(cnt)] = comp['PIN']
                 cnt += 1

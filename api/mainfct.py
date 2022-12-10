@@ -1,5 +1,9 @@
 import string
 import pandas as pd
+from datetime import datetime
+import io
+import os
+from docxtpl import DocxTemplate
 from fuzzywuzzy import process
 from .computils import prettify_detroit, prettify_cook, find_comps
 from .dataqueries import address_candidates_query, get_pin, ecdf, avg_ecf
@@ -112,12 +116,108 @@ def comparables(input_data, sales_comps=False):
 
 def process_estimate(form_data):
     '''
-    Input:
     {
-        pin: '',
-        appeal_type: ''
+        'target_pin': [{}],
+        'comparablesPool': [{},{},{},{}]
+        'uuid': '',
+        'selectedComparables': [{}]
     }
     '''
+
+    rename_dict = {
+        'PIN' : 'Parcel ID',
+        'assessed_value' : 'Assessed Value',
+        'total_acre' : 'Acres',
+        'total_floorarea' : 'Floor Area',
+        'total_sqft' : 'Square Footage (Abv. Ground)',
+        'Age' : 'Year Built',
+        'Exterior' : 'Exterior Material',
+        'Distance' : 'Dist.',
+        'Stories (not including basement)' : 'Number of Stories',
+    }
+    
+
+    t_df = pd.DataFrame([form_data['target_pin']])
+    c_df = pd.DataFrame(form_data['selectedComparables'])
+    comps_df = pd.DataFrame(form_data['comparablesPool'])
+    pin_av = t_df.assessed_value[0]
+    pin = t_df.PIN[0]
+    comps_avg = 2 * c_df.assessed_value[0] #PLACEHOLDER CHANGE THIS!!!!
+
+    #rename cols
+    t_df = t_df.rename(columns=rename_dict)
+    c_df = c_df.rename(columns=rename_dict)
+    comps_df = comps_df.rename(columns=rename_dict)
+
+    #tbl cols
+    target_cols = ['Baths', 'Square Footage (Abv. Ground)', 'Year Built', \
+        'Exterior Material', 'Number of Stories', 'Neighborhood']
+    
+    comp_cols = ['Address', 'Dist.', 'Sale Price', 'Sale Date'] + target_cols
+
+    #generate docx
+    output_name = 'api/tmp_data/' + pin + \
+        datetime.today().strftime('%m_%d_%y') + '.docx'
+
+    doc = DocxTemplate("api/template_files/detroit_template_2023.docx")
+
+    context = {
+        'pin' : pin,
+        'address' : t_df.Address[0],
+        'comp_address' : c_df.Address[0],
+        'current_sev' : '{:,.0f}'.format(pin_av),
+        'current_faircash' : '${:,.0f}'.format(pin_av * 2),
+        'contention_sev' : '{:,.0f}'.format(comps_avg / 2),
+        'contention_faircash' : '${:,.0f}'.format(comps_avg),
+        'target_labels' : target_cols,
+        'target_contents' : [t_df[target_cols].to_numpy().tolist()[0]],
+        'target_contents2' : [c_df[target_cols].to_numpy().tolist()[0]],
+        'comp_labels' : comp_cols,
+        'comp_contents' : comps_df[comp_cols].to_numpy().tolist(),
+        }
+
+    print(context)
+    doc.render(context)
+    doc.save(output_name)
+
+    output = {}
+    # also save a byte object to return
+    file_stream = io.BytesIO()
+    doc.save(file_stream) # save to stream
+    file_stream.seek(0) # reset pointer to head
+    output['file_stream'] = file_stream
+
+    print(output)
+    '''
+    # update submission log
+    targ = get_pin('detroit', pin)
+    
+    if form_data['validcharacteristics'] == 'No':
+        c_flag = 'Yes. Homeowner Input: ' + form_data['characteristicsinput']
+    else:
+        c_flag = 'No'
+
+    sub_dict = {
+        'Client Name' : form_data['name'],
+        'Address' : form_data['address'],
+        'Taxpayer of Record' : targ['taxpayer_1'].to_string(index=False),
+        'PIN' : pin,
+        'Phone Number' : form_data['phone'],
+        'Email Address' : form_data['email'],
+        'Phone Contact Time' : form_data['phonetime'],
+        'PRE' : targ['homestead_'].to_string(index=False),
+        'Eligibility Flag' : form_data['eligibility'],
+        'Characteristics Flag': c_flag,
+        'SEV' : str(pin_av),
+        'TV' : targ['taxable_va'].to_string(index=False),
+        'CV' : str(comps_avg)
+    }
+
+    log_url = record_final_submission(sub_dict)
+    form_data['log_url'] = log_url
+    '''
+    '''
+    #serve information for website display
     mini_output = comparables(form_data)
     comps_df = pd.DataFrame(mini_output['comparables'])
     comps_df['Sale Price2'] = comps_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))
@@ -145,7 +245,8 @@ def process_estimate(form_data):
     l6 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
     
     mini_output['estimate'] = l1 + " " + l2 + l3 + l4 + l5 + l6
-    return mini_output
+    '''
+    return output
 
 
 def process_comps_input(comp_submit, mail):
