@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { estimatePin } from '../../requests';
+import { submitForm } from '../../requests';
 import {
   Form,
   Input,
@@ -27,7 +27,7 @@ const CompsLookup = (props) => {
           onFinish={async () => {
             setSelect(false);
             var pin = targRecord.PIN;
-            const response = await estimatePin({ appeal_type: appealType, pin });
+            const response = await submitForm({ appeal_type: appealType, pin });
             if (response != null) {
               setEstimate(response.estimate);
               setComparablesPool(response.comparables);
@@ -42,7 +42,7 @@ const CompsLookup = (props) => {
           scrollToFirstError
           autoComplete="off"
         > 
-        {selected && <Button type="primary" htmlType="submit">Get Estimate</Button>}
+        {selected && <Button type="primary" htmlType="submit">Get Comparables</Button>}
       </Form>
     </>
   );

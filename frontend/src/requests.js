@@ -36,7 +36,7 @@ export const submitEstimate = async (targetProperty, selectedComparables, compar
     const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
     console.log(body);
     const download = true;
-    const resp = await axios.post('/api_v1/submit3', body, { responseType: download ? 'blob' : 'json' });
+    const resp = await axios.post('/api_v1/estimates', body, { responseType: download ? 'blob' : 'json' });
     if (download === true) {
       saveAs(resp.data, `${targetProperty.Address + ' ' + date} Appendix.docx`);
     } else {
@@ -58,7 +58,7 @@ export const lookupPin = async (data) => {
 
 export const estimatePin = async (data) => {
   try {
-    const resp = await axios.post('/api_v1/estimate', data)
+    const resp = await axios.post('/api_v1/submit2', data)
     return resp.data.response;
   } catch (err) {
     return [];

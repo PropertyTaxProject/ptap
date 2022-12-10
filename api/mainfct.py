@@ -47,7 +47,7 @@ def comparables(input_data, sales_comps=False):
 
     #set constants
     if input_data['appeal_type'] == "detroit_single_family":
-        max_comps = 15
+        max_comps = 7
         sales_comps = True
         region = 'detroit'
         targ = get_pin(region, target_pin)
@@ -110,7 +110,14 @@ def comparables(input_data, sales_comps=False):
 
     return output
 
-def estimate(form_data):
+def process_estimate(form_data):
+    '''
+    Input:
+    {
+        pin: '',
+        appeal_type: ''
+    }
+    '''
     mini_output = comparables(form_data)
     comps_df = pd.DataFrame(mini_output['comparables'])
     comps_df['Sale Price2'] = comps_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))
