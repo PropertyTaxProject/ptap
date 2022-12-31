@@ -108,10 +108,10 @@ const PinLookup = (props) => {
             <>
               <br />
               <Table key={pins.PIN} columns={columns} dataSource={pins} />
+              {submitted && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
             </>
           )
-          : (submitted ? 'Your property could not be found. Please try searching again.' : null))}
-        {submitted && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
+          : (submitted ? 'Your property could not be found. Please try searching again. NOTE: Homes which are NEZs cannot be processed by this tool.' : null))}
       </>
     );
   

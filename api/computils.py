@@ -12,7 +12,6 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         lon_dif = 0.02 * multiplier
         distance_filter = 2 * multiplier #miles
         exterior = 'Match' # (1 siding, 2 brick/other, 3 brick, 4 other)
-        basement = 'Match'
         #garage = 'Match'
         #bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
         #height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
@@ -152,7 +151,7 @@ def prettify_detroit(data, sales_comps):
                         'total_floor_area', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance', 'Neighborhood']
     if sales_comps:
-        detroit_sf_cols = detroit_sf_cols + ['Sale Price', 'Sale Date']
+        detroit_sf_cols = detroit_sf_cols + ['Market Value', 'Sale Price', 'Sale Date']
 
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
@@ -200,6 +199,10 @@ def prettify_detroit(data, sales_comps):
     }
 
     if data.shape[0] != 0:
+        if sales_comps:
+            data['Market Value'] = 2 * data['assessed_v']
+            data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,}".format(round(x)))
+            data['Sale Date'] = data['Sale Date'].str.slice(0, 10)
         data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
         data = data.replace({"Baths": bath_d,
                     "Basement": basement_d,
@@ -207,8 +210,5 @@ def prettify_detroit(data, sales_comps):
                     "Stories (not including basements)": height_d,
                     "Exterior": exterior_d
                     })
-        if sales_comps:
-            data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,.2f}".format(x))
-            data['Sale Date'] = data['Sale Date'].str.slice(0, 10)
 
     return data
