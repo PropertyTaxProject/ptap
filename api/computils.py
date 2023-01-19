@@ -12,6 +12,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         lon_dif = 0.02 * multiplier
         distance_filter = 2 * multiplier #miles
         exterior = 'Match' # (1 siding, 2 brick/other, 3 brick, 4 other)
+        #basement = 'Match'
         #garage = 'Match'
         #bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
         #height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)

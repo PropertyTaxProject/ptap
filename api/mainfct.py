@@ -141,8 +141,9 @@ def process_estimate(form_data, download):
     c_df = pd.DataFrame(form_data['selectedComparables'])
     comps_df = pd.DataFrame(form_data['comparablesPool'])
     pin_av = t_df.assessed_value[0]
+    comp_av = c_df.assessed_value[0]
     pin = t_df.PIN[0]
-    comps_avg = 2 * c_df.assessed_value[0] #PLACEHOLDER CHANGE THIS!!!!
+    comps_avg = c_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))[0] * (1 + (pin_av - comp_av) / pin_av)
 
     #rename cols
     t_df = t_df.rename(columns=rename_dict)
@@ -168,6 +169,8 @@ def process_estimate(form_data, download):
             'pin' : pin,
             'address' : t_df.Address[0],
             'comp_address' : c_df.Address[0],
+            'comp_sale' : c_df['Sale Price'][0],
+            'comp_date' : c_df['Sale Date'][0],
             'current_sev' : '{:,.0f}'.format(pin_av),
             'current_faircash' : '${:,.0f}'.format(pin_av * 2),
             'contention_sev' : '{:,.0f}'.format(comps_avg / 2),
