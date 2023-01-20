@@ -14,8 +14,8 @@ const PTAPHeader = () => (
           <img height={50} alt='Coalition Logo' src={coalition}/>
         </a>
       </Menu.Item>
-      {/*<Menu.Item disabled={true}><span style={{color:'black'}}>Call 313-438-8698 or email us at law-propertytax@umich.edu</span></Menu.Item>*/}
-      <Menu.Item disabled={true}><span style={{color:'black'}}>Email us at chicagoptap@gmail.com</span></Menu.Item>
+      <Menu.Item disabled={true}><span style={{color:'black'}}>Call or text us at: 313-329-7610</span></Menu.Item>
+      <Menu.Item disabled={true}><span style={{color:'black'}}>Email us at: propertytax@streetdemocracy.org</span></Menu.Item>
       </Menu>
   </Header>
 );
