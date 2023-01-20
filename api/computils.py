@@ -152,7 +152,7 @@ def prettify_detroit(data, sales_comps):
                         'total_floor_area', 'year_built', 'heightcat', 'extcat', 'bathcat',
                         'has_garage', 'has_basement', 'assessed_v', 'Distance', 'Neighborhood']
     if sales_comps:
-        detroit_sf_cols = detroit_sf_cols + ['Market Value', 'Sale Price', 'Sale Date']
+        detroit_sf_cols = detroit_sf_cols + ['Assessor Market Value', 'Sale Price', 'Sale Date']
 
     detroit_sf_rename_dict = {
         'parcel_num' : 'PIN',
@@ -167,7 +167,6 @@ def prettify_detroit(data, sales_comps):
         'has_garage': 'Garage',
         'year_built': 'Age',
     }
-
 
     bath_d = {
         1:"1",
@@ -201,7 +200,7 @@ def prettify_detroit(data, sales_comps):
 
     if data.shape[0] != 0:
         if sales_comps:
-            data['Market Value'] = 2 * data['assessed_v']
+            data['Assessor Market Value'] = 2 * data['assessed_v']
             data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,}".format(round(x)))
             data['Sale Date'] = data['Sale Date'].str.slice(0, 10)
         data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)

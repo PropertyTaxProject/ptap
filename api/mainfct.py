@@ -106,9 +106,9 @@ def comparables(input_data, sales_comps=False):
     new_targ = new_targ.fillna('')
     cur_comps = cur_comps.fillna('')
 
-    output['target_pin'] = new_targ.to_dict(orient='records')
-    output['comparables'] = cur_comps.to_dict(orient='records')
-    output['labeled_headers'] = cur_comps.columns.tolist()
+    output['target_pin'] = new_targ.drop('assessed_value', axis=1).to_dict(orient='records')
+    output['comparables'] = cur_comps.drop('assessed_value', axis=1).to_dict(orient='records')
+    output['labeled_headers'] = cur_comps.drop('assessed_value', axis=1).columns.tolist()
     output['prop_info'] = prop_info
     output['pinav'] = new_targ.assessed_value.mean()
 
