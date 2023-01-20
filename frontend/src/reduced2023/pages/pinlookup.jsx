@@ -22,7 +22,7 @@ const PinLookup = (props) => {
       setRecord(record);
       selected = true;
       setSelect(true);
-      submitted = false;
+      submitted = true;
     };
   
     const logResponse = (theResponse) => {
@@ -80,7 +80,7 @@ const PinLookup = (props) => {
   
     return (
       <>
-        <h1>Step 1: Property Search</h1>
+        <h1>Step 1:  Enter your address into the search bar.</h1>
         <Form
           form={form}
           name="Pin Lookup"
@@ -90,7 +90,7 @@ const PinLookup = (props) => {
           scrollToFirstError
           autoComplete="off"
         >
-          <p style={{ width: '350px' }}>Enter your street number and street name and select your property from the table.</p>
+          <p style={{ width: '350px' }}>Enter your street number and street name.</p>
   
           <Input.Group compact>
             <Form.Item style={{ width: '100px' }} name="st_num" rules={[{ required: true, message: 'Street name is required.' }]}>
@@ -107,6 +107,7 @@ const PinLookup = (props) => {
           ? (
             <>
               <br />
+              {submitted && <h1> Step 2. Select your property from the table and then click “Get Sales Data.”</h1>}
               <Table key={pins.PIN} columns={columns} dataSource={pins} />
               {submitted && <p>After searching for your home, please hit <b>Select</b> next to your property</p>}
             </>
