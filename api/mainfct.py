@@ -194,20 +194,19 @@ def process_estimate(form_data, download):
     else:
         #serve information for website display
         delta = (comps_avg / 2) - pin_av
-        d_str = '{:,.0f}'.format(abs(delta))
         tax_bill = .06*delta
         tax_str = '{:,.0f}'.format(abs(tax_bill))
 
         if delta < 0:
             d_str2 = " less" #overassessed
         else:
-            d_str2 = " greater" #underassessed
+            d_str2 = " more" #underassessed
 
-        l1 = "Michigan law requires that property assessments be no more than 50 percent of a property's value. "
-        l2 = "In 2022, the City assessed your home at " + '{:,.0f}'.format(pin_av) + ". "
-        l3 = "A more accurate assessment would be " + '{:,.0f}'.format(comps_avg / 2) + ","
-        l4 = " which is " + d_str + d_str2 + " than the City's current assessment. Based on estimated current tax rates, "
-        l5 = "if the City correctly assessed your property your tax bill would be about $" + tax_str + d_str2 + ". "
+        l1 = "In 2023, the City assigned your property an assessed value of " + '{:,.0f}'.format(pin_av) + ", "
+        l2 = "meaning it believes your home is worth " + '{:,.0f}'.format(2*pin_av) +  '. '
+        l3 = "Since your home is actually worth " + '{:,.0f}'.format(comps_avg) + ","
+        l4 = " a more accurate assessed value is " +  '{:,.0f}'.format(comps_avg/2) + ". "
+        l5 = "Based on estimated current tax rates, if the City correctly assessed your property’s value, your tax bill would be $" + tax_str + d_str2 + ". "
         
         output['estimate'] = l1 + l2 + l3 + l4 + l5
 
