@@ -39,7 +39,7 @@ const CompsLookup = (props) => {
           scrollToFirstError
           autoComplete="off"
         > 
-        {selected && <Button type="primary" htmlType="submit">Get Comparables</Button>}
+        {selected && <Button type="primary" htmlType="submit">Get Sales Data</Button>}
       </Form>
     </>
   );
@@ -50,22 +50,20 @@ const PtapLanguage = (props) => {
   const {estimate} = props;
   return(
     <>
-      <h1>Next Steps</h1>
-      <h2>Summary</h2>
+      <h1>Is the City of Detroit Overtaxing You?</h1>
+      <p>The Michigan Constitution requires that the City of Detroit assess each property at no more than 50 percent of its market value, meaning what it could sell for. <a href='http://www.legislature.mi.gov/(S(kioev32ipygkaee2kepvbbtn))/mileg.aspx?page=getobject&objectname=mcl-Article-IX-3'
+           target='_blank' rel="noopener noreferrer">Click here</a> to read Article IX § 3 of the Michigan Constitution.</p>
       {estimate}
-      <h3>File with Us</h3>
+      <br></br>
+      <br></br>
+      <p>*Note: Other factors impact your tax bill, including exemptions and caps on your property’s taxable value. As such, our estimate might not be accurate.</p>
+      <h3>File Your Tax Assessment Appeal!</h3>
       <p>
-      If you want FREE* help protesting your property tax assessment, contact the <b>Property Tax Appeal Project 
-      <a href ="https://actionnetwork.org/forms/property-tax-assessment-appeal-interest-form?source=estimator_app"> here. </a></b>
+      To file on your own, submit your appeal by emailing it to <b>AssessorReview@detroitmi.gov</b> no later than February 22, 2023 (make sure to attach the evidence you downloaded from this tool!). 
+
+      To get assistance filing your appeal, <a href ="https://actionnetwork.org/forms/property-tax-assessment-appeal-interest-form?source=app"> complete our interest form</a> to sign up for FREE assistance appealing your property taxes no later than February 15, 2023.
+
       </p>
-      <h3>Self File</h3>
-      <p>
-      This appendix can be used as evidence in your appeal. Forms to file can be found 
-      <a href="https://detroitmi.gov/departments/office-chief-financial-officer/ocfo-divisions/office-assessor/property-assessment-appeal-information"> here.</a>
-      </p>
-      <br />
-      *Other factors may impact your tax bill such as exemptions or caps on your property's taxable value.
-      To qualify for services, you must live in an owner occupied home and your home must be assessed at $100,000 or less.
   </>
   );
 
@@ -88,14 +86,27 @@ const TheShow = (props) => {
 
   return (
     <>
-      <h2>Comparable Property Finder</h2>  
+      <h1>Welcome to the Property Sales Search Tool!</h1>  
       <p>
-      This tool finds possible comparables and estimates the likelihood that your property is over-assessed. This page will not file an appeal on your behalf.
+      This tool will help you figure out whether the City of Detroit is fairly assessing your property’s value. If your property is not being fairly assessed, this tool provides you with evidence that you can use to protest your assessment and lower your tax bill.
       </p>
-      <p>There are two steps to generate your comparables. First, search and select the property in the table below. 
-        Second, among the five comparable properties, select the one property which is most similar. 
-        Finally, you may choose to download a document which summarizes the comparables and estimated valuation to assist in filing an appeal.
+      <p>
+      Before using this tool, we recommend that you <a href = "https://www.youtube.com/watch?v=3fLN7ZVT2CU" target='_blank' rel="noopener noreferrer">watch this video to understand your property tax assessment notice.</a> 
       </p>
+
+      <Divider/>
+
+      <h3>How to Use This Tool</h3>
+      <p>Step 1. 	Input your address into the search bar below.</p>
+      <p>Step 2. 	Select your address from the list. </p>
+      <p>Step 3. 	Compare the City’s estimate of your property’s MARKET VALUE to the SALES PRICES of homes that have recently sold in your neighborhood. If the market value of your property is HIGHER than the sales prices of similar homes, the City is over assessing your property value.</p>
+      <p>Step 4. 	Select the sale in your neighborhood that is most similar to your property. If you aren’t sure, pick the home that is closest to yours. Click the “Generate Appeal Evidence” button to receive the property sales data that you can attach as evidence to your property tax assessment appeal. <br></br> Tip: Make sure the property you select is not in much worse condition than your home. If you can, walk or drive by the property to check it out. </p>
+      <p>Step 5. 	Submit your appeal on your own by emailing it to AssessorReview@detroitmi.gov no later than February 22, 2023 (make sure to attach the evidence you downloaded from this tool!) or completing our interest form to sign up for FREE assistance appealing your property taxes no later than February 15, 2023.</p>
+
+      <h2>Property Sales Search Tool</h2>
+      <p>This tool finds sales of properties that are similar to yours in your neighborhood. The assessor refers to these sales as “Comparable Properties.” From these comparable property sales, you can tell what your property is likely worth. If the City is assessing your property as though it has a higher market value than these sales prices, the City is likely over assessing and overtaxing you.</p>
+      <p>This tool does not file an appeal on your behalf.</p>
+
       <Divider/>
       {step == 1 && <PinLookup
         city={city}
