@@ -143,7 +143,7 @@ def process_estimate(form_data, download):
     pin_av = t_df.assessed_value[0]
     comp_av = c_df.assessed_value[0]
     pin = t_df.PIN[0]
-    comps_avg = c_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))[0] * (1 + (pin_av - comp_av) / pin_av)
+    comps_avg = c_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))[0] #* (1 + (pin_av - comp_av) / pin_av)
 
     #rename cols
     t_df = t_df.rename(columns=rename_dict)
