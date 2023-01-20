@@ -134,14 +134,12 @@ def process_estimate(form_data, download):
         'Exterior' : 'Exterior Material',
         'Distance' : 'Dist.',
         'Stories (not including basement)' : 'Number of Stories',
-    }
-    
+    }  
 
     t_df = pd.DataFrame([form_data['target_pin']])
     c_df = pd.DataFrame(form_data['selectedComparables'])
     comps_df = pd.DataFrame(form_data['comparablesPool'])
-    pin_av = t_df.assessed_value[0]
-    comp_av = c_df.assessed_value[0]
+    pin_av = t_df['Assessor Market Value'][0] * 0.5
     pin = t_df.PIN[0]
     comps_avg = c_df['Sale Price'].map(lambda x: float(x[1:].replace(',', '')))[0] #* (1 + (pin_av - comp_av) / pin_av)
 
