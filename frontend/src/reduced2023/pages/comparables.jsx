@@ -54,7 +54,7 @@ const ComparablesTable = (props) => {
 
   return (
     <>
-      <h3>Your Property Information</h3>
+      <h2>Step 3. 	Compare the City’s estimate of your property’s MARKET VALUE to the SALES PRICES of homes that have recently sold in your neighborhood. If the market value of your property is HIGHER than the sales prices of similar homes, the City is over assessing your property value.</h2>
       <p>Below is the data that the Assessor has on file for your property.</p>
       <Table 
         dataSource={[targetProperty]} 
@@ -63,8 +63,10 @@ const ComparablesTable = (props) => {
       </Table>
       {propInfo}
       <Divider/>
-      <h1>Step 2: Select Comparable Property</h1>
-      {!showSelected && <p>This table includes properties which might be similar to yours. Click 'Add' on the property which is most similar.</p>}
+      <h2>Step 4. 	Select the sale in your neighborhood that is most similar to your property. If you aren’t sure, pick the home that is closest to yours. Click the “Generate Appeal Evidence” button to receive the property sales data that you can attach as evidence to your property tax assessment appeal.
+      </h2>
+
+      {!showSelected && <p> <i>Tip: Make sure the property you select is not in much worse condition than your home. If you can, walk or drive by the property to check it out. </i></p>}
       <Table 
         dataSource={candidates} 
         scroll={{ x: true }}
@@ -134,7 +136,7 @@ const ComparablesTable = (props) => {
           autoComplete="off"
         >
           <Form.Item>
-            <Button type="primary" htmlType="submit">Generate Comparable Letter</Button>
+            <Button type="primary" htmlType="submit">Generate Appeal Evidence</Button>
           </Form.Item>
       </Form>}
     </>
