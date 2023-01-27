@@ -12,7 +12,7 @@ import createHistory from 'history/createBrowserHistory';
 import ReactGA from 'react-ga';
 
 import Header from './general/header';
-import DetroitLandingPage from './landing/detroit-landing-page';
+/*import DetroitLandingPage from './landing/detroit-landing-page';*/
 import Appeal from './appeal/appeal';
 import SelectRegion from './landing/select-region';
 import FinalPage from './landing/final-page';
@@ -42,7 +42,7 @@ const Page = () => {
         <Switch>
           <Route
             path="/detroit"
-            render={() => <DetroitLandingPage />}
+            render={() => <Reduced2023 />}
           />
           <Route
             path="/detroit2023"
