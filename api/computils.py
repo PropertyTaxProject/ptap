@@ -201,7 +201,7 @@ def prettify_detroit(data, sales_comps):
     if data.shape[0] != 0:
         if sales_comps:
             data['Assessor Market Value'] = 2 * data['assessed_v']
-            data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None else "${:0,}".format(round(x)))
+            data['Sale Price'] = data['Sale Price'].apply(lambda x: '' if x is None or x == '' else "${:0,}".format(round(x)))
             data['Sale Date'] = data['Sale Date'].str.slice(0, 10)
         data = data[detroit_sf_cols].rename(columns=detroit_sf_rename_dict)
         data = data.replace({"Baths": bath_d,
