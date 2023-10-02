@@ -25,7 +25,6 @@ const ComparablesTable = (props) => {
 
   const [candidates, setCandidates] = useState([]);
   const [selectedComparables, setSelected] = useState([]);
-  const [showSelected, setShowSelected] = useState(false);
   const [form] = Form.useForm();
 
 
@@ -33,13 +32,7 @@ const ComparablesTable = (props) => {
     setCandidates(comparablesPool); //initialize comparables pool
   }
 
-  if(selectedComparables.length > 0 && showSelected === false){
-    setShowSelected(true); //show selected once one is selected
-  }
-
-  if(selectedComparables.length == 0 && showSelected === true){
-    setShowSelected(false); //reshow comps
-  }
+  const showSelected = selectedComparables.length > 0
  
   const excludeColumns = ['PIN', 'total_sqft', 'total_acre', 'Total Floor Area',
                           'score'];
@@ -66,57 +59,30 @@ const ComparablesTable = (props) => {
       <h2>Step 4. 	Select the sale in your neighborhood that is most similar to your property. If you aren’t sure, pick the home that is closest to yours. Click the “Generate Appeal Evidence” button to receive the property sales data that you can attach as evidence to your property tax assessment appeal.
       </h2>
 
-      {!showSelected && <p> <i>Tip: Make sure the property you select is not in much worse condition than your home. If you can, walk or drive by the property to check it out. </i></p>}
+      <p> <i>Tip: Make sure the property you select is not in much worse condition than your home. If you can, walk or drive by the property to check it out. </i></p>
       <Table 
         dataSource={candidates} 
         scroll={{ x: true }}
-        style={!showSelected ? { display: ''} : {display: 'none'}}
       >
         {Columns}
         <Column
           title="Action"
           key="action"
-          render={(record) => (
-          <Button 
-            onClick={() => {
-              if(selectedComparables.length >= 1){
-                alert('You may only select 1 comparable. In order to continue adding this property, you must remove one you have already added.')
-              } else{
-                setCandidates(candidates.filter(candidate => candidate.PIN !== record.PIN));
-                setSelected(selectedComparables.concat(record));
-              }
-            }}
-          >
-            Add
-          </Button>
-          )}
-        />
-      </Table>
-      {showSelected && 
-      <>
-        <h3>Your Selected Comparable</h3>
-        <p>This table includes the property you have selected as comparables to yours. Click 'Delete' to remove the property from your selection to select another property.</p>
-      </>
-      }
-      <Table dataSource={selectedComparables} 
-        scroll={{ x: true }}
-        style={showSelected ? { display: ''} : {display: 'none'}}
-      >
-        {Columns}
-        <Column
-          title="Action"
-          key="action"
-          render={(record) => (
-          <Button 
-            danger
-            onClick={() => {
-              setSelected(selectedComparables.filter(candidate => candidate.PIN !== record.PIN));
-              setCandidates(candidates.concat(record));
-            }}
-          >
-            Delete
-          </Button>
-          )}
+          render={(record) => {
+            const isSelected = !!selectedComparables.find(({ PIN }) => record.PIN === PIN)
+            return (
+              <Button 
+                danger={isSelected}
+                onClick={() => 
+                  setSelected(isSelected ?
+                    selectedComparables.filter(({ PIN }) => record.PIN !== PIN) :
+                    selectedComparables.concat(record))
+                }
+              >
+                {isSelected ? "Delete" : "Add"}
+              </Button>
+            )
+        }}
         />
       </Table>
       {showSelected && <Form
