@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronized]
+  push:
+  workflow_dispatch:
+
+jobs:
+  python-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: pipx install poetry
+
+      - uses: actions/setup-python@v4
+        id: py
+        with:
+          python-version: 3.11
+          cache: poetry
+
+      - run: poetry install --no-interaction
+
+      - run: poetry run black . --check
+
+      - run: poetry run ruff check .
+
+  js-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "17.x"
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
+      - run: npm ci --prefer-offline --no-audit --no-optional
+        working-directory: ./frontend
+
+      - run: npm run lint
+        working-directory: ./frontend
+
+      - run: npm run prettier
+        working-directory: ./frontend
+
+      - run: npm run build
+        working-directory: ./frontend

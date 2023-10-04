@@ -59,7 +59,7 @@ exclude = '''
 
 [tool.ruff]
 line-length = 88
-target-version = ["py311"]
+target-version = "py311"
 exclude = [
     ".git",
     ".venv",
@@ -68,6 +68,10 @@ exclude = [
     "app/template_files",
     "frontend"
 ]
+
+[tool.isort]
+profile = "black"
+line_length = 88
 
 [tool.ruff.isort]
 known-first-party = ["api"]
