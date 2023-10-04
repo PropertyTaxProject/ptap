@@ -1,75 +1,117 @@
-import axios from 'axios';
-import { saveAs } from 'file-saver';
+import axios from "axios"
+import { saveAs } from "file-saver"
 
 export const submitForm = async (info) => {
   try {
-    const resp = await axios.post('/api_v1/submit', info);
-    return resp.data.response;
+    const resp = await axios.post("/api_v1/submit", info)
+    return resp.data.response
   } catch (e) {
-    console.error(e);
-    return null;
+    console.error(e)
+    return null
   }
-};
+}
 
-export const submitAppeal = async (targetProperty, comparables, userInfo, userPropInfo, uuid) => {
+export const submitAppeal = async (
+  targetProperty,
+  comparables,
+  userInfo,
+  userPropInfo,
+  uuid
+) => {
   try {
-    const body = { target_pin: targetProperty, comparables, uuid, ...userInfo, ...userPropInfo };
+    const body = {
+      target_pin: targetProperty,
+      comparables,
+      uuid,
+      ...userInfo,
+      ...userPropInfo,
+    }
     //const detroit = userInfo.appeal_type === 'detroit_single_family';
-    const download = false;
-    const resp = await axios.post('/api_v1/submit2', body, { responseType: download ? 'blob' : 'json' });
+    const download = false
+    const resp = await axios.post("/api_v1/submit2", body, {
+      responseType: download ? "blob" : "json",
+    })
     if (download === true) {
-      saveAs(resp.data, `${userInfo.name.split(' ').join('-').toLowerCase()}-appeal.docx`);
+      saveAs(
+        resp.data,
+        `${userInfo.name.split(" ").join("-").toLowerCase()}-appeal.docx`
+      )
     } else {
-      console.log(resp);
+      console.log(resp)
     }
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-};
+}
 
-export const submitEstimate = async (targetProperty, uuid, comparablesPool, selectedComparables) => {
+export const submitEstimate = async (
+  targetProperty,
+  uuid,
+  comparablesPool,
+  selectedComparables
+) => {
   let today = new Date()
-  let date = today.getDate() + '-' + parseInt(today.getMonth() + 1) + '-' + today.getFullYear()
+  let date =
+    today.getDate() +
+    "-" +
+    parseInt(today.getMonth() + 1) +
+    "-" +
+    today.getFullYear()
   try {
-    const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
-    const download = true;
-    const resp = await axios.post('/api_v1/estimates', body, { responseType: download ? 'blob' : 'json' });
+    const body = {
+      target_pin: targetProperty,
+      comparablesPool,
+      uuid,
+      selectedComparables,
+    }
+    const download = true
+    const resp = await axios.post("/api_v1/estimates", body, {
+      responseType: download ? "blob" : "json",
+    })
     if (download === true) {
-      saveAs(resp.data, `${targetProperty.Address + ' ' + date} Appendix.docx`);
+      saveAs(resp.data, `${targetProperty.Address + " " + date} Appendix.docx`)
     } else {
-      console.log(resp);
+      console.log(resp)
     }
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-};
+}
 
-export const submitEstimate2 = async (targetProperty, uuid, comparablesPool, selectedComparables) => {
+export const submitEstimate2 = async (
+  targetProperty,
+  uuid,
+  comparablesPool,
+  selectedComparables
+) => {
   try {
-    const body = { target_pin: targetProperty, comparablesPool, uuid, selectedComparables };
-    const resp = await axios.post('/api_v1/estimates2', body);
-    return resp.data.response;
+    const body = {
+      target_pin: targetProperty,
+      comparablesPool,
+      uuid,
+      selectedComparables,
+    }
+    const resp = await axios.post("/api_v1/estimates2", body)
+    return resp.data.response
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-};
-
-
+}
 
 export const lookupPin = async (data) => {
   try {
-    const resp = await axios.post('/api_v1/pin-lookup', data)
-    return resp.data.response;
+    const resp = await axios.post("/api_v1/pin-lookup", data)
+    return resp.data.response
   } catch (err) {
-    return [];
+    return []
   }
-};
+}
 
 export const estimatePin = async (data) => {
   try {
-    const resp = await axios.post('/api_v1/submit2', data)
-    return resp.data.response;
+    const resp = await axios.post("/api_v1/submit2", data)
+    return resp.data.response
   } catch (err) {
-    return [];
+    return []
   }
 }

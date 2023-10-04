@@ -2,21 +2,82 @@
   "name": "ptap_site",
   "version": "1.0.1",
   "private": true,
+  "scripts": {
+    "start": "WATCHPACK_POLLING=true react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint \"./src/**/*.{js,jsx,ts}\"",
+    "lint:fix": "eslint --quiet --fix \"./src/**/*.{js,jsx,ts}\"",
+    "prettier": "prettier --check \"./src/**/*.{js,jsx,css}\"",
+    "prettier:fix": "prettier --write \"./src/**/*.{js,jsx,css}\""
+  },
   "dependencies": {
     "antd": "^4.11.2",
     "axios": "^0.21.4",
     "file-saver": "^2.0.5",
+    "prop-types": "^15.8.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-ga": "^3.3.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1"
   },
-  "scripts": {
-    "start": "WATCHPACK_POLLING=true react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "^3.0.3",
+    "prettier-eslint": "^15.0.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "plugins": [
+      "import",
+      "prettier",
+      "react"
+    ],
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "requireConfigFile": false,
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "babelOptions": {
+        "presets": [
+          "@babel/preset-env",
+          "@babel/preset-react"
+        ]
+      }
+    }
+  },
+  "prettier": {
+    "endOfLine": "lf",
+    "semi": false,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
   },
   "browserslist": {
     "production": [

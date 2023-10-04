@@ -18,17 +18,17 @@ gunicorn --bind 127.0.0.1:5000 --workers 2 --threads 3 application:application
 
 ### From Scratch
 
-From the frontend directory, run the following lines to build and start the app. Must have yarn and flask installed. Run `yarn start-api` on a separate terminal.
+From the frontend directory, run the following lines to build and start the app. Must have npm and flask installed. Run `npm start` on a separate terminal.
 
 ```bash
-yarn install
-yarn start
-yarn start-api
+npm install
+npm start
 ```
+
 ### Rebuilding after Install
 
 ```bash
-yarn build
+npm run build
 ```
 
 ## Deploy AWS Elastic Beanstalk

@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
-import Page2023 from './pages/page2023';
+import React, { useState } from "react"
+import PropTypes from "prop-types"
+import Page2023 from "./pages/page2023"
 
 const Reduced2023 = (props) => {
-  const { city } = props;
-  const [pin, setPin] = useState(null);
-  const [sessionUuid, setUuid] = useState([]);
-
+  const { city } = props
+  const [, setPin] = useState(null)
+  const [, setUuid] = useState([])
 
   let view = (
     <Page2023
-      logPin={(selectedPin) => { setPin(selectedPin); }}
+      logPin={(selectedPin) => {
+        setPin(selectedPin)
+      }}
       city={city}
-      logUuid={(givenUuid) => { setUuid(givenUuid); }}
+      logUuid={(givenUuid) => {
+        setUuid(givenUuid)
+      }}
     />
-  );
+  )
 
-  return view;
-};
+  return view
+}
 
-export default Reduced2023;
+Reduced2023.propTypes = {
+  city: PropTypes.string,
+}
+
+export default Reduced2023
