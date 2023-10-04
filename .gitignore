@@ -12,3 +12,4 @@ __pycache__
 !.elasticbeanstalk/*.global.yml
 *.ipynb
 .vscode*
+.ruff_cache

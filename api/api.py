@@ -1,124 +1,142 @@
-import time
 import os
+import time
+
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
-from flask_mail import Mail, Message
-from .mainfct import process_comps_input, comparables, address_candidates, process_estimate
+from flask_mail import Mail
+
 from .logging import logger
+from .mainfct import (
+    address_candidates,
+    comparables,
+    process_comps_input,
+    process_estimate,
+)
 
-load_dotenv('api/.env')
+load_dotenv("api/.env")
 
-application = Flask(__name__,
-                    static_folder='../frontend/build/',
-                    template_folder='../frontend/build/')
-application.config['SECRET_KEY'] = 'averyfunsalt!!!'
-application.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
-application.config['MAIL_PORT'] = 587
-application.config['MAIL_USE_TLS'] = True
-application.config['MAIL_USERNAME'] = 'apikey'
-application.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
-application.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+application = Flask(
+    __name__, static_folder="../frontend/build/", template_folder="../frontend/build/"
+)
+application.config["SECRET_KEY"] = "averyfunsalt!!!"
+application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
+application.config["MAIL_PORT"] = 587
+application.config["MAIL_USE_TLS"] = True
+application.config["MAIL_USERNAME"] = "apikey"
+application.config["MAIL_PASSWORD"] = os.environ.get("SENDGRID_API_KEY")
+application.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_DEFAULT_SENDER")
 
 CORS(application)
 mail = Mail(application)
 
-@application.route('/')
-def index():
-    return render_template('index.html')
 
-@application.route('/api_v1/pin-lookup', methods=['POST'])
+@application.route("/")
+def index():
+    return render_template("index.html")
+
+
+@application.route("/api_v1/pin-lookup", methods=["POST"])
 def handle_form0():
-    #get pin from address / send to owner input page
-    print('pin finder submit')
+    # get pin from address / send to owner input page
+    print("pin finder submit")
     pf_data = request.json
-    print('PAGE DATA', request.json)
-    print('REQUEST OBJECT', request)
+    print("PAGE DATA", request.json)
+    print("REQUEST OBJECT", request)
     try:
         response_dict = get_pin(pf_data)
-        response_dict['uuid'] = logger(pf_data, 'address_finder')
-        resp = jsonify({'request_status': time.time(),
-        'response': response_dict})
+        response_dict["uuid"] = logger(pf_data, "address_finder")
+        resp = jsonify({"request_status": time.time(), "response": response_dict})
     except Exception as e:
-        resp = jsonify({'error': str(e)})
-        logger(pf_data, 'address_finder', e)
+        resp = jsonify({"error": str(e)})
+        logger(pf_data, "address_finder", e)
 
     return resp
 
-@application.route('/api_v1/submit', methods=['POST'])
+
+@application.route("/api_v1/submit", methods=["POST"])
 def handle_form():
-    #owner information submit / get comps / send to comps select page
-    print('owner info submit')
+    # owner information submit / get comps / send to comps select page
+    print("owner info submit")
     owner_data = request.json
-    print('PAGE DATA', request.json)
-    print('REQUEST OBJECT', request)
+    print("PAGE DATA", request.json)
+    print("REQUEST OBJECT", request)
     try:
         response_dict = get_comps(owner_data)
-        logger(owner_data, 'get_comps')
-        resp = jsonify({'request_status': time.time(),
-        'response': response_dict})
+        logger(owner_data, "get_comps")
+        resp = jsonify({"request_status": time.time(), "response": response_dict})
     except Exception as e:
-        resp = jsonify({'error': str(e)})
-        logger(owner_data, 'get_comps', e)
+        resp = jsonify({"error": str(e)})
+        logger(owner_data, "get_comps", e)
 
     return resp
 
-@application.route('/api_v1/submit2', methods=['POST'])
+
+@application.route("/api_v1/submit2", methods=["POST"])
 def handle_form2():
-    #submit selected comps / finalize appeal / send to summary or complete page
-    print('page 2 submit')
+    # submit selected comps / finalize appeal / send to summary or complete page
+    print("page 2 submit")
     comps_data = request.json
     download = False
     try:
         response_dict = finalize_appeal(comps_data, mail)
-        logger(comps_data, 'submit')
+        logger(comps_data, "submit")
         if download:
-            return send_file(response_dict['file_stream'], as_attachment=True, attachment_filename='%s-appeal.docx' % comps_data['name'].lower().replace(' ', '-'))
-        resp = jsonify({'request_status': time.time(),
-        'response': response_dict})
+            return send_file(
+                response_dict["file_stream"],
+                as_attachment=True,
+                attachment_filename="%s-appeal.docx"
+                % comps_data["name"].lower().replace(" ", "-"),
+            )
+        resp = jsonify({"request_status": time.time(), "response": response_dict})
     except Exception as e:
-        resp = jsonify({'error': str(e)})
-        logger(comps_data, 'submit', e)
+        resp = jsonify({"error": str(e)})
+        logger(comps_data, "submit", e)
 
     return resp
 
-@application.route('/api_v1/estimates', methods=['POST'])
+
+@application.route("/api_v1/estimates", methods=["POST"])
 def handle_form3():
-    #given pin and select comp, generate estimate/appendix file
-    print('estimate submit')
+    # given pin and select comp, generate estimate/appendix file
+    print("estimate submit")
     est_data = request.json
     try:
         response_dict = finalize_estimate(est_data, True)
-        logger(est_data, 'est_submit')
-        return send_file(response_dict['file_stream'], as_attachment=True, download_name = 'test.docx')
+        logger(est_data, "est_submit")
+        return send_file(
+            response_dict["file_stream"], as_attachment=True, download_name="test.docx"
+        )
     except Exception as e:
-        resp = jsonify({'error': str(e)})
-        logger(est_data, 'submit_estimate', e)
+        resp = jsonify({"error": str(e)})
+        logger(est_data, "submit_estimate", e)
 
     return resp
 
-@application.route('/api_v1/estimates2', methods=['POST'])
+
+@application.route("/api_v1/estimates2", methods=["POST"])
 def handle_form4():
-    #given pin and select comp, generate estimate/appendix file
-    print('estimate submit')
+    # given pin and select comp, generate estimate/appendix file
+    print("estimate submit")
     est_data = request.json
     try:
         response_dict = finalize_estimate(est_data, False)
-        logger(est_data, 'est_submit')
-        resp = jsonify({'request_status': time.time(),
-        'response': response_dict})
+        logger(est_data, "est_submit")
+        resp = jsonify({"request_status": time.time(), "response": response_dict})
     except Exception as e:
-        resp = jsonify({'error': str(e)})
-        logger(est_data, 'submit_estimate2', e)
+        resp = jsonify({"error": str(e)})
+        logger(est_data, "submit_estimate2", e)
 
     return resp
 
+
 @application.errorhandler(404)
 def page_not_found(error):
-    return render_template('index.html')
+    return render_template("index.html")
+
 
 def get_pin(form_data):
-    '''
+    """
     Input:
     {
         st_num : 'num' #street number,
@@ -128,11 +146,8 @@ def get_pin(form_data):
     {
         candidates: [{'address':val,'parcel_num':val},{}]
     }
-    '''
-    cutoff_info = {
-        'detroit': 150000,
-        'cook': 225000
-    }
+    """
+    cutoff_info = {"detroit": 150000, "cook": 225000}
 
     return address_candidates(form_data, cutoff_info)
 
@@ -149,8 +164,9 @@ def get_comps(form_data):
     """
     return comparables(form_data)
 
+
 def finalize_appeal(form_data, mail):
-    '''
+    """
     Input:
     {
         'target_pin': [{}],
@@ -166,18 +182,19 @@ def finalize_appeal(form_data, mail):
         'zip': '',
         'preferred: ''
     }
-       
+
     Output:
     {
         success: bool,
         contention_value: val,
         message: txt
     }
-    '''
+    """
     return process_comps_input(form_data, mail)
 
+
 def finalize_estimate(form_data, download=True):
-    '''
+    """
     Input:
     {
         'target_pin': [{}],
@@ -185,11 +202,11 @@ def finalize_estimate(form_data, download=True):
         'uuid': '',
         'selectedComparables': [{}]
     }
-       
+
     Output:
-    word document OR 
+    word document OR
     {
-        TBD   
+        TBD
     }
-    '''
+    """
     return process_estimate(form_data, download)

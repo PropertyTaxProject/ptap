@@ -2,6 +2,15 @@
 
 Welcome to the property tax appeal project repository. This is a flask/react project designed for deployment to AWS Elastic Beanstalk which files property tax appeals for low-income homeowners in Detroit and Chicago.
 
+## Setup
+
+To install Python dependencies and run locally, you'll need [Poetry](https://python-poetry.org/) installed. Then you can run:
+
+```
+poetry install
+poetry run python application.py
+```
+
 ## Deployment Guide
 
 The app requires credentials. api/.env includes SENDGRID_API_KEY and MAIL_DEFAULT_SENDER. api/.googleenv includes google drive service credentials.
