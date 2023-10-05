@@ -97,12 +97,12 @@ def submit_cook_sf(comp_submit, mail):
     """
     # update submission log
     targ = get_pin('detroit', pin)
-    
+
     if comp_submit['validcharacteristics'] == 'No':
         c_flag = 'Yes. Homeowner Input: ' + comp_submit['characteristicsinput']
     else:
         c_flag = 'No'
-    
+
     sub_dict = {
         'Client Name' : comp_submit['name'],
         'Address' : comp_submit['address'],
