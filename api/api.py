@@ -16,9 +16,7 @@ from .mainfct import (
 
 load_dotenv("api/.env")
 
-application = Flask(
-    __name__, static_folder="../frontend/build/", template_folder="../frontend/build/"
-)
+application = Flask(__name__, static_folder="../build/", template_folder="../build/")
 application.config["SECRET_KEY"] = "averyfunsalt!!!"
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
 application.config["MAIL_PORT"] = 587

@@ -27,7 +27,7 @@ gunicorn --bind 127.0.0.1:5000 --workers 2 --threads 3 application:application
 
 ### From Scratch
 
-From the frontend directory, run the following lines to build and start the app. Must have npm and flask installed. Run `npm start` on a separate terminal.
+Run the following lines to build and start the app. Must have npm and flask installed. Run `npm start` on a separate terminal.
 
 ```bash
 npm install

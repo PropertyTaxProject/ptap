@@ -53,7 +53,7 @@ exclude = '''
     | dist
     | app/database
     | app/template_files
-    | frontend
+    | src
 )
 '''
 
@@ -71,7 +71,7 @@ exclude = [
     ".pytest_cache",
     "app/database",
     "app/template_files",
-    "frontend"
+    "src"
 ]
 
 [tool.ruff.isort]
