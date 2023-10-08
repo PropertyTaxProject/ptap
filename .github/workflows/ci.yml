@@ -90,7 +90,8 @@ jobs:
         with:
           terraform_version: 1.1.7
 
-      - working-directory: ./tf
+      - name: Update Lambda with Terraform
+        working-directory: ./tf
         run: |
           terraform init
           terraform plan

@@ -1,7 +1,6 @@
 terraform {
   required_version = ">= 1.0"
 
-  # TODO: local state to start
   backend "s3" {
     bucket = "pjsier-ptap-testing-terraform-state"
     key    = "ptap/terraform.tfstate"
@@ -22,17 +21,43 @@ provider "aws" {
 
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
-data "aws_availability_zones" "available" {}
 
 locals {
-  name     = "ptap"
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+  name = "ptap"
+  tags = {
+    project = "ptap"
+  }
 }
 
 module "iam_github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
   version = "5.30.0"
+}
+
+resource "aws_iam_policy" "get_access" {
+  name = "${local.name}-get-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "iam:Get*",
+          "iam:List*",
+          "logs:List*",
+          "logs:Describe*",
+          "ecr:Get*",
+          "ecr:List*",
+          "ecr:Describe*",
+          "apigateway:GET"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = local.tags
 }
 
 resource "aws_iam_policy" "s3_state_access" {
@@ -51,6 +76,8 @@ resource "aws_iam_policy" "s3_state_access" {
       }
     ]
   })
+
+  tags = local.tags
 }
 
 resource "aws_iam_policy" "ecr_access" {
@@ -73,6 +100,8 @@ resource "aws_iam_policy" "ecr_access" {
       },
     ]
   })
+
+  tags = local.tags
 }
 
 resource "aws_iam_policy" "lambda_access" {
@@ -86,11 +115,13 @@ resource "aws_iam_policy" "lambda_access" {
         Effect = "Allow"
         Resource = [
           module.lambda.lambda_function_arn,
-          "${module.lambda.lambda_function_arn}/*"
+          "${module.lambda.lambda_function_arn}:*"
         ]
       },
     ]
   })
+
+  tags = local.tags
 }
 
 module "iam_github_oidc_role" {
@@ -101,14 +132,13 @@ module "iam_github_oidc_role" {
   subjects = ["pjsier/ptap:*"]
 
   policies = {
-    EcrAccess    = aws_iam_policy.ecr_access.arn,
-    LambdaAccess = aws_iam_policy.lambda_access.arn
+    EcrAccess     = aws_iam_policy.ecr_access.arn,
+    LambdaAccess  = aws_iam_policy.lambda_access.arn
     S3StateAccess = aws_iam_policy.s3_state_access.arn
+    GetAccess     = aws_iam_policy.get_access.arn
   }
 
-  tags = {
-    Environment = "test"
-  }
+  tags = local.tags
 }
 
 # TODO: S3 bucket for loading data, assets
@@ -138,8 +168,7 @@ module "ecr" {
     ]
   })
 
-  # TODO:
-  # tags
+  tags = local.tags
 }
 
 module "lambda" {
@@ -160,9 +189,7 @@ module "lambda" {
     }
   }
 
-  # tags = {
-  #   Name = "my-lambda1"
-  # }
+  tags = local.tags
 }
 
 module "apigw" {
@@ -198,121 +225,6 @@ module "apigw" {
       timeout_milliseconds   = 12000
     }
   }
+
+  tags = local.tags
 }
-
-# resource "aws_ssm_parameter" "db_name" {
-#   name = "/${local.name}/database/name"
-#   type = "SecureString"
-
-#   value = ""
-# }
-
-# resource "aws_ssm_parameter" "db_username" {
-#   name = "/${local.name}/database/username"
-#   type = "SecureString"
-
-#   value = ""
-# }
-
-# resource "aws_ssm_parameter" "db_password" {
-#   name = "/${local.name}/database/password"
-#   type = "SecureString"
-
-#   value = ""
-# }
-
-# module "vpc" {
-#   source  = "terraform-aws-modules/vpc/aws"
-#   version = "~> 5.0"
-
-#   name = local.name
-#   cidr = local.vpc_cidr
-
-#   azs              = local.azs
-#   public_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
-#   private_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 3)]
-#   database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 6)]
-
-#   create_database_subnet_group = true
-
-#   # tags = local.tags
-# }
-
-# module "security_group" {
-#   source  = "terraform-aws-modules/security-group/aws"
-#   version = "~> 5.0"
-
-#   name        = local.name
-#   description = "Complete PostgreSQL example security group"
-#   vpc_id      = module.vpc.vpc_id
-
-#   # ingress
-#   ingress_with_cidr_blocks = [
-#     {
-#       from_port   = 5432
-#       to_port     = 5432
-#       protocol    = "tcp"
-#       description = "PostgreSQL access from within VPC"
-#       cidr_blocks = module.vpc.vpc_cidr_block
-#     },
-#   ]
-
-#   # tags = local.tags
-# }
-
-# module "rds" {
-#   source  = "terraform-aws-modules/rds/aws"
-#   version = "6.1.1"
-
-#   identifier = local.name
-
-#   engine               = "postgres"
-#   engine_version       = "14"
-#   family               = "postgres14"
-#   major_engine_version = "14"
-#   instance_class       = "db.t4g.micro"
-
-#   allocated_storage     = 5
-#   max_allocated_storage = 20
-
-#   db_name  = aws_ssm_parameter.db_name.value
-#   username = aws_ssm_parameter.db_username.value
-#   port     = 5432
-
-#   multi_az               = true
-#   db_subnet_group_name   = module.vpc.database_subnet_group
-#   vpc_security_group_ids = [module.security_group.security_group_id]
-#   publicly_accessible    = true
-
-#   maintenance_window              = "Mon:00:00-Mon:03:00"
-#   backup_window                   = "03:00-06:00"
-#   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-#   create_cloudwatch_log_group     = true
-
-#   backup_retention_period = 1
-#   skip_final_snapshot     = true
-#   deletion_protection     = false
-
-#   performance_insights_enabled          = true
-#   performance_insights_retention_period = 7
-#   create_monitoring_role                = true
-#   monitoring_interval                   = 60
-
-#   parameters = [
-#     {
-#       name  = "autovacuum"
-#       value = 1
-#     },
-#     {
-#       name  = "client_encoding"
-#       value = "utf8"
-#     }
-#   ]
-
-#   monitoring_role_name            = "${local.name}-rds-monitoring-role-name"
-#   monitoring_role_use_name_prefix = true
-
-#   # TODO:
-#   # iam_database_authentication_enabled = true
-
-# }
