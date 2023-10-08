@@ -2,6 +2,11 @@ terraform {
   required_version = ">= 1.0"
 
   # TODO: local state to start
+  backend "s3" {
+    bucket = "pjsier-ptap-testing-terraform-state"
+    key    = "ptap/terraform.tfstate"
+    region = "us-east-1"
+  }
 
   required_providers {
     aws = {
@@ -28,6 +33,24 @@ locals {
 module "iam_github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
   version = "5.30.0"
+}
+
+resource "aws_iam_policy" "s3_state_access" {
+  name = "${local.name}-s3-state-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = ["s3:*"]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::pjsier-ptap-testing-terraform-state",
+          "arn:aws:s3:::pjsier-ptap-testing-terraform-state/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_policy" "ecr_access" {
@@ -80,6 +103,7 @@ module "iam_github_oidc_role" {
   policies = {
     EcrAccess    = aws_iam_policy.ecr_access.arn,
     LambdaAccess = aws_iam_policy.lambda_access.arn
+    S3StateAccess = aws_iam_policy.s3_state_access.arn
   }
 
   tags = {

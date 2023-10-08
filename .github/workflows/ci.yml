@@ -91,7 +91,10 @@ jobs:
           terraform_version: 1.1.7
 
       - working-directory: ./tf
-        run: terraform plan
+        run: |
+          terraform init
+          terraform plan
+
 # if:  TODO: only on main
 # TODO:
 # - build docker with SHA, also tag latest
