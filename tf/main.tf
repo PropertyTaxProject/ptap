@@ -1,6 +1,7 @@
 terraform {
   required_version = ">= 1.0"
 
+  # TODO:
   backend "s3" {
     bucket = "pjsier-ptap-testing-terraform-state"
     key    = "ptap/terraform.tfstate"
@@ -37,6 +38,7 @@ module "iam_github_oidc_provider" {
 resource "aws_iam_policy" "s3_state_access" {
   name = "${local.name}-s3-state-access"
 
+  # TODO:
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -152,7 +154,7 @@ module "iam_github_oidc_role" {
   version = "5.30.0"
 
   name     = "${local.name}-terraform-github-role"
-  subjects = ["pjsier/ptap:*"]
+  subjects = ["pjsier/ptap:*"] # TODO:
 
   policies = {
     EcrAccess     = aws_iam_policy.ecr_access.arn,
@@ -262,7 +264,7 @@ module "apigw" {
 
   create_api_domain_name = false
 
-  # Custom domain
+  # Custom domain TODO:
   # domain_name                 = "terraform-aws-modules.modules.tf"
   # domain_name_certificate_arn = "arn:aws:acm:eu-west-1:052235179155:certificate/2b3a7ed9-05e1-4f9e-952b-27744ba06da6"
 

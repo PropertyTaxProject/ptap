@@ -1,7 +1,0 @@
-.git*
-__pycache__*
-node_modules
-node_modules/*
-api/database/*.csv
-.git/
-.ipynb_checkpoints/
