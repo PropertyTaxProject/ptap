@@ -134,6 +134,8 @@ resource "aws_iam_policy" "get_access" {
           "ecr:Get*",
           "ecr:List*",
           "ecr:Describe*",
+          "s3:Get*",
+          "s3:List*",
           "apigateway:GET"
         ]
         Effect   = "Allow"

@@ -73,11 +73,25 @@ jobs:
           role-to-assume: arn:aws:iam::146849845625:role/ptap-terraform-github-role
           aws-region: us-east-1
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "17.x"
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
       # TODO: Set non-secret configuration vars
+      # TODO: Set cache-control headers
       - name: Build assets for production
         env:
           PUBLIC_URL: https://ptap-testing-assets.s3.amazonaws.com
-        run: npm run build
+        run: |
+          npm ci --prefer-offline --no-audit --no-optional
+          npm run build
 
       - run: aws s3 cp ./build/ s3://ptap-testing-assets/ --recursive
 
