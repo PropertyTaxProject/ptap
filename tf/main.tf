@@ -38,20 +38,15 @@ resource "aws_iam_policy" "ecr_access" {
     Statement = [
       {
         Action = [
-          "ecr:Get*",
-          "ecr:List*",
-          "ecr:Describe*",
+          "ecr:GetAuthorizationToken",
           "ecr:CompleteLayerUpload",
           "ecr:UploadLayerPart",
           "ecr:InitiateLayerUpload",
           "ecr:BatchCheckLayerAvailability",
           "ecr:PutImage"
         ]
-        Effect = "Allow"
-        Resource = [
-          module.ecr.repository_arn,
-          "${module.ecr.repository_arn}/*"
-        ]
+        Effect   = "Allow"
+        Resource = "*"
       },
     ]
   })
