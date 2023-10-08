@@ -6,36 +6,43 @@ import gspread
 import pandas as pd
 from google.oauth2 import service_account
 
-# open connection with google sheets personal log
-credentials = service_account.Credentials.from_service_account_file(
-    "api/.googleenv/ptap-904555bfffb0.json",
-    scopes=[
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive",
-    ],
-)
+gsheet = None
+gsheet2 = None
 
-client = gspread.authorize(credentials)
-gsheet = client.open("ptap-log").sheet1
+if os.path.exists("api/.googleenv/ptap-904555bfffb0.json"):
+    # open connection with google sheets personal log
+    credentials = service_account.Credentials.from_service_account_file(
+        "api/.googleenv/ptap-904555bfffb0.json",
+        scopes=[
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/drive",
+        ],
+    )
 
-# open connection with google sheets submission account
-credentials2 = service_account.Credentials.from_service_account_file(
-    "api/.googleenv/ptap-297022-09570cc5b389.json",
-    scopes=[
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive",
-    ],
-)
+    client = gspread.authorize(credentials)
+    gsheet = client.open("ptap-log").sheet1
 
-client2 = gspread.authorize(credentials2)
-gsheet2 = client2.open("PTAP_Submissions").sheet1
+    # # open connection with google sheets submission account
+    credentials2 = service_account.Credentials.from_service_account_file(
+        "api/.googleenv/ptap-297022-09570cc5b389.json",
+        scopes=[
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/drive",
+        ],
+    )
+
+    client2 = gspread.authorize(credentials2)
+    gsheet2 = client2.open("PTAP_Submissions").sheet1
 
 
 def record_log(uuid_val, process_step_id, exception, form_data):
+    if gsheet is None:
+        return
+
     new = {}
     new["uuid"] = uuid_val
     new["process_step_id"] = process_step_id
@@ -66,6 +73,9 @@ def record_log(uuid_val, process_step_id, exception, form_data):
 
 
 def record_final_submission(sub_dict):
+    if gsheet2 is None:
+        return
+
     # add values
     gsheet2.append_rows([list(sub_dict.values())])
     # make url
@@ -84,4 +94,3 @@ def logger(form_data, process_step_id, exception=""):
     else:  # missing
         uuid_val = "missing"
     record_log(uuid_val, process_step_id, exception, form_data)
-    return uuid_val
