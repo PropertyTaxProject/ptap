@@ -93,7 +93,8 @@ resource "aws_iam_policy" "ecr_access" {
           "ecr:UploadLayerPart",
           "ecr:InitiateLayerUpload",
           "ecr:BatchCheckLayerAvailability",
-          "ecr:PutImage"
+          "ecr:PutImage",
+          "ecr:SetRepositoryPolicy"
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -150,7 +151,7 @@ module "ecr" {
   repository_name = local.name
   repository_type = "private"
 
-  repository_read_write_access_arns = [data.aws_caller_identity.current.arn]
+  repository_read_write_access_arns = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {

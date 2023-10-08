@@ -92,14 +92,8 @@ jobs:
 
       - name: Update Lambda with Terraform
         working-directory: ./tf
+        env:
+          TF_VAR_lambda_image_tag: ${{ github.sha }}
         run: |
           terraform init
-          terraform plan
-
-# if:  TODO: only on main
-# TODO:
-# - build docker with SHA, also tag latest
-# - push to ECR, will need creds (maybe role?)
-# - access role/creds for terraform apply
-# - run tf apply to update Lambda
-# - Deploy assets to S3
+          terraform apply -auto-approve
