@@ -73,6 +73,14 @@ jobs:
           role-to-assume: arn:aws:iam::146849845625:role/ptap-terraform-github-role
           aws-region: us-east-1
 
+      # TODO: Set non-secret configuration vars
+      - name: Build assets for production
+        env:
+          PUBLIC_URL: https://ptap-testing-assets.s3.amazonaws.com
+        run: npm run build
+
+      - run: aws s3 cp ./build/ s3://ptap-testing-assets/ --recursive
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2

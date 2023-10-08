@@ -34,32 +34,6 @@ module "iam_github_oidc_provider" {
   version = "5.30.0"
 }
 
-resource "aws_iam_policy" "get_access" {
-  name = "${local.name}-get-access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "iam:Get*",
-          "iam:List*",
-          "logs:List*",
-          "logs:Describe*",
-          "ecr:Get*",
-          "ecr:List*",
-          "ecr:Describe*",
-          "apigateway:GET"
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      }
-    ]
-  })
-
-  tags = local.tags
-}
-
 resource "aws_iam_policy" "s3_state_access" {
   name = "${local.name}-s3-state-access"
 
@@ -125,6 +99,52 @@ resource "aws_iam_policy" "lambda_access" {
   tags = local.tags
 }
 
+resource "aws_iam_policy" "s3_assets_access" {
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:*"
+        ]
+        Effect = "Allow"
+        Resource = [
+          module.s3.s3_bucket_arn,
+          "${module.s3.s3_bucket_arn}/*"
+        ]
+      },
+    ]
+  })
+
+  tags = local.tags
+}
+
+resource "aws_iam_policy" "get_access" {
+  name = "${local.name}-get-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "iam:Get*",
+          "iam:List*",
+          "logs:List*",
+          "logs:Describe*",
+          "ecr:Get*",
+          "ecr:List*",
+          "ecr:Describe*",
+          "apigateway:GET"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = local.tags
+}
+
 module "iam_github_oidc_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
   version = "5.30.0"
@@ -136,13 +156,45 @@ module "iam_github_oidc_role" {
     EcrAccess     = aws_iam_policy.ecr_access.arn,
     LambdaAccess  = aws_iam_policy.lambda_access.arn
     S3StateAccess = aws_iam_policy.s3_state_access.arn
+    S3AssetsAcess = aws_iam_policy.s3_assets_access.arn
     GetAccess     = aws_iam_policy.get_access.arn
   }
 
   tags = local.tags
 }
 
-# TODO: S3 bucket for loading data, assets
+data "aws_iam_policy_document" "s3_public" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    actions   = ["s3:GetObject"]
+    resources = ["${module.s3.s3_bucket_arn}/*"]
+  }
+}
+
+module "s3" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.15.1"
+
+  bucket        = "${local.name}-testing-assets"
+  acl           = "public-read"
+  attach_policy = true
+  policy        = data.aws_iam_policy_document.s3_public.json
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+
+  website = {
+    index_document = "index.html"
+  }
+}
 
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
