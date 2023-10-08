@@ -8,4 +8,7 @@ RUN pip install -U poetry && \
 
 COPY . ./
 
+# TODO: Remove this once data build works
+RUN sqlite3 ./api/database/data.sqlite "VACUUM;"
+
 CMD ["application.lambda_handler"]

@@ -70,7 +70,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::146849845625:role/ptap-terraform-github-role
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ptap-terraform-github-role
           aws-region: us-east-1
 
       - uses: actions/setup-node@v1
@@ -84,16 +84,17 @@ jobs:
           restore-keys: |
             npm-
 
-      # TODO: Set non-secret configuration vars
-      # TODO: Set cache-control headers
       - name: Build assets for production
         env:
-          PUBLIC_URL: https://ptap-testing-assets.s3.amazonaws.com
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          PUBLIC_URL: https://${{ vars.S3_BUCKET }}.s3.amazonaws.com
         run: |
           npm ci --prefer-offline --no-audit --no-optional
           npm run build
 
-      - run: aws s3 cp ./build/ s3://ptap-testing-assets/ --recursive
+      - env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: aws s3 cp ./build/ s3://$S3_BUCKET/ --cache-control no-cache --recursive
 
       - name: Login to Amazon ECR
         id: login-ecr
