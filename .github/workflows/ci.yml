@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  POETRY_VIRTUALENVS_IN_PROJECT: true
+
 on:
   pull_request:
     types: [opened, synchronized]
@@ -51,3 +54,10 @@ jobs:
       - run: npm run prettier
 
       - run: npm run build
+# if:  TODO: only on main
+# TODO:
+# - build docker with SHA, also tag latest
+# - push to ECR, will need creds (maybe role?)
+# - access role/creds for terraform apply
+# - run tf apply to update Lambda
+# - Deploy assets to S3

@@ -10,6 +10,9 @@ __pycache__
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+.terraform/
+*.tfstate*
+*.tfvars
 *.ipynb
 .vscode*
 .ruff_cache

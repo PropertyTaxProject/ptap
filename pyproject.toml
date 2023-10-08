@@ -29,6 +29,7 @@ six = "^1.16.0"
 werkzeug = "^3.0.0"
 numpy = "^1.26.0"
 pandas = "^2.1.1"
+aws-wsgi = "^0.2.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
@@ -54,6 +55,7 @@ exclude = '''
     | app/database
     | app/template_files
     | src
+    | tf
 )
 '''
 
@@ -71,7 +73,8 @@ exclude = [
     ".pytest_cache",
     "app/database",
     "app/template_files",
-    "src"
+    "src",
+    "tf"
 ]
 
 [tool.ruff.isort]
