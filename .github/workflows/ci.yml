@@ -82,13 +82,16 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ptap
           IMAGE_TAG: ${{ github.sha }}
-        # TODO: might be a more efficient way
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker build -t $REGISTRY/$REPOSITORY:latest .
-          docker push $REGISTRY/$REPOSITORY:latest
 
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.1.7
+
+      - working-directory: ./tf
+        run: terraform plan
 # if:  TODO: only on main
 # TODO:
 # - build docker with SHA, also tag latest
