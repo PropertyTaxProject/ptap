@@ -25,6 +25,73 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
 
+module "iam_github_oidc_provider" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
+  version = "5.30.0"
+}
+
+resource "aws_iam_policy" "ecr_access" {
+  name = "${local.name}-ecr-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecr:Get*",
+          "ecr:List*",
+          "ecr:Describe*",
+          "ecr:CompleteLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:InitiateLayerUpload",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:PutImage"
+        ]
+        Effect = "Allow"
+        Resource = [
+          module.ecr.repository_arn,
+          "${module.ecr.repository_arn}/*"
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy" "lambda_access" {
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "lambda:*"
+        ]
+        Effect = "Allow"
+        Resource = [
+          module.lambda.lambda_function_arn,
+          "${module.lambda.lambda_function_arn}/*"
+        ]
+      },
+    ]
+  })
+}
+
+module "iam_github_oidc_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  version = "5.30.0"
+
+  name     = "${local.name}-terraform-github-role"
+  subjects = ["pjsier/ptap:*"]
+
+  policies = {
+    EcrAccess    = aws_iam_policy.ecr_access.arn,
+    LambdaAccess = aws_iam_policy.lambda_access.arn
+  }
+
+  tags = {
+    Environment = "test"
+  }
+}
+
 # TODO: S3 bucket for loading data, assets
 
 module "ecr" {

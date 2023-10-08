@@ -3,6 +3,10 @@ name: CI
 env:
   POETRY_VIRTUALENVS_IN_PROJECT: true
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   pull_request:
     types: [opened, synchronized]
@@ -54,6 +58,36 @@ jobs:
       - run: npm run prettier
 
       - run: npm run build
+
+  deploy:
+    needs: [python-checks, js-checks]
+    # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      # https://github.com/aws-actions/configure-aws-credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::146849845625:role/ptap-terraform-github-role
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ptap
+          IMAGE_TAG: ${{ github.sha }}
+        # TODO: might be a more efficient way
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t $REGISTRY/$REPOSITORY:latest .
+          docker push $REGISTRY/$REPOSITORY:latest
+
 # if:  TODO: only on main
 # TODO:
 # - build docker with SHA, also tag latest
