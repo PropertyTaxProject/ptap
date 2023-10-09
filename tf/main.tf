@@ -138,6 +138,9 @@ resource "aws_iam_policy" "get_access" {
           "ecr:Describe*",
           "s3:Get*",
           "s3:List*",
+          "events:Get*",
+          "events:List*",
+          "events:Describe*",
           "apigateway:GET"
         ]
         Effect   = "Allow"
@@ -243,10 +246,26 @@ module "lambda" {
     AllowExecutionFromAPIGateway = {
       service = "apigateway"
       arn     = "${module.apigw.apigatewayv2_api_execution_arn}/*/*/*"
+    },
+    AllowExecutionFromCloudWatch = {
+      principal  = "events.amazonaws.com"
+      source_arn = aws_cloudwatch_event_rule.keep_warm.arn
     }
   }
 
   tags = local.tags
+}
+
+# TODO: Maybe make 10-15 minutes?
+resource "aws_cloudwatch_event_rule" "keep_warm" {
+  name                = "${local.name}-keep-lambda-warm"
+  schedule_expression = "rate(5 minutes)"
+}
+
+resource "aws_cloudwatch_event_target" "keep_warm" {
+  rule      = aws_cloudwatch_event_rule.keep_warm.name
+  target_id = local.name
+  arn       = module.lambda.lambda_function_arn
 }
 
 module "apigw" {
@@ -273,13 +292,13 @@ module "apigw" {
     "ANY /{proxy+}" = {
       lambda_arn             = module.lambda.lambda_function_arn
       payload_format_version = "1.0"
-      timeout_milliseconds   = 12000
+      timeout_milliseconds   = 30000
     }
 
     "$default" = {
       lambda_arn             = module.lambda.lambda_function_arn
       payload_format_version = "1.0"
-      timeout_milliseconds   = 12000
+      timeout_milliseconds   = 30000
     }
   }
 
