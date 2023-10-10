@@ -1,4 +1,5 @@
 import io
+import os
 import string
 from datetime import datetime
 
@@ -183,13 +184,22 @@ def process_estimate(form_data, download):
     comp_cols = ["Address", "Dist.", "Sale Price", "Sale Date"] + target_cols
     output = {}
 
+    base_dir = os.path.dir(os.path.abspath(__file__))
+
     # generate docx
     if download:
-        output_name = (
-            "api/tmp_data/" + pin + datetime.today().strftime("%m_%d_%y") + ".docx"
+        output_name = os.path.join(
+            base_dir, "tmp_data", f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
         )
 
-        doc = DocxTemplate("api/template_files/detroit_template_2023.docx")
+        doc = DocxTemplate(
+            os.path.join(
+                base_dir,
+                "templates",
+                "docs",
+                "detroit_template_2023.docx",
+            )
+        )
 
         context = {
             "pin": pin,

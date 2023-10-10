@@ -44,16 +44,18 @@ def submit_cook_sf(comp_submit, mail):
     if "characteristicsinput" not in comp_submit:
         comp_submit["characteristicsinput"] = "NO STRUCTURAL DAMAGE REPORTED"
 
+    base_dir = os.path.dir(os.path.abspath(__file__))
+
     # generate docx
-    output_name = (
-        "api/tmp_data/"
-        + pin
-        + " Protest Letter Updated "
-        + datetime.today().strftime("%m_%d_%y")
-        + ".docx"
+    output_name = os.path.join(
+        base_dir,
+        "tmp_data",
+        f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
     )
     comp_submit["output_name"] = output_name
-    doc = DocxTemplate("api/template_files/dentons_cook_template.docx")
+    doc = DocxTemplate(
+        os.path.join(base_dir, "templates", "docs", "dentons_cook_template.docx")
+    )
 
     allinfo = []
     propinfo = []
@@ -178,15 +180,17 @@ def submit_detroit_sf(comp_submit, mail):
     avg_ecf_price = avg_ecf(t_df["Neighborhood"].values[0])
 
     # generate docx
-    output_name = (
-        "api/tmp_data/"
-        + pin
-        + " Protest Letter Updated "
-        + datetime.today().strftime("%m_%d_%y")
-        + ".docx"
+    base_dir = os.path.dir(os.path.abspath(__file__))
+
+    output_name = os.path.join(
+        base_dir,
+        "tmp_data",
+        f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
     )
     comp_submit["output_name"] = output_name
-    doc = DocxTemplate("api/template_files/detroit_template_2022.docx")
+    doc = DocxTemplate(
+        os.path.join(base_dir, "templates", "docs", "detroit_template_2022.docx")
+    )
 
     allinfo = []
     propinfo = []

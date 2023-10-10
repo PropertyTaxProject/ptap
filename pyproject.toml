@@ -41,7 +41,7 @@ exclude = '''
     | coverage
     | dist
     | app/database
-    | app/template_files
+    | app/templates
     | src
     | tf
 )
@@ -60,7 +60,7 @@ exclude = [
     ".venv",
     ".pytest_cache",
     "app/database",
-    "app/template_files",
+    "app/templates",
     "src",
     "tf"
 ]

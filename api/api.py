@@ -13,7 +13,7 @@ from .mainfct import (
     process_estimate,
 )
 
-application = Flask(__name__, static_folder="../build/", template_folder="../build/")
+application = Flask(__name__, static_folder="../build/", template_folder="./templates/")
 application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
 application.config["MAIL_PORT"] = 587
