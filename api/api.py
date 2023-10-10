@@ -18,7 +18,7 @@ application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
 application.config["MAIL_PORT"] = 587
 application.config["MAIL_USE_TLS"] = True
-application.config["MAIL_USERNAME"] = os.getenve("SENDGRID_USERNAME")
+application.config["MAIL_USERNAME"] = os.getenv("SENDGRID_USERNAME")
 application.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
 application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 
@@ -28,7 +28,7 @@ mail = Mail(application)
 
 @application.route("/")
 def index():
-    return render_template("index.html")
+    return send_file("../build/index.html")
 
 
 @application.route("/api_v1/pin-lookup", methods=["POST"])

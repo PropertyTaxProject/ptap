@@ -235,7 +235,7 @@ data "aws_ssm_parameter" "secret_key" {
   name = "/${local.name}/secret_key"
 }
 
-data "aws_ssm_paramter" "sendgrid_username" {
+data "aws_ssm_parameter" "sendgrid_username" {
   name = "/${local.name}/sendgrid_username"
 }
 
