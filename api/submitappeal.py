@@ -122,7 +122,7 @@ def submit_cook_sf(comp_submit, mail):
     log_url = record_final_submission(sub_dict)
     comp_submit['log_url'] = log_url
     """
-    comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.environ.get(
+    comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
         "PTAP_SHEET_SID"
     )
 

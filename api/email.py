@@ -8,8 +8,8 @@ def detroit_submission_email(mail, data):
     name = data["name"]
     addr = data["target_pin"]["Address"]
     submit_email = [data["email"]]
-    ptap = [os.environ.get("PTAP_MAIL")]
-    uofm = [os.environ.get("UOFM_MAIL")]
+    ptap = [os.getenv("PTAP_MAIL")]
+    uofm = [os.getenv("UOFM_MAIL")]
 
     subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
     body = (
@@ -67,8 +67,8 @@ def cook_submission_email(mail, data):
     name = data["name"]
     addr = data["target_pin"]["Address"]
     submit_email = [data["email"]]
-    ptap = [os.environ.get("PTAP_MAIL")]
-    ptap_chi = [os.environ.get("CHICAGO_MAIL")]
+    ptap = [os.getenv("PTAP_MAIL")]
+    ptap_chi = [os.getenv("CHICAGO_MAIL")]
 
     subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
     body = (

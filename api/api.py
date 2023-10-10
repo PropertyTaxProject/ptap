@@ -1,7 +1,6 @@
 import os
 import time
 
-from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
@@ -14,16 +13,14 @@ from .mainfct import (
     process_estimate,
 )
 
-load_dotenv("api/.env")
-
 application = Flask(__name__, static_folder="../build/", template_folder="../build/")
-application.config["SECRET_KEY"] = "averyfunsalt!!!"
+application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
 application.config["MAIL_PORT"] = 587
 application.config["MAIL_USE_TLS"] = True
-application.config["MAIL_USERNAME"] = "apikey"
-application.config["MAIL_PASSWORD"] = os.environ.get("SENDGRID_API_KEY")
-application.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_DEFAULT_SENDER")
+application.config["MAIL_USERNAME"] = os.getenve("SENDGRID_USERNAME")
+application.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
+application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 
 CORS(application)
 mail = Mail(application)

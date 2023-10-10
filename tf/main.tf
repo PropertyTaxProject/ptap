@@ -231,6 +231,18 @@ module "ecr" {
   tags = local.tags
 }
 
+data "aws_ssm_parameter" "secret_key" {
+  name = "/${local.name}/secret_key"
+}
+
+data "aws_ssm_paramter" "sendgrid_username" {
+  name = "/${local.name}/sendgrid_username"
+}
+
+data "aws_ssm_parameter" "sendgrid_api_key" {
+  name = "/${local.name}/sendgrid_api_key"
+}
+
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
@@ -251,6 +263,17 @@ module "lambda" {
       principal  = "events.amazonaws.com"
       source_arn = aws_cloudwatch_event_rule.keep_warm.arn
     }
+  }
+
+  environment_variables = {
+    SECRET_KEY          = data.aws_ssm_parameter.secret_key.value,
+    SENDGRID_USERNAME   = data.aws_ssm_parameter.sendgrid_username.value
+    SENDGRID_API_KEY    = data.aws_ssm_parameter.sendgrid_api_key.value,
+    MAIL_DEFAULT_SENDER = "test@example.com",
+    PTAP_MAIL           = "test@example.com",
+    UOFM_MAIL           = "test@example.com",
+    CHICAGO_MAIL        = "test@example.com",
+    PTAP_SHEET_SID      = ""
   }
 
   tags = local.tags

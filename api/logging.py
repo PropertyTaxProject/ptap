@@ -81,7 +81,7 @@ def record_final_submission(sub_dict):
     # make url
     val_list = gsheet2.col_values(1)
     base_url = "https://docs.google.com/spreadsheets/d/"
-    sid = os.environ.get("PTAP_SHEET_SID")
+    sid = os.getenv("PTAP_SHEET_SID")
 
     return base_url + sid + "/edit#gid=0&range=A" + str(len(val_list))
 
