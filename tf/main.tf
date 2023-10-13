@@ -145,6 +145,11 @@ resource "aws_iam_policy" "get_access" {
         ]
         Effect   = "Allow"
         Resource = "*"
+      },
+      {
+        Action   = ["ssm:Get*"],
+        Effect   = "Allow",
+        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/*"
       }
     ]
   })
@@ -243,6 +248,7 @@ data "aws_ssm_parameter" "sendgrid_api_key" {
   name = "/${local.name}/sendgrid_api_key"
 }
 
+# TODO: Can't find image
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
