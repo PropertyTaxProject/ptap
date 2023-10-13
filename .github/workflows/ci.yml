@@ -101,7 +101,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Check if ECR image exists
+        id: container-exists
+        continue-on-error: true
+        env:
+          REPOSITORY: ptap
+          IMAGE_TAG: ${{ github.sha }}
+        run: aws ecr describe-images --repository-name=$REPOSITORY --image-ids=imageTag=$IMAGE_TAG
+
       - name: Build, tag, and push docker image to ECR
+        if: steps.container-exists.outcome != 'success'
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ptap
