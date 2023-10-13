@@ -4,6 +4,8 @@ import time
 from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
 
 from .logging import logger
 from .mainfct import (
@@ -13,6 +15,8 @@ from .mainfct import (
     process_estimate,
 )
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 application = Flask(__name__, static_folder="../build/", template_folder="./templates/")
 application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
@@ -21,6 +25,21 @@ application.config["MAIL_USE_TLS"] = True
 application.config["MAIL_USERNAME"] = os.getenv("SENDGRID_USERNAME")
 application.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
 application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+
+
+application.config[
+    "SQLALCHEMY_DATABASE_URI"
+] = f"sqlite://{os.path.join(BASE_DIR, 'database', 'data.sqlite')}"
+
+db = SQLAlchemy(application)
+
+with application.app_context():
+
+    @event.listens_for(db.engine, "connect")
+    def load_spatialite(dbapi_conn, connection_record):
+        dbapi_conn.enable_load_extension(True)
+        dbapi_conn.load_extension("mod_spatialite")
+
 
 CORS(application)
 mail = Mail(application)
