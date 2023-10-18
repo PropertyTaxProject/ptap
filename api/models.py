@@ -1,39 +1,48 @@
 from geoalchemy2 import Geometry
+from thefuzz import process
 
-from .api import db
+from .db import db
+
+
+# TODO:
+def fuzzy_address_matches(street, parcels):
+    parcel_dict = {p.street_name: p for p in parcels}
+    results = process.extractBests(street, parcel_dict.keys(), score_cutoff=50)
+    return [parcel_dict[r[0]] for r in results]
 
 
 class CookParcel(db.Model):
     __tablename__ = "cook"
-    pin = db.Column("PIN", db.String)
-    sale_price = db.Column("Sale Price", db.Float)
-    sale_year = db.Column("SALE_YEAR", db.Integer)
-    property_class = db.Column("Property Class", db.String)
-    age = db.Column("Age", db.Integer)
-    # TODO: Int?
-    building_sq_ft = db.Column("Building Square Feet", db.Integer)
-    land_sq_ft = db.Column("Land Square Feet", db.Integer)
-    rooms = db.Column("Rooms", db.Integer)
-    bedrooms = db.Column("Bedrooms", db.Integer)
-    certified = db.Column("CERTIFIED", db.Integer)  # TODO: ?
-    wall_material = db.Column("Wall Material", db.String)
-    stories = db.Column("stories_record", db.Integer)
-    basement = db.Column("basement", db.Integer)  # TODO: ?
-    garage = db.Column("Garage indicator", db.Boolean)  # TODO: ?
-    # lon = db.Column(db.Float)
-    # lat = db.Column(db.Float)
+    id = db.Column(db.Integer, primary_key=True)
+    pin = db.Column(db.String(64))
+    street_number = db.Column(db.String(64))
+    street_name = db.Column(db.String(64))
+    sale_price = db.Column(db.Float)
+    sale_year = db.Column(db.Integer)
+    property_class = db.Column(db.String(10))
+    age = db.Column(db.Integer)
+    building_sq_ft = db.Column(db.Integer)
+    land_sq_ft = db.Column(db.Integer)
+    rooms = db.Column(db.Integer)
+    bedrooms = db.Column(db.Integer)
+    certified = db.Column(db.Integer)  # TODO: ?
+    wall_material = db.Column(db.String(32))
+    stories = db.Column(db.Integer)
+    basement = db.Column(db.Integer)  # TODO: ?
+    garage = db.Column(db.Boolean)
     geom = db.Column(Geometry("POINT"))
 
 
-# TODO: Add spatialite
 class DetroitParcel(db.Model):
     __tablename__ = "detroit"
-    pin = db.Column("parcel_num", db.String)
-    sale_price = db.Column("Sale Price", db.Float)
-    sale_year = db.Column("SALE_YEAR", db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    pin = db.Column(db.String(64))
+    street_number = db.Column(db.String(64))
+    street_name = db.Column(db.String(64))
+    sale_price = db.Column(db.Float)
+    sale_year = db.Column(db.Integer)
     year_built = db.Column(db.Integer)
     total_floor_area = db.Column(db.Float)
-    extcat = db.Column(db.String)
+    extcat = db.Column(db.String(10))
     geom = db.Column(Geometry("POINT"))
-    # lon = db.Column(db.Float)
-    # lat = db.Column(db.Float)
+    # TODO: More columns

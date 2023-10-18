@@ -12,6 +12,8 @@ from .dataqueries import address_candidates_query, ecdf, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
 
 
+# TODO: fuzzy string search
+# TODO: Pydantic to enforce types on input? https://pypi.org/project/Flask-Pydantic/
 def address_candidates(input_data, cutoff_info):
     """
     Returns address candidates
@@ -47,6 +49,7 @@ def address_candidates(input_data, cutoff_info):
     return output
 
 
+# TODO: This is the entrypoint that needs to be modified
 def comparables(input_data, sales_comps=False):
     """
     Returns comparables
@@ -85,6 +88,8 @@ def comparables(input_data, sales_comps=False):
     # call comp funtion
     new_targ, cur_comps = find_comps(targ, region, sales_comps)
 
+    # TODO: Below here is the real analysis code
+    # TODO: Enum to represent regions
     # process comps
 
     # add weights based on Cook PINS AA-SS-BBB-PPP-UUUU

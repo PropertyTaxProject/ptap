@@ -4,9 +4,9 @@ import time
 from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 
+from .db import db
 from .logging import logger
 from .mainfct import (
     address_candidates,
@@ -29,9 +29,9 @@ application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 
 application.config[
     "SQLALCHEMY_DATABASE_URI"
-] = f"sqlite://{os.path.join(BASE_DIR, 'database', 'data.sqlite')}"
+] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'data.db')}"
 
-db = SQLAlchemy(application)
+db.init_app(application)
 
 with application.app_context():
 

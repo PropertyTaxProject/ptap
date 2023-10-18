@@ -6,6 +6,7 @@ __pycache__
 .env
 .ipynb_checkpoints
 *.sqlite
+*.db
 .googleenv
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

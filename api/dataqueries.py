@@ -34,6 +34,7 @@ def ecdf(x):
 
 # sql query things
 def address_candidates_query(region, st_num):
+    # TODO: Fix this
     return pd.read_sql("SELECT * FROM " + region + " WHERE st_num = " + st_num, con)
 
 
@@ -72,6 +73,7 @@ def query_on(col, val, range_val, filter_type):
         raise Exception("Query On Error")
 
 
+# TODO: Replace distance here with spatialite
 def run_comps_query(query, val, range_val):
     data = pd.read_sql(query, con)
     if data.shape[0] > 1:

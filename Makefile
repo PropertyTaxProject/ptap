@@ -1,3 +1,13 @@
+.PHONY: clean
+clean:
+	rm -f api/database/data.db
+
+.PHONY: data
+data: api/database/data.db
+
+api/database/data.db:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
+
 .PHONY: start
 start:
 	$(MAKE) -j 2 start-py start-js

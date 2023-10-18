@@ -1,4 +1,8 @@
+# from geoalchemy2.functions import ST_Distance_Sphere
+
 from .dataqueries import query_on, run_comps_query
+
+# from .models import CookParcel, DetroitParcel
 
 
 def calculate_comps(targ, region, sales_comps, multiplier):
@@ -120,6 +124,112 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         return (prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps))
     elif region == "cook":
         return (prettify_cook(targ, sales_comps), prettify_cook(new, sales_comps))
+
+
+# def calculate_comps_alt(targ, region, sales_comps, multiplier):
+#     if region == "detroit":
+#         model = DetroitParcel
+#         floor_dif = 100 * multiplier
+#         age_dif = 15 * multiplier
+#         lat_dif = 0.02 * multiplier
+#         lon_dif = 0.02 * multiplier
+#         distance_filter = 2 * multiplier
+#         exterior = "Match"  # (1 siding, 2 brick/other, 3 brick, 4 other)
+#         # basement = 'Match'
+#         # garage = 'Match'
+#         # bath = 'Match' #(1 1.0, 2 1.5, 3 2 to 3, 4 3+)
+#         # height = 'Match' #(1 1 to 1.5, 2 1.5 to 2.5, 3 3+)
+#         pin_name = "parcel_num"
+#         sale_name = "Sale Price"
+#         debug = False
+#     elif region == "cook":
+#         model = CookParcel
+#         age_dif = 15 * multiplier
+#         build_dif = 0.10 * targ["Building Square Feet"].values[0] * multiplier
+#         land_dif = 0.25 * targ["Land Square Feet"].values[0] * multiplier
+#         rooms_dif = 1.5 * multiplier
+#         bedroom_dif = 1.5 * multiplier
+#         av_dif = 0.5 * targ["CERTIFIED"].values[0] * multiplier
+#         wall_material = (
+#             "Match"  # wall material 1=wood, 2=masonry, 3=wood&masonry, 4=stucco
+#         )
+#         stories = "Match"  # 1, 2, or 3 stories
+#         basement = "Match"  # 1 full, 0 partial
+#         garage_ind = "Match"  # 1 any garage 0 no garage
+#         distance_filter = 1 * multiplier  # miles
+#         pin_name = "PIN"
+#         sale_name = "Sale Price"
+#         debug = True
+
+#     # construct query
+#     pin_val = targ[pin_name].values[0]
+#     query_filters = [model.pin != pin_val]
+
+#     if sales_comps:
+#         query_filters.extend(
+#             [
+#                 model.sale_price is not None,
+#                 model.sale_price
+#                 <= targ["assessed_v"].values[0] * 3 + 1000 * multiplier,
+#                 model.sale_year >= 2019,
+#                 model.sale_price > 500,
+#             ]
+#         )
+#     if debug:
+#         print("~~~" + region + "~~~")
+#         print(targ[pin_name].values[0] + " |||| multiplier " + str(multiplier))
+
+#     if region == "detroit":
+#         query_filters.extend(
+#             [
+#                 model.year_built >= targ["year_built"].values[0] - age_dif,
+#                 model.year_built <= targ["year_built"].values[0] + age_dif,
+#                 model.total_floor_area
+#                 >= targ["total_floor_area"].values[0] - floor_dif,
+#                 model.total_floor_area
+#                 <= targ["total_floor_area"].values[0] + floor_dif,
+#                 # TODO: Fix lat, lon here for range
+#                 model.extcat == targ["extcat"].values[0],
+#             ]
+#         )
+#     elif region == "cook":
+#         query_filters.extend(
+#             [
+#                 model.property_class == targ["Property Class"].values[0],
+#                 model.age >= targ["Age"].values[0] - age_dif,
+#                 model.age <= targ["Age"].values[0] + age_dif,
+#                 model.building_sq_ft
+#                 >= targ["Building Square Feet"].values[0] - build_dif,
+#                 model.building_sq_ft
+#                 <= targ["Building Square Feet"].values[0] + build_dif,
+#                 model.land_sq_ft >= targ["Land Square Feet"].values[0] - land_dif,
+#                 model.land_sq_ft <= targ["Land Square Feet"].values[0] + land_dif,
+#                 model.rooms >= targ["Rooms"].values[0] - rooms_dif,
+#                 model.rooms <= targ["Rooms"].values[0] + rooms_dif,
+#                 model.bedrooms >= targ["Bedrooms"].values[0] - bedroom_dif,
+#                 model.bedrooms <= targ["Bedrooms"].values[0] + bedroom_dif,
+#                 model.certified >= targ["CERTIFIED"].values[0] - av_dif,
+#                 model.certified <= targ["CERTIFIED"].values[0] + av_dif,
+#                 model.wall_material == targ["Wall Material"].values[0],
+#                 model.stories == targ["stories_recode"].values[0],
+#                 model.basement == targ["basement_record"].values[0],
+#                 model.garage == targ["Garage indicator"],
+#             ]
+#         )
+#     else:
+#         raise Exception("Invalid Region for Comps")
+
+#     if debug:
+#         print(query_filters)
+
+#     # TODO: targ should be model type
+#     # TODO: 1000 should be meter distance allowed
+#     query_filters.append(ST_Distance_Sphere(model.geom, targ.geom) < 1000)
+
+#     if region == "detroit":
+#         return prettify_detroit(targ, sales_comps), prettify_detroit(new, sales_comps)
+#     elif region == "cook":
+#         return (prettify_cook(targ, sales_comps), prettify_cook(new, sales_comps))
 
 
 def find_comps(targ, region, sales_comps, multiplier=1):
