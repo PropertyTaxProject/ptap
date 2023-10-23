@@ -17,7 +17,7 @@ const PropertyInfo = (props) => {
     ([title, description]) =>
       title !== "" &&
       description !== "" &&
-      title !== "PIN" &&
+      title !== "pin" &&
       title !== "Distance"
   )
   characteristics.sort(([title1], [title2]) => {

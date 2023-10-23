@@ -16,7 +16,7 @@ const PinLookup = (props) => {
 
   const selectPin = (record) => {
     //log pin
-    logPin(record.PIN)
+    logPin(record.pin)
     setPin([record])
     setRecord(record)
     selected = true
@@ -37,12 +37,12 @@ const PinLookup = (props) => {
   var columns = [
     {
       title: "Address",
-      dataIndex: "Address",
-      key: "Address",
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: "Pin",
-      dataIndex: "PIN",
+      dataIndex: "pin",
       key: "pin",
     },
     {
@@ -64,12 +64,12 @@ const PinLookup = (props) => {
     columns = [
       {
         title: "Address",
-        dataIndex: "Address",
-        key: "Address",
+        dataIndex: "address",
+        key: "address",
       },
       {
         title: "Pin",
-        dataIndex: "PIN",
+        dataIndex: "pin",
         key: "pin",
       },
       {
@@ -192,7 +192,7 @@ const Lookup = (props) => {
         onFinish={async () => {
           working = true
           selected = false
-          var pin = targRecord.PIN
+          var pin = targRecord.pin
           logEligibility(true)
           const response = await estimatePin({ appeal_type: appealType, pin })
           if (response != null) {

@@ -1,10 +1,11 @@
 import os
 import time
 
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
 from sqlalchemy import event
+from werkzeug.exceptions import HTTPException
 
 from .db import db
 from .logging import logger
@@ -16,8 +17,13 @@ from .mainfct import (
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "build")
 
-application = Flask(__name__, static_folder="../build/", template_folder="./templates/")
+application = Flask(
+    __name__,
+    static_folder=os.path.join(STATIC_BUILD_DIR, "static"),
+    template_folder="./templates/",
+)
 application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
 application.config["MAIL_PORT"] = 587
@@ -30,6 +36,11 @@ application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 application.config[
     "SQLALCHEMY_DATABASE_URI"
 ] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'data.db')}"
+# application.config["JSON_PROVIDER_CLASS"] = "api.json.SQLAlchemyJSONProvider"
+# TODO: Figure this out
+# application.json_provider_class = SQLAlchemyJSONProvider
+# application.json = application.json_provider_class(application)
+# application.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(application)
 
@@ -47,7 +58,7 @@ mail = Mail(application)
 
 @application.route("/")
 def index():
-    return send_file("../build/index.html")
+    return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
 @application.route("/api_v1/pin-lookup", methods=["POST"])
@@ -57,13 +68,9 @@ def handle_form0():
     pf_data = request.json
     print("PAGE DATA", request.json)
     print("REQUEST OBJECT", request)
-    try:
-        response_dict = get_pin(pf_data)
-        response_dict["uuid"] = logger(pf_data, "address_finder")
-        resp = jsonify({"request_status": time.time(), "response": response_dict})
-    except Exception as e:
-        resp = jsonify({"error": str(e)})
-        logger(pf_data, "address_finder", e)
+    response_dict = address_candidates(pf_data, {"detroit": 150000, "cook": 225000})
+    response_dict["uuid"] = logger(pf_data, "address_finder")
+    resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
 
@@ -75,13 +82,9 @@ def handle_form():
     owner_data = request.json
     print("PAGE DATA", request.json)
     print("REQUEST OBJECT", request)
-    try:
-        response_dict = get_comps(owner_data)
-        logger(owner_data, "get_comps")
-        resp = jsonify({"request_status": time.time(), "response": response_dict})
-    except Exception as e:
-        resp = jsonify({"error": str(e)})
-        logger(owner_data, "get_comps", e)
+    response_dict = comparables(owner_data)
+    logger(owner_data, "get_comps")
+    resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
 
@@ -92,20 +95,16 @@ def handle_form2():
     print("page 2 submit")
     comps_data = request.json
     download = False
-    try:
-        response_dict = finalize_appeal(comps_data, mail)
-        logger(comps_data, "submit")
-        if download:
-            return send_file(
-                response_dict["file_stream"],
-                as_attachment=True,
-                attachment_filename="%s-appeal.docx"
-                % comps_data["name"].lower().replace(" ", "-"),
-            )
-        resp = jsonify({"request_status": time.time(), "response": response_dict})
-    except Exception as e:
-        resp = jsonify({"error": str(e)})
-        logger(comps_data, "submit", e)
+    response_dict = process_comps_input(comps_data, mail)
+    logger(comps_data, "submit")
+    if download:
+        return send_file(
+            response_dict["file_stream"],
+            as_attachment=True,
+            attachment_filename="%s-appeal.docx"
+            % comps_data["name"].lower().replace(" ", "-"),
+        )
+    resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
 
@@ -115,15 +114,11 @@ def handle_form3():
     # given pin and select comp, generate estimate/appendix file
     print("estimate submit")
     est_data = request.json
-    try:
-        response_dict = finalize_estimate(est_data, True)
-        logger(est_data, "est_submit")
-        return send_file(
-            response_dict["file_stream"], as_attachment=True, download_name="test.docx"
-        )
-    except Exception as e:
-        resp = jsonify({"error": str(e)})
-        logger(est_data, "submit_estimate", e)
+    response_dict = process_estimate(est_data, True)
+    logger(est_data, "est_submit")
+    return send_file(
+        response_dict["file_stream"], as_attachment=True, download_name="test.docx"
+    )
 
     return resp
 
@@ -133,94 +128,21 @@ def handle_form4():
     # given pin and select comp, generate estimate/appendix file
     print("estimate submit")
     est_data = request.json
-    try:
-        response_dict = finalize_estimate(est_data, False)
-        logger(est_data, "est_submit")
-        resp = jsonify({"request_status": time.time(), "response": response_dict})
-    except Exception as e:
-        resp = jsonify({"error": str(e)})
-        logger(est_data, "submit_estimate2", e)
+    response_dict = process_estimate(est_data, False)
+    logger(est_data, "est_submit")
+    resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
 
 
 @application.errorhandler(404)
 def page_not_found(error):
-    return render_template("index.html")
+    return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-def get_pin(form_data):
-    """
-    Input:
-    {
-        st_num : 'num' #street number,
-        st_name : 'str' #street name/rest of address
-    }
-    Output:
-    {
-        candidates: [{'address':val,'parcel_num':val},{}]
-    }
-    """
-    cutoff_info = {"detroit": 150000, "cook": 225000}
+@application.errorhandler(Exception)
+def handle_error(error):
+    if isinstance(error, HTTPException):
+        return error
 
-    return address_candidates(form_data, cutoff_info)
-
-
-def get_comps(form_data):
-    """
-    Output:
-    {
-        target_pin : [{char1:val1,...}],
-        comparables : [{char1:val1,...},{char1:val1,...}] #sorted by best to worst
-        labeled_headers : [h1, h2, ...] #headers sorted in display order
-        prop_info: 'str' #a string of info to display
-    }
-    """
-    return comparables(form_data)
-
-
-def finalize_appeal(form_data, mail):
-    """
-    Input:
-    {
-        'target_pin': [{}],
-        'comparables': [{},{},{},{}]
-        'appeal_type': '',
-        'pin': '',
-        'name': '',
-        'email': '',
-        'address': '',
-        'phone': '',
-        'city': '',
-        'state': '',
-        'zip': '',
-        'preferred: ''
-    }
-
-    Output:
-    {
-        success: bool,
-        contention_value: val,
-        message: txt
-    }
-    """
-    return process_comps_input(form_data, mail)
-
-
-def finalize_estimate(form_data, download=True):
-    """
-    Input:
-    {
-        'target_pin': [{}],
-        'comparablesPool': [{},{},{},{}]
-        'uuid': '',
-        'selectedComparables': [{}]
-    }
-
-    Output:
-    word document OR
-    {
-        TBD
-    }
-    """
-    return process_estimate(form_data, download)
+    return jsonify({"error": str(error)})

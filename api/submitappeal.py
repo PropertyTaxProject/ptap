@@ -28,7 +28,7 @@ def submit_cook_sf(comp_submit, mail):
     comps_df = pd.DataFrame(comp_submit["comparables"])
 
     pin_av = t_df.assessed_value[0]
-    pin = t_df.PIN[0]
+    pin = t_df.pin[0]
     comps_avg = comps_df["assessed_value"].mean()
 
     # rename cols
@@ -44,7 +44,7 @@ def submit_cook_sf(comp_submit, mail):
     if "characteristicsinput" not in comp_submit:
         comp_submit["characteristicsinput"] = "NO STRUCTURAL DAMAGE REPORTED"
 
-    base_dir = os.path.dir(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # generate docx
     output_name = os.path.join(
@@ -108,12 +108,12 @@ def submit_cook_sf(comp_submit, mail):
     sub_dict = {
         'Client Name' : comp_submit['name'],
         'Address' : comp_submit['address'],
-        'Taxpayer of Record' : targ['taxpayer_1'].to_string(index=False),
-        'PIN' : pin,
+        'Taxpayer of Record' : targ['taxpayer'].to_string(index=False),
+        'pin' : pin,
         'Phone Number' : comp_submit['phone'],
         'Email Address' : comp_submit['email'],
         'Preferred Contact Method' : comp_submit['preferred'],
-        'PRE' : targ['homestead_'].to_string(index=False),
+        'PRE' : targ['homestead_exemption'].to_string(index=False),
         'Eligibility Flag' : comp_submit['eligibility'],
         'Characteristics Flag': c_flag,
         'SEV' : str(pin_av),
@@ -155,7 +155,7 @@ def submit_detroit_sf(comp_submit, mail):
     t_df = pd.DataFrame([comp_submit["target_pin"]])
     comps_df = pd.DataFrame(comp_submit["comparables"])
     pin_av = t_df.assessed_value[0]
-    pin = t_df.PIN[0]
+    pin = t_df.pin[0]
     comps_avg = (
         comps_df["Sale Price"].map(lambda x: float(x[1:].replace(",", ""))).mean()
     )
@@ -180,7 +180,7 @@ def submit_detroit_sf(comp_submit, mail):
     avg_ecf_price = avg_ecf(t_df["Neighborhood"].values[0])
 
     # generate docx
-    base_dir = os.path.dir(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
     output_name = os.path.join(
         base_dir,
@@ -243,12 +243,12 @@ def submit_detroit_sf(comp_submit, mail):
     sub_dict = {
         "Client Name": comp_submit["name"],
         "Address": comp_submit["address"],
-        "Taxpayer of Record": targ["taxpayer_1"].to_string(index=False),
-        "PIN": pin,
+        "Taxpayer of Record": targ["taxpayer"].to_string(index=False),
+        "pin": pin,
         "Phone Number": comp_submit["phone"],
         "Email Address": comp_submit["email"],
         "Phone Contact Time": comp_submit["phonetime"],
-        "PRE": targ["homestead_"].to_string(index=False),
+        "PRE": targ["homestead_exemption"].to_string(index=False),
         "Eligibility Flag": comp_submit["eligibility"],
         "Characteristics Flag": c_flag,
         "SEV": str(pin_av),

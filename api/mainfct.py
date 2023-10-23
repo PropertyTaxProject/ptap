@@ -30,10 +30,15 @@ def address_candidates(input_data, cutoff_info):
         cutoff = cutoff_info["cook"]
         region = "cook"
 
-    mini = address_candidates_query(region, st_num)
-    candidate_matches = process.extractBests(st_name, mini.st_name, score_cutoff=50)
-    selected = mini[mini["st_name"].isin([i for i, _, _ in candidate_matches])].copy()
+    # mini = address_candidates_query(region, st_num)
+    candidates = address_candidates_query(region, st_num)
+    parcel_dict = {p.street_name: p.as_dict() for p in candidates}
+    results = process.extractBests(st_name, parcel_dict.keys(), score_cutoff=50)
+
+    selected = pd.DataFrame([parcel_dict[r[0]] for r in results])
+
     selected["Distance"] = 0
+    selected["address"] = selected["street_number"] + " " + selected["street_name"]
 
     if input_data["appeal_type"] == "detroit_single_family":
         selected = prettify_detroit(selected, False)
@@ -41,7 +46,10 @@ def address_candidates(input_data, cutoff_info):
         selected = prettify_cook(selected, False)
 
     selected["eligible"] = selected.assessed_value <= cutoff
-    selected.dropna(axis=0, inplace=True)
+    # TODO: Is this still needed?
+    # selected.dropna(axis=0, inplace=True)
+    # Don't need this to be returned so dropping
+    selected.drop("geom", axis=1, inplace=True)
     output["candidates"] = selected.to_dict(orient="records")
 
     if len(output["candidates"]) == 0:  # if none found raise
@@ -65,13 +73,11 @@ def comparables(input_data, sales_comps=False):
         if targ.empty:
             raise Exception("Invalid PIN")
         targ["Distance"] = 0
-        partone = (
-            "Taxpayer of Record: " + targ["taxpayer_1"].to_string(index=False) + "."
-        )
+        partone = "Taxpayer of Record: " + targ["taxpayer"].to_string(index=False) + "."
         partone = string.capwords(partone)
         parttwo = (
             " Current Principal Residence Exemption (PRE)  Exemption Status: "
-            + targ["homestead_"].to_string(index=False)
+            + targ["homestead_exemption"].to_string(index=False)
             + "%."
         )
         prop_info = partone + parttwo
@@ -100,7 +106,7 @@ def comparables(input_data, sales_comps=False):
     dist_weight = 1
     valuation_weight = 3
 
-    cur_comps["dist_dist"] = ecdf(cur_comps.Distance)(cur_comps.Distance, True)
+    cur_comps["dist_dist"] = ecdf(cur_comps.distance)(cur_comps.distance, True)
     cur_comps["val_dist"] = ecdf(cur_comps.assessed_value)(
         cur_comps.assessed_value, True
     )
@@ -110,7 +116,7 @@ def comparables(input_data, sales_comps=False):
 
     if input_data["appeal_type"] == "detroit_single_family":  # neighborhood bonus
         cur_comps["neigborhoodmatch"] = (
-            cur_comps["Neighborhood"] == targ["Neighborhood"].values[0]
+            cur_comps["neighborhood"] == targ["neighborhood"].values[0]
         )
         cur_comps["neigborhoodmatch"] = cur_comps["neigborhoodmatch"].astype(int)
         cur_comps["score"] = cur_comps["score"] + 1 * cur_comps["neigborhoodmatch"]
@@ -125,15 +131,16 @@ def comparables(input_data, sales_comps=False):
     new_targ = new_targ.fillna("")
     cur_comps = cur_comps.fillna("")
 
-    output["target_pin"] = new_targ.drop("assessed_value", axis=1).to_dict(
-        orient="records"
+    # breakpoint()
+    # new_targ["sale_date"] = new_targ["sale_date"].apply(
+    #     lambda v: v.strftime("%Y-%m-%d")
+    # )
+    cur_comps["sale_date"] = cur_comps["sale_date"].apply(
+        lambda v: v.strftime("%Y-%m-%d")
     )
-    output["comparables"] = cur_comps.drop("assessed_value", axis=1).to_dict(
-        orient="records"
-    )
-    output["labeled_headers"] = cur_comps.drop(
-        "assessed_value", axis=1
-    ).columns.tolist()
+    output["target_pin"] = new_targ.drop(["geom"], axis=1).to_dict(orient="records")
+    output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(orient="records")
+    output["labeled_headers"] = cur_comps.columns.tolist()
     output["prop_info"] = prop_info
     output["pinav"] = new_targ.assessed_value.mean()
 
@@ -141,6 +148,7 @@ def comparables(input_data, sales_comps=False):
 
 
 def process_estimate(form_data, download):
+    # TODO: Should break this into two requests, one to do the logic, one to format
     """
     {
         'target_pin': [{}],
@@ -150,46 +158,35 @@ def process_estimate(form_data, download):
     }
     """
 
-    rename_dict = {
-        "PIN": "Parcel ID",
-        "assessed_value": "Assessed Value",
-        "total_acre": "Acres",
-        "total_floorarea": "Floor Area",
-        "total_sqft": "Square Footage (Abv. Ground)",
-        "Age": "Year Built",
-        "Exterior": "Exterior Material",
-        "Distance": "Dist.",
-        "Stories (not including basement)": "Number of Stories",
-    }
+    # rename_dict = {
+    #     "pin": "Parcel ID",
+    #     "assessed_value": "Assessed Value",
+    #     "total_acre": "Acres",
+    #     "total_floorarea": "Floor Area",
+    #     "total_sqft": "Square Footage (Abv. Ground)",
+    #     "Age": "Year Built",
+    #     "Exterior": "Exterior Material",
+    #     "Distance": "Dist.",
+    #     "Stories (not including basement)": "Number of Stories",
+    # }
 
     t_df = pd.DataFrame([form_data["target_pin"]])
     c_df = pd.DataFrame(form_data["selectedComparables"])
     comps_df = pd.DataFrame(form_data["comparablesPool"])
-    pin_av = t_df["Assessor Market Value"][0] * 0.5
-    pin = t_df.PIN[0]
-    comps_avg = c_df["Sale Price"].map(lambda x: float(x[1:].replace(",", "")))[
-        0
-    ]  # * (1 + (pin_av - comp_av) / pin_av)
+
+    pin_av = t_df["assessed_value"][0]
+    pin = t_df.pin[0]
+
+    comps_avg = c_df["sale_price"].mean()
 
     # rename cols
-    t_df = t_df.rename(columns=rename_dict)
-    c_df = c_df.rename(columns=rename_dict)
-    comps_df = comps_df.rename(columns=rename_dict)
+    # t_df = t_df.rename(columns=rename_dict)
+    # c_df = c_df.rename(columns=rename_dict)
+    # comps_df = comps_df.rename(columns=rename_dict)
 
-    # tbl cols
-    target_cols = [
-        "Baths",
-        "Square Footage (Abv. Ground)",
-        "Year Built",
-        "Exterior Material",
-        "Number of Stories",
-        "Neighborhood",
-    ]
-
-    comp_cols = ["Address", "Dist.", "Sale Price", "Sale Date"] + target_cols
     output = {}
 
-    base_dir = os.path.dir(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # generate docx
     if download:
@@ -205,23 +202,68 @@ def process_estimate(form_data, download):
                 "detroit_template_2023.docx",
             )
         )
+        # tbl cols
+        target_cols = [
+            "Baths",
+            "Square Footage (Abv. Ground)",
+            "Year Built",
+            "Exterior Material",
+            "Number of Stories",
+            "Neighborhood",
+        ]
+        comp_labels = [
+            "Address",
+            "Distance",
+            "Sale Price",
+            "Sale Date",
+        ] + target_cols
+        comp_records = comps_df.to_dict(orient="records")
+        comp_contents = []
+        for comp_rec in comp_records:
+            comp_contents.append(
+                [
+                    comp_rec["street_number"] + " " + comp_rec["street_name"],
+                    comp_rec["distance"],
+                    "{:,.0f}".format(comp_rec["sale_price"]),
+                    comp_rec["sale_date"],
+                    comp_rec["baths"],
+                    comp_rec["total_sq_ft"],
+                    comp_rec["year_built"],
+                    comp_rec["exterior_category"],
+                    comp_rec["stories"],
+                    comp_rec["neighborhood"],
+                ]
+            )
+
+        target_rec_base = t_df.to_dict(orient="records")[0]
+        target_rec = [
+            target_rec_base["baths"],
+            target_rec_base["total_sq_ft"],
+            target_rec_base["year_built"],
+            target_rec_base["exterior_category"],
+            target_rec_base["stories"],
+            target_rec_base["neighborhood"],
+        ]
 
         context = {
             "pin": pin,
-            "address": t_df.Address[0],
-            "comp_address": c_df.Address[0],
-            "comp_sale": c_df["Sale Price"][0],
-            "comp_date": c_df["Sale Date"][0],
+            "address": target_rec_base["street_number"]
+            + " "
+            + target_rec_base["street_name"],
+            "comp_address": comp_contents[0][0],
+            "comp_sale": "{:,.0f}".format(comp_records[0]["sale_price"]),
+            "comp_date": comp_records[0]["sale_date"],
             "current_sev": "{:,.0f}".format(pin_av),
             "current_faircash": "${:,.0f}".format(pin_av * 2),
             "contention_sev": "{:,.0f}".format(comps_avg / 2),
             "contention_faircash": "${:,.0f}".format(comps_avg),
             "target_labels": target_cols,
-            "target_contents": [t_df[target_cols].to_numpy().tolist()[0]],
-            "target_contents2": [c_df[target_cols].to_numpy().tolist()[0]],
-            "comp_labels": comp_cols,
-            "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
+            "target_contents": [target_rec],
+            "target_contents2": comp_contents[:1],
+            "comp_labels": comp_labels,
+            "comp_contents": comp_contents,
         }
+        breakpoint()
 
         doc.render(context)
         doc.save(output_name)

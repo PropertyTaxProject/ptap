@@ -84,7 +84,7 @@ const PinLookup = (props) => {
 
   const selectPin = (record) => {
     //log pin
-    logPin(record.PIN)
+    logPin(record.pin)
     setPin([record])
     setRecord(record)
     selected = true
@@ -111,12 +111,12 @@ const PinLookup = (props) => {
   var columns = [
     {
       title: "Address",
-      dataIndex: "Address",
-      key: "Address",
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: "Pin",
-      dataIndex: "PIN",
+      dataIndex: "pin",
       key: "pin",
     },
     {
@@ -138,12 +138,12 @@ const PinLookup = (props) => {
     columns = [
       {
         title: "Address",
-        dataIndex: "Address",
-        key: "Address",
+        dataIndex: "address",
+        key: "address",
       },
       {
         title: "Pin",
-        dataIndex: "PIN",
+        dataIndex: "pin",
         key: "pin",
       },
       {

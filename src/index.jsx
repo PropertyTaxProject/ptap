@@ -4,7 +4,7 @@ import React, { useEffect } from "react"
 import ReactDOM from "react-dom"
 import { Layout } from "antd"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import createHistory from "history/createBrowserHistory"
+import { createBrowserHistory } from "history"
 import ReactGA from "react-ga"
 
 import Header from "./general/header"
@@ -19,7 +19,7 @@ const { Content, Footer } = Layout
 
 /* google analytics */
 ReactGA.initialize("UA-178459008-2")
-const history = createHistory()
+const history = createBrowserHistory()
 history.listen((location) => {
   ReactGA.set({ page: location.pathname })
   ReactGA.pageview(location.pathname)

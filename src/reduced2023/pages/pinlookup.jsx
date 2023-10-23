@@ -13,7 +13,7 @@ const PinLookup = (props) => {
 
   const selectPin = (record) => {
     //log pin
-    logPin(record.PIN)
+    logPin(record.pin)
     setPin([record])
     setRecord(record)
     selected = true
@@ -35,12 +35,12 @@ const PinLookup = (props) => {
   var columns = [
     {
       title: "Address",
-      dataIndex: "Address",
-      key: "Address",
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: "Pin",
-      dataIndex: "PIN",
+      dataIndex: "pin",
       key: "pin",
     },
     {
@@ -62,12 +62,12 @@ const PinLookup = (props) => {
     columns = [
       {
         title: "Address",
-        dataIndex: "Address",
-        key: "Address",
+        dataIndex: "address",
+        key: "address",
       },
       {
         title: "Pin",
-        dataIndex: "PIN",
+        dataIndex: "pin",
         key: "pin",
       },
       {
@@ -136,7 +136,7 @@ const PinLookup = (props) => {
               Sales Data.”
             </h1>
           )}
-          <Table key={pins.PIN} columns={columns} dataSource={pins} />
+          <Table key={pins.pin} columns={columns} dataSource={pins} />
           {submitted && (
             <p>
               After searching for your home, please hit <b>Select</b> next to

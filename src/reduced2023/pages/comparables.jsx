@@ -34,7 +34,7 @@ const ComparablesTable = (props) => {
   const showSelected = selectedComparables.length > 0
 
   const excludeColumns = [
-    "PIN",
+    "pin",
     "total_sqft",
     "total_acre",
     "Total Floor Area",
@@ -88,7 +88,7 @@ const ComparablesTable = (props) => {
           key="action"
           render={(record) => {
             const isSelected = !!selectedComparables.find(
-              ({ PIN }) => record.PIN === PIN
+              ({ pin }) => record.pin === pin
             )
             return (
               <Button
@@ -97,7 +97,7 @@ const ComparablesTable = (props) => {
                   setSelected(
                     isSelected
                       ? selectedComparables.filter(
-                          ({ PIN }) => record.PIN !== PIN
+                          ({ pin }) => record.pin !== pin
                         )
                       : selectedComparables.concat(record)
                   )

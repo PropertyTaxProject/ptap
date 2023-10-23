@@ -30,7 +30,7 @@ const CompsLookup = (props) => {
         layout="vertical"
         onFinish={async () => {
           setSelect(false)
-          var pin = targRecord.PIN
+          var pin = targRecord.pin
           const response = await submitForm({ appeal_type: appealType, pin })
           if (response != null) {
             setComparablesPool(response.comparables)

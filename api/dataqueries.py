@@ -4,7 +4,9 @@ from math import acos, cos, radians, sin
 import pandas as pd
 from numpy import searchsorted, sort
 
-con = sqlite3.connect("api/database/data.sqlite", check_same_thread=False)
+from .models import CookParcel, DetroitParcel
+
+con = sqlite3.connect("api/database/data.db", check_same_thread=False)
 
 
 # helper functions
@@ -32,20 +34,24 @@ def ecdf(x):
     return _ecdf
 
 
+# TODO: autocomplete/typeahead?
 # sql query things
 def address_candidates_query(region, st_num):
     # TODO: Fix this
-    return pd.read_sql("SELECT * FROM " + region + " WHERE st_num = " + st_num, con)
+    model = None
+    if region == "cook":
+        model = CookParcel
+    elif region == "detroit":
+        model = DetroitParcel
+    return model.query.filter(model.street_number == st_num)
 
 
 def get_pin(region, pin):
-    if region == "detroit":
-        pin_name = "parcel_num"
-    elif region == "cook":
-        pin_name = "PIN"
-    qs = "SELECT * FROM " + region + " WHERE " + pin_name + ' = "' + pin + '"'
-
-    return pd.read_sql(qs, con)
+    if region == "cook":
+        model = CookParcel
+    elif region == "detroit":
+        model = DetroitParcel
+    return pd.DataFrame([p.as_dict() for p in model.query.filter(model.pin == pin)])
 
 
 def query_on(col, val, range_val, filter_type):
@@ -75,6 +81,7 @@ def query_on(col, val, range_val, filter_type):
 
 # TODO: Replace distance here with spatialite
 def run_comps_query(query, val, range_val):
+    print(query)
     data = pd.read_sql(query, con)
     if data.shape[0] > 1:
         data["Distance"] = data.apply(

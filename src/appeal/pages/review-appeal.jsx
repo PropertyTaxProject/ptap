@@ -45,13 +45,13 @@ const userCols = [
 const compCols = [
   {
     title: "Address",
-    dataIndex: "Address",
-    key: "Address",
+    dataIndex: "address",
+    key: "address",
   },
   {
     title: "Pin",
-    dataIndex: "PIN",
-    key: "PIN",
+    dataIndex: "pin",
+    key: "pin",
   },
   {
     title: "Assessed Value",

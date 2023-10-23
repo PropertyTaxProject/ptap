@@ -36,7 +36,7 @@ const CharacteristicsTable = (props) => {
   }
 
   const excludeColumns = [
-    "PIN",
+    "pin",
     "total_sqft",
     "total_acre",
     "Total Floor Area",
@@ -80,7 +80,7 @@ const CharacteristicsTable = (props) => {
               onClick={() => {
                 setSelected(
                   selectedComparables.filter(
-                    (candidate) => candidate.PIN !== record.PIN
+                    (candidate) => candidate.pin !== record.pin
                   )
                 )
                 setCandidates(candidates.concat(record))
@@ -112,7 +112,7 @@ const CharacteristicsTable = (props) => {
                 } else {
                   setCandidates(
                     candidates.filter(
-                      (candidate) => candidate.PIN !== record.PIN
+                      (candidate) => candidate.pin !== record.pin
                     )
                   )
                   setSelected(selectedComparables.concat(record))

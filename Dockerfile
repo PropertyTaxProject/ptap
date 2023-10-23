@@ -9,12 +9,10 @@ COPY pyproject.toml poetry.lock ./
 
 RUN pip install -U poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --only main
+    poetry install --only main && \
+    make data
 
 COPY . ./
-
-# TODO: Remove this once data build works
-RUN sqlite3 ./api/database/data.sqlite "VACUUM;"
 
 ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
 

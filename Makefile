@@ -5,6 +5,10 @@ clean:
 .PHONY: data
 data: api/database/data.db
 
+.PHONY: deploy-data
+deploy-data: api/database/data.db
+	aws s3 cp $< s3://$(S3_BUCKET)/data.db
+
 api/database/data.db:
 	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
 
@@ -14,11 +18,11 @@ start:
 
 .PHONY: start-py
 start-py:
-	poetry run python application.py
+	poetry run flask --app application.py --debug run
 
 .PHONY: start-js
 start-js:
-	npm start
+	REACT_APP_BASE_URL=http://localhost:5000 npm start
 
 .PHONY: install
 install: install-js install-py

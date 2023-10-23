@@ -1,9 +1,11 @@
 import axios from "axios"
 import { saveAs } from "file-saver"
 
+const BASE_URL = process.env.REACT_APP_BASE_URL || ""
+
 export const submitForm = async (info) => {
   try {
-    const resp = await axios.post("/api_v1/submit", info)
+    const resp = await axios.post(`${BASE_URL}/api_v1/submit`, info)
     return resp.data.response
   } catch (e) {
     console.error(e)
@@ -28,7 +30,7 @@ export const submitAppeal = async (
     }
     //const detroit = userInfo.appeal_type === 'detroit_single_family';
     const download = false
-    const resp = await axios.post("/api_v1/submit2", body, {
+    const resp = await axios.post(`${BASE_URL}/api_v1/submit2`, body, {
       responseType: download ? "blob" : "json",
     })
     if (download === true) {
@@ -65,7 +67,7 @@ export const submitEstimate = async (
       selectedComparables,
     }
     const download = true
-    const resp = await axios.post("/api_v1/estimates", body, {
+    const resp = await axios.post(`${BASE_URL}/api_v1/estimates`, body, {
       responseType: download ? "blob" : "json",
     })
     if (download === true) {
@@ -91,7 +93,7 @@ export const submitEstimate2 = async (
       uuid,
       selectedComparables,
     }
-    const resp = await axios.post("/api_v1/estimates2", body)
+    const resp = await axios.post(`${BASE_URL}/api_v1/estimates2`, body)
     return resp.data.response
   } catch (e) {
     console.error(e)
@@ -100,7 +102,7 @@ export const submitEstimate2 = async (
 
 export const lookupPin = async (data) => {
   try {
-    const resp = await axios.post("/api_v1/pin-lookup", data)
+    const resp = await axios.post(`${BASE_URL}/api_v1/pin-lookup`, data)
     return resp.data.response
   } catch (err) {
     return []
@@ -109,7 +111,7 @@ export const lookupPin = async (data) => {
 
 export const estimatePin = async (data) => {
   try {
-    const resp = await axios.post("/api_v1/submit2", data)
+    const resp = await axios.post(`${BASE_URL}/api_v1/submit2`, data)
     return resp.data.response
   } catch (err) {
     return []
