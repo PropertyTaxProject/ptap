@@ -9,6 +9,10 @@ data: api/database/data.db
 deploy-data: api/database/data.db
 	aws s3 cp $< s3://$(S3_BUCKET)/data.db
 
+.PHONY: download-data
+download-data:
+	aws s3 cp s3://$(S3_BUCKET)/data.db api/database/data.db
+
 api/database/data.db:
 	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
 

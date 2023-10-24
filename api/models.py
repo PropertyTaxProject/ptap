@@ -16,16 +16,6 @@ def fuzzy_address_matches(street, parcels):
 
 def as_dict(obj):
     return {col.name: getattr(obj, col.name) for col in obj.__table__.columns}
-    # obj_dict = {}
-    # for col in obj.__table__.columns:
-    #     obj_value = getattr(obj, col.name)
-    #     if isinstance(obj_value, datetime):
-    #         obj_value = datetime.strftime("%Y-%m-%d")
-    #     elif isinstance(obj_value, WKBElement):
-    #         point = to_shape(obj_value)
-    #         obj_value = {"type": "Point", "coordinates": [point.x, point.y]}
-    #     obj_dict[col.name] = obj_value
-    # return obj_dict
 
 
 def as_json_dict(obj):
@@ -41,14 +31,13 @@ def as_json_dict(obj):
     return obj_dict
 
 
-# TODO: Indexes
 class CookParcel(db.Model):
     __tablename__ = "cook"
     id = db.Column(db.Integer, primary_key=True)
-    pin = db.Column(db.String(64))
-    street_number = db.Column(db.String(64))
-    street_name = db.Column(db.String(64))
-    neighborhood = db.Column(db.String(64))
+    pin = db.Column(db.String(64), index=True)
+    street_number = db.Column(db.String(64), index=True)
+    street_name = db.Column(db.String(64), index=True)
+    neighborhood = db.Column(db.String(64), index=True)
     sale_price = db.Column(db.Float)
     sale_year = db.Column(db.Integer)
     assessed_value = db.Column(db.Float)
@@ -72,10 +61,10 @@ class CookParcel(db.Model):
 class DetroitParcel(db.Model):
     __tablename__ = "detroit"
     id = db.Column(db.Integer, primary_key=True)
-    pin = db.Column(db.String(64))
-    street_number = db.Column(db.String(64))
-    street_name = db.Column(db.String(64))
-    neighborhood = db.Column(db.String(64))
+    pin = db.Column(db.String(64), index=True)
+    street_number = db.Column(db.String(64), index=True)
+    street_name = db.Column(db.String(64), index=True)
+    neighborhood = db.Column(db.String(64), index=True)
     assessed_value = db.Column(db.Float)
     taxable_value = db.Column(db.Float)
     sale_price = db.Column(db.Float)
