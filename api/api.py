@@ -120,8 +120,6 @@ def handle_form3():
         response_dict["file_stream"], as_attachment=True, download_name="test.docx"
     )
 
-    return resp
-
 
 @application.route("/api_v1/estimates2", methods=["POST"])
 def handle_form4():

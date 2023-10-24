@@ -148,7 +148,6 @@ def calculate_comps_alt(targ, region, sales_comps, multiplier):
         bedroom_dif = 1.5 * multiplier
         av_dif = 0.5 * targ["assessed_value"].values[0] * multiplier
         distance = MILE_IN_METERS * multiplier  # miles
-        pin_name = "pin"
         debug = True
 
     # construct query
