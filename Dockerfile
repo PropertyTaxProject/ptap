@@ -9,8 +9,7 @@ COPY pyproject.toml poetry.lock ./
 
 RUN pip install -U poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --only main && \
-    make data
+    poetry install --only main
 
 COPY . ./
 
