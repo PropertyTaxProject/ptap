@@ -248,6 +248,10 @@ data "aws_ssm_parameter" "sendgrid_api_key" {
   name = "/${local.name}/sendgrid_api_key"
 }
 
+data "aws_ssm_parameter" "sentry_dsn" {
+  name = "/${local.name}/sentry_dsn"
+}
+
 # TODO: Can't find image
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
@@ -275,6 +279,7 @@ module "lambda" {
     SECRET_KEY          = data.aws_ssm_parameter.secret_key.value,
     SENDGRID_USERNAME   = data.aws_ssm_parameter.sendgrid_username.value
     SENDGRID_API_KEY    = data.aws_ssm_parameter.sendgrid_api_key.value,
+    SENTRY_DSN          = data.aws_ssm_parameter.sentry_dsn.value,
     MAIL_DEFAULT_SENDER = "test@example.com",
     PTAP_MAIL           = "test@example.com",
     UOFM_MAIL           = "test@example.com",

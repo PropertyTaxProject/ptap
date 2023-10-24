@@ -1,9 +1,12 @@
 import os
 import time
 
+import sentry_sdk
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+from sentry_sdk.integrations.flask import FlaskIntegration
 from sqlalchemy import event
 from werkzeug.exceptions import HTTPException
 
@@ -18,6 +21,13 @@ from .mainfct import (
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "build")
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[AwsLambdaIntegration(), FlaskIntegration()],
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 application = Flask(
     __name__,
