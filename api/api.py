@@ -143,4 +143,4 @@ def handle_error(error):
     if isinstance(error, HTTPException):
         return error
 
-    return jsonify({"error": str(error)})
+    return jsonify({"error": str(error)}), 500

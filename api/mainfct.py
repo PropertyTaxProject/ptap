@@ -7,7 +7,7 @@ import pandas as pd
 from docxtpl import DocxTemplate
 from fuzzywuzzy import process
 
-from .computils import find_comps, prettify_cook, prettify_detroit
+from .computils import find_comps
 from .dataqueries import address_candidates_query, ecdf, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
 
@@ -40,10 +40,10 @@ def address_candidates(input_data, cutoff_info):
     selected["Distance"] = 0
     selected["address"] = selected["street_number"] + " " + selected["street_name"]
 
-    if input_data["appeal_type"] == "detroit_single_family":
-        selected = prettify_detroit(selected, False)
-    elif input_data["appeal_type"] == "cook_county_single_family":
-        selected = prettify_cook(selected, False)
+    # if input_data["appeal_type"] == "detroit_single_family":
+    #     selected = prettify_detroit(selected, False)
+    # elif input_data["appeal_type"] == "cook_county_single_family":
+    #     selected = prettify_cook(selected, False)
 
     selected["eligible"] = selected.assessed_value <= cutoff
     # TODO: Is this still needed?
@@ -131,7 +131,6 @@ def comparables(input_data, sales_comps=False):
     new_targ = new_targ.fillna("")
     cur_comps = cur_comps.fillna("")
 
-    # breakpoint()
     # new_targ["sale_date"] = new_targ["sale_date"].apply(
     #     lambda v: v.strftime("%Y-%m-%d")
     # )
@@ -263,7 +262,6 @@ def process_estimate(form_data, download):
             "comp_labels": comp_labels,
             "comp_contents": comp_contents,
         }
-        breakpoint()
 
         doc.render(context)
         doc.save(output_name)

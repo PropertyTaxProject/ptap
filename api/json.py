@@ -19,7 +19,6 @@ class SQLAlchemyJSONEncoder(json.JSONEncoder):
                     point = to_shape(obj_value)
                     obj_value = {"type": "Point", "coordinates": [point.x, point.y]}
                 obj_dict[col.name] = obj_value
-            breakpoint()
             return obj_dict
 
         return json.JSONEncoder.default(self, obj)
@@ -27,5 +26,4 @@ class SQLAlchemyJSONEncoder(json.JSONEncoder):
 
 class SQLAlchemyJSONProvider(JSONProvider):
     def dumps(self, obj, **kwargs):
-        breakpoint()
         return json.dumps(obj, **kwargs, cls=SQLAlchemyJSONEncoder)
