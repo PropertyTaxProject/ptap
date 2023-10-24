@@ -101,7 +101,7 @@ jobs:
         run: make download-data
 
       - uses: cypress-io/github-action@v4.1.0
-        continue-on-error: true # TODO: Fix
+        # continue-on-error: true # TODO: Fix
         with:
           config-file: cypress.config.js
           build: npm run build
@@ -110,6 +110,20 @@ jobs:
           wait-on-timeout: 60
           browser: chrome
           headless: true
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore
 
   deploy:
     needs: [python-checks, js-checks, cypress]
