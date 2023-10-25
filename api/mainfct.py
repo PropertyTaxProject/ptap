@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pandas as pd
 from docxtpl import DocxTemplate
-from fuzzywuzzy import process
+from thefuzz import process
 
 from .computils import find_comps
 from .dataqueries import address_candidates_query, ecdf, get_pin

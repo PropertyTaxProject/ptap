@@ -2,16 +2,8 @@ from datetime import datetime
 
 from geoalchemy2 import Geometry, WKBElement
 from geoalchemy2.shape import to_shape
-from thefuzz import process
 
 from .db import db
-
-
-# TODO:
-def fuzzy_address_matches(street, parcels):
-    parcel_dict = {p.street_name: p for p in parcels}
-    results = process.extractBests(street, parcel_dict.keys(), score_cutoff=50)
-    return [parcel_dict[r[0]] for r in results]
 
 
 def as_dict(obj):

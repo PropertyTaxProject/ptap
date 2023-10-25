@@ -126,7 +126,7 @@ jobs:
           if-no-files-found: ignore
 
   deploy:
-    needs: [python-checks, js-checks, cypress]
+    needs: [python-checks, js-checks]
     # TODO:
     # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
