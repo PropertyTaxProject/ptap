@@ -29,6 +29,7 @@ def address_candidates_query(region, st_num):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
+    print("Running address candidate query")
     return model.query.filter(model.street_number == st_num)
 
 

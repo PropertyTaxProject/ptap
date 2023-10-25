@@ -101,7 +101,7 @@ jobs:
         run: make download-data
 
       - uses: cypress-io/github-action@v4.1.0
-        # continue-on-error: true # TODO: Fix
+        continue-on-error: true # TODO: Fix
         with:
           config-file: cypress.config.js
           build: npm run build

@@ -32,6 +32,7 @@ def address_candidates(input_data, cutoff_info):
 
     # mini = address_candidates_query(region, st_num)
     candidates = address_candidates_query(region, st_num)
+    print("rand address candidates query, processing string keys")
     parcel_dict = {p.street_name: p.as_dict() for p in candidates}
     results = process.extractBests(st_name, parcel_dict.keys(), score_cutoff=50)
 
