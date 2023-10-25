@@ -1483,20 +1483,6 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
-name = "thefuzz"
-version = "0.20.0"
-description = "Fuzzy string matching in python"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "thefuzz-0.20.0-py3-none-any.whl", hash = "sha256:bd2b657a12bd8518917d2d71c53125368706233b822fac688fca956730154388"},
-    {file = "thefuzz-0.20.0.tar.gz", hash = "sha256:a25e49786b1c4603c7fc6e2d69e6bc660982a2919698b536ff8354e0631cc40d"},
-]
-
-[package.dependencies]
-rapidfuzz = ">=3.0.0,<4.0.0"
-
-[[package]]
 name = "typing-extensions"
 version = "4.8.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1555,4 +1541,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11.3,<3.13.0"
-content-hash = "1ab3df92553cda1a7d0eff09b50d049c02141031d6ba7a73722cbbb8be1c1cb5"
+content-hash = "04b7c377118208f1b0d7f3374a956581b404f9dae768d57124ad71838b533ce5"
