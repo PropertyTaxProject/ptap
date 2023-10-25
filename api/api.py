@@ -50,7 +50,7 @@ application.config[
 # TODO: Figure this out
 # application.json_provider_class = SQLAlchemyJSONProvider
 # application.json = application.json_provider_class(application)
-# application.config["SQLALCHEMY_ECHO"] = True
+application.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(application)
 
