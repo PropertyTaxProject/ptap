@@ -7,9 +7,8 @@ from flask_cors import CORS
 from flask_mail import Mail
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
-from sqlalchemy import event
+from werkzeug.exceptions import HTTPException
 
-# from werkzeug.exceptions import HTTPException
 from .db import db
 from .logging import logger
 from .mainfct import (
@@ -41,27 +40,15 @@ application.config["MAIL_USE_TLS"] = True
 application.config["MAIL_USERNAME"] = os.getenv("SENDGRID_USERNAME")
 application.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
 application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+application.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
-
-application.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = f"sqlite:///{os.path.join(BASE_DIR, 'database', 'data.db')}"
 # application.config["JSON_PROVIDER_CLASS"] = "api.json.SQLAlchemyJSONProvider"
 # TODO: Figure this out
 # application.json_provider_class = SQLAlchemyJSONProvider
 # application.json = application.json_provider_class(application)
-application.config["SQLALCHEMY_ECHO"] = True
+# application.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(application)
-
-with application.app_context():
-
-    @event.listens_for(db.engine, "connect")
-    def load_spatialite(dbapi_conn, connection_record):
-        print("loading extensions")
-        dbapi_conn.enable_load_extension(True)
-        dbapi_conn.load_extension("mod_spatialite")
-        print("extensions loaded")
 
 
 CORS(application)
@@ -152,9 +139,9 @@ def page_not_found(error):
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-# @application.errorhandler(Exception)
-# def handle_error(error):
-#     if isinstance(error, HTTPException):
-#         return error
+@application.errorhandler(Exception)
+def handle_error(error):
+    if isinstance(error, HTTPException):
+        return error
 
-#     return jsonify({"error": str(error)}), 500
+    return jsonify({"error": str(error)}), 500

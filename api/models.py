@@ -45,9 +45,27 @@ class CookParcel(db.Model):
     basement = db.Column(db.Boolean)
     garage = db.Column(db.Boolean)
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
-
     as_dict = as_dict
     as_json_dict = as_json_dict
+    __table_args__ = (
+        db.Index(
+            "cook_compound_match_index",
+            "pin",
+            "age",
+            "sale_price",
+            "sale_year",
+            "property_class",
+            "building_sq_ft",
+            "land_sq_ft",
+            "rooms",
+            "bedrooms",
+            "assessed_value",
+            "wall_material",
+            "stories",
+            "basement",
+            "garage",
+        ),
+    )
 
 
 class DetroitParcel(db.Model):
@@ -74,7 +92,18 @@ class DetroitParcel(db.Model):
     basement = db.Column(db.Boolean)
     garage = db.Column(db.Boolean)
     taxpayer = db.Column(db.String(128))
-    homestead_exemption = db.Column(db.Integer)  # TODO: Is this right?
+    homestead_exemption = db.Column(db.String(64))
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
     as_dict = as_dict
     as_json_dict = as_json_dict
+    __table_args__ = (
+        db.Index(
+            "detroit_compound_match_index",
+            "pin",
+            "age",
+            "sale_price",
+            "sale_year",
+            "total_floor_area",
+            "exterior_category",
+        ),
+    )

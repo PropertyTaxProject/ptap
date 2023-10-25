@@ -3,14 +3,14 @@
   "street_number": "3914",
   "street_name": "MCDOUGALL",
   "assessed_value": "10,300",
-  "updated_assessed_value": "7,500",
+  "updated_assessed_value": "8,500",
   "comparables": [
     {
       "street_number": "4743",
       "street_name": "HECK"
     },
     {
-      "street_number": "3754",
+      "street_number": "4154",
       "street_name": "ROHNS"
     }
   ]

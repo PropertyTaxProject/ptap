@@ -33,12 +33,20 @@ def address_candidates_query(region, st_num):
     return model.query.filter(model.street_number == st_num)
 
 
-def get_pin(region, pin):
+def _get_pin(region, pin):
     if region == "cook":
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
-    return pd.DataFrame([p.as_dict() for p in model.query.filter(model.pin == pin)])
+    return model.query.filter(model.pin == pin).first()
+
+
+def get_pin(region, pin):
+    data_list = []
+    parcel = _get_pin(region, pin)
+    if parcel:
+        data_list = [parcel.as_dict()]
+    return pd.DataFrame(data_list)
 
 
 def avg_ecf(neighborhood):

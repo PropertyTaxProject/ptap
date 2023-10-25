@@ -2,7 +2,6 @@ import csv
 import os
 from datetime import datetime
 
-from geoalchemy2.functions import ST_GeomFromText
 from sqlalchemy import text
 
 from api.api import application
@@ -13,11 +12,10 @@ DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database"
 )
 
-# TODO: This takes a long time to load, maybe upload to S3 and cache
 with application.app_context():
+    db.session.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+    db.session.commit()
     db.create_all()
-    db.session.execute(text("SELECT InitSpatialMetadata(1)"))
-    db.session.execute(text("SELECT UpdateLayerStatistics()"))
     db.session.commit()
 
 
@@ -26,7 +24,7 @@ if __name__ == "__main__":
     with open(os.path.join(DATA_DIR, "cooksf2.csv"), "r") as f:
         cook_parcels = []
         reader = csv.DictReader(f)
-        for row in reader:
+        for idx, row in enumerate(reader):
             sale_price = (
                 float(row["Sale Price"])
                 if row["Sale Price"] not in ["", "NA"]
@@ -38,43 +36,43 @@ if __name__ == "__main__":
             price_per_sq_ft = None
             if sale_price:
                 price_per_sq_ft = sale_price / total_sq_ft
+            point = None
+            if row["Longitude"] and row["Latitude"]:
+                point = f"POINT({row['Longitude']} {row['Latitude']})"
             cook_parcels.append(
                 CookParcel(
+                    id=idx,
                     pin=row["PIN"],
                     street_number=row["st_num"],
                     street_name=row["st_name"],
                     sale_price=sale_price,
-                    sale_year=row["Sale Year"],
+                    sale_year=row["Sale Year"] or None,
                     assessed_value=row["CERTIFIED"] if row["CERTIFIED"] else None,
                     property_class=row["Property Class"],
-                    age=row["Age"],
+                    age=row["Age"] or None,
                     building_sq_ft=building_sq_ft,
                     land_sq_ft=land_sq_ft,
                     price_per_sq_ft=price_per_sq_ft,
-                    rooms=row["Rooms"],
-                    bedrooms=row["Bedrooms"],
+                    rooms=row["Rooms"] or None,
+                    bedrooms=row["Bedrooms"] or None,
                     wall_material=row["Wall Material"],
-                    stories=row["stories_recode"],
+                    stories=row["stories_recode"] or None,
                     basement=row["basement_recode"] == "1",
                     garage=row["Garage indicator"] == "1",
-                    geom=ST_GeomFromText(
-                        f"POINT({row['Longitude']} {row['Latitude']})", 4326
-                    ),
+                    geom=point,
                 )
             )
         with application.app_context():
-            db.session.add_all(cook_parcels)
+            db.session.bulk_save_objects(cook_parcels)
             db.session.commit()
 
     with open(os.path.join(DATA_DIR, "detroit_sf_2022sales_2023avtent.csv"), "r") as f:
         detroit_parcels = []
         reader = csv.DictReader(f)
-        for row in reader:
+        for idx, row in enumerate(reader):
             point = None
             if row["Longitude"] != "NA":
-                point = ST_GeomFromText(
-                    f"POINT({row['Longitude']} {row['Latitude']})", 4326
-                )
+                point = f"POINT({row['Longitude']} {row['Latitude']})"
             sale_price = (
                 float(row["Sale Price"])
                 if row["Sale Price"] not in ["", "NA"]
@@ -90,6 +88,7 @@ if __name__ == "__main__":
                 age = current_year - year_built
             detroit_parcels.append(
                 DetroitParcel(
+                    id=idx,
                     pin=row["parcel_num"],
                     street_number=row["st_num"],
                     street_name=row["st_name"],
@@ -122,5 +121,5 @@ if __name__ == "__main__":
                 )
             )
         with application.app_context():
-            db.session.add_all(detroit_parcels)
+            db.session.bulk_save_objects(detroit_parcels)
             db.session.commit()

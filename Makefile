@@ -3,18 +3,23 @@ clean:
 	rm -f api/database/data.db
 
 .PHONY: data
-data: api/database/data.db
-
-.PHONY: deploy-data
-deploy-data: api/database/data.db
-	aws s3 cp $< s3://$(S3_BUCKET)/data.db
+data:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
 
 .PHONY: download-data
 download-data:
-	aws s3 cp s3://$(S3_BUCKET)/data.db api/database/data.db
+	aws s3 cp s3://$(S3_BUCKET)/data.dump .
 
-api/database/data.db:
-	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
+.PHONY: deploy-data
+deploy-data: data.dump
+	aws s3 cp $< s3://$(S3_BUCKET)/
+
+.PHONY: restore
+restore: data.dump
+	pg_restore -d $(DATABASE_URL) -F c $<
+
+data.dump:
+	pg_dump $(DATABASE_URL) -F c -f $@
 
 .PHONY: start
 start:

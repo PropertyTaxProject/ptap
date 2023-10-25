@@ -1,6 +1,7 @@
 import pandas as pd
-from geoalchemy2.functions import ST_Distance
-from sqlalchemy import literal_column
+from geoalchemy2.functions import ST_DistanceSphere
+from sqlalchemy import func, literal_column
+from sqlalchemy.orm import aliased
 
 from .db import db
 from .models import CookParcel, DetroitParcel
@@ -87,14 +88,56 @@ def calculate_comps_alt(targ, region, sales_comps, multiplier):
     if debug:
         print(query_filters)
 
-    result = pd.DataFrame(
-        [
-            {**m.as_dict(), "distance": d}
-            for (m, d) in db.session.query(
-                model, ST_Distance(model.geom, targ["geom"][0], 1).label("distance")
-            ).filter(*query_filters, literal_column("distance") < distance)
-        ]
+    distance_subquery = (
+        db.session.query(
+            model,
+            ST_DistanceSphere(model.geom, targ["geom"][0]).label("distance"),
+        )
+        .filter(*query_filters)
+        .subquery()
     )
+    model_alias = aliased(model, distance_subquery)
+    diff_score = None
+    if region == "detroit":
+        diff_score = (
+            func.abs(
+                model_alias.total_floor_area - float(targ["total_floor_area"].values[0])
+            )
+            / 100
+            + func.abs(model_alias.age - int(targ["age"].values[0])) / 15
+            + literal_column("distance") / MILE_IN_METERS
+        )
+    elif region == "cook":
+        diff_score = (
+            func.abs(model_alias.age - int(targ["age"].values[0])) / 15
+            + func.abs(
+                model_alias.building_sq_ft - float(targ["building_sq_ft"].values[0])
+            )
+            / (float(targ["building_sq_ft"].values[0]) * 0.10)
+            + func.abs(model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0]))
+            / (float(targ["land_sq_ft"].values[0]) * 0.10)
+            + func.abs(model_alias.rooms - int(targ["rooms"].values[0])) / 1.5
+            + func.abs(model_alias.bedrooms - int(targ["bedrooms"].values[0])) / 1.5,
+            +func.abs(
+                model_alias.assessed_value - float(targ["assessed_value"].values[0])
+            )
+            / (float(targ["assessed_value"].values[0]) * 0.5)
+            + literal_column("distance") / MILE_IN_METERS,
+        )
+
+    # TODO: Modify weighting of distance
+    query = (
+        db.session.query(
+            aliased(model, distance_subquery),
+            distance_subquery.c.distance,
+            diff_score.label("diff_score"),
+        )
+        .filter(literal_column("distance") < distance)
+        .order_by(literal_column("diff_score"))
+        .limit(10)
+    )
+
+    result = pd.DataFrame([{**m.as_dict(), "distance": d} for (m, d, _) in query])
 
     if region == "detroit":
         return targ, result
@@ -103,11 +146,10 @@ def calculate_comps_alt(targ, region, sales_comps, multiplier):
 
 
 def find_comps(targ, region, sales_comps, multiplier=1):
+    multiplier = 8
     new_targ, cur_comps = calculate_comps_alt(targ, region, sales_comps, multiplier)
+    # TODO: Fix this check
     if multiplier > 8:  # no comps found within maximum search area---hault
         raise Exception("Comparables not found with given search")
-    elif cur_comps.shape[0] < 10:  # find more comps
-        # TODO: There has to be a more efficient way of finding this than repeating it
-        return find_comps(targ, region, sales_comps, multiplier * 1.25)
     else:  # return best comps
         return new_targ, cur_comps

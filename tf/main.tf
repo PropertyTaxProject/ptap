@@ -28,6 +28,9 @@ locals {
   tags = {
     project = "ptap"
   }
+
+  db_username = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["username"]
+  db_password = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["password"]
 }
 
 module "iam_github_oidc_provider" {
@@ -35,29 +38,49 @@ module "iam_github_oidc_provider" {
   version = "5.30.0"
 }
 
-resource "aws_iam_policy" "s3_state_access" {
-  name = "${local.name}-s3-state-access"
+resource "aws_iam_policy" "update_access" {
+  name = "${local.name}-update-access"
 
-  # TODO:
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = ["s3:*"]
         Effect = "Allow"
+        # TODO: Update this
         Resource = [
           "arn:aws:s3:::pjsier-ptap-testing-terraform-state",
           "arn:aws:s3:::pjsier-ptap-testing-terraform-state/*"
         ]
-      }
+      },
+      {
+        Action = [
+          "lambda:*"
+        ]
+        Effect = "Allow"
+        Resource = [
+          module.lambda.lambda_function_arn,
+          "${module.lambda.lambda_function_arn}:*"
+        ]
+      },
+      {
+        Action = [
+          "s3:*"
+        ]
+        Effect = "Allow"
+        Resource = [
+          module.s3.s3_bucket_arn,
+          "${module.s3.s3_bucket_arn}/*"
+        ]
+      },
     ]
   })
 
   tags = local.tags
 }
 
-resource "aws_iam_policy" "ecr_access" {
-  name = "${local.name}-ecr-access"
+resource "aws_iam_policy" "read_access" {
+  name = "${local.name}-read-access"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -75,58 +98,21 @@ resource "aws_iam_policy" "ecr_access" {
         Effect   = "Allow"
         Resource = "*"
       },
-    ]
-  })
-
-  tags = local.tags
-}
-
-resource "aws_iam_policy" "lambda_access" {
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
       {
-        Action = [
-          "lambda:*"
-        ]
-        Effect = "Allow"
-        Resource = [
-          module.lambda.lambda_function_arn,
-          "${module.lambda.lambda_function_arn}:*"
-        ]
+        Action   = ["ssm:Get*"],
+        Effect   = "Allow",
+        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/*"
       },
-    ]
-  })
-
-  tags = local.tags
-}
-
-resource "aws_iam_policy" "s3_assets_access" {
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
       {
-        Action = [
-          "s3:*"
-        ]
-        Effect = "Allow"
-        Resource = [
-          module.s3.s3_bucket_arn,
-          "${module.s3.s3_bucket_arn}/*"
-        ]
+        Action   = ["secretsmanager:GetSecretValue"],
+        Effect   = "Allow",
+        Resource = [module.rds.db_instance_master_user_secret_arn, "${module.rds.db_instance_master_user_secret_arn}*"]
       },
-    ]
-  })
-
-  tags = local.tags
-}
-
-resource "aws_iam_policy" "get_access" {
-  name = "${local.name}-get-access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+      {
+        Action   = ["rds:ListTagsForResource"],
+        Effect   = "Allow",
+        Resource = [module.rds.db_parameter_group_arn]
+      },
       {
         Action = [
           "iam:Get*",
@@ -141,16 +127,14 @@ resource "aws_iam_policy" "get_access" {
           "events:Get*",
           "events:List*",
           "events:Describe*",
+          "ec2:Describe*",
+          "rds:Describe*",
+          "rds:List*",
           "apigateway:GET"
         ]
         Effect   = "Allow"
         Resource = "*"
       },
-      {
-        Action   = ["ssm:Get*"],
-        Effect   = "Allow",
-        Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/*"
-      }
     ]
   })
 
@@ -165,11 +149,8 @@ module "iam_github_oidc_role" {
   subjects = ["pjsier/ptap:*"] # TODO:
 
   policies = {
-    EcrAccess     = aws_iam_policy.ecr_access.arn,
-    LambdaAccess  = aws_iam_policy.lambda_access.arn
-    S3StateAccess = aws_iam_policy.s3_state_access.arn
-    S3AssetsAcess = aws_iam_policy.s3_assets_access.arn
-    GetAccess     = aws_iam_policy.get_access.arn
+    UpdateAccess = aws_iam_policy.update_access.arn
+    ReadAccess   = aws_iam_policy.read_access.arn
   }
 
   tags = local.tags
@@ -252,7 +233,6 @@ data "aws_ssm_parameter" "sentry_dsn" {
   name = "/${local.name}/sentry_dsn"
 }
 
-# TODO: Can't find image
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
@@ -261,6 +241,8 @@ module "lambda" {
   package_type   = "Image"
   create_package = false
   publish        = true
+  timeout        = 30
+  memory_size    = 1024
 
   image_uri = "${module.ecr.repository_url}:${var.lambda_image_tag}"
 
@@ -280,18 +262,17 @@ module "lambda" {
     SENDGRID_USERNAME   = data.aws_ssm_parameter.sendgrid_username.value
     SENDGRID_API_KEY    = data.aws_ssm_parameter.sendgrid_api_key.value,
     SENTRY_DSN          = data.aws_ssm_parameter.sentry_dsn.value,
+    DATABASE_URL        = "postgresql+psycopg2://${local.db_username}:${local.db_password}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER = "test@example.com",
     PTAP_MAIL           = "test@example.com",
     UOFM_MAIL           = "test@example.com",
     CHICAGO_MAIL        = "test@example.com",
     PTAP_SHEET_SID      = "",
-    FLASK_DEBUG         = "True" # TODO: Remove
   }
 
   tags = local.tags
 }
 
-# TODO: Maybe make 10-15 minutes?
 resource "aws_cloudwatch_event_rule" "keep_warm" {
   name                = "${local.name}-keep-lambda-warm"
   schedule_expression = "rate(5 minutes)"
@@ -346,25 +327,8 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
 
-resource "aws_ssm_parameter" "db_name" {
-  name = "/${local.name}/database/name"
-  type = "SecureString"
-
-  value = "ptap"
-}
-
-resource "aws_ssm_parameter" "db_username" {
-  name = "/${local.name}/database/username"
-  type = "SecureString"
-
-  value = "ptap"
-}
-
-resource "aws_ssm_parameter" "db_password" {
-  name = "/${local.name}/database/password"
-  type = "SecureString"
-
-  value = "ptap1234"
+data "aws_secretsmanager_secret_version" "db" {
+  secret_id = module.rds.db_instance_master_user_secret_arn
 }
 
 module "vpc" {
@@ -412,9 +376,8 @@ module "rds" {
   allocated_storage     = 5
   max_allocated_storage = 20
 
-  db_name  = aws_ssm_parameter.db_name.value
-  username = aws_ssm_parameter.db_username.value
-  port     = 5432
+  db_name = local.name
+  port    = 5432
 
   multi_az               = false
   db_subnet_group_name   = module.vpc.database_subnet_group

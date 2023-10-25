@@ -62,6 +62,19 @@ jobs:
   cypress:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: kartoza/postgis:13.0
+        env:
+          POSTGRES_USER: ptap
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ptap
+        ports:
+          # will assign a random free host port
+          - 5432/tcp
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - uses: actions/checkout@v2
 
@@ -90,8 +103,8 @@ jobs:
 
       - run: npx cypress install
 
-      - name: Install Spatialite dependencies
-        run: sudo apt-get install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite binutils libproj-dev gdal-bin
+      - name: Install GDAL dependencies
+        run: sudo apt-get update -y && sudo apt-get install -y gdal-bin
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -99,11 +112,17 @@ jobs:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ptap-terraform-github-role
           aws-region: us-east-1
 
-      - env:
+      - name: Download and restore database
+        env:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-        run: make download-data
+          DATABASE_URL: postgresql://ptap:postgres@localhost:${{ job.services.postgres.ports[5432] }}/ptap
+        run: |
+          make download-data
+          make restore
 
       - uses: cypress-io/github-action@v4.1.0
+        env:
+          DATABASE_URL: postgresql://ptap:postgres@localhost:${{ job.services.postgres.ports[5432] }}/ptap
         with:
           config-file: cypress.config.js
           build: npm run build
@@ -164,10 +183,6 @@ jobs:
       - env:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
         run: aws s3 cp ./build/ s3://$S3_BUCKET/ --cache-control no-cache --recursive
-
-      - env:
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
-        run: make download-data
 
       - name: Login to Amazon ECR
         id: login-ecr
