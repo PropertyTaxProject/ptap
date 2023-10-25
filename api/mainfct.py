@@ -5,8 +5,8 @@ from datetime import datetime
 
 import pandas as pd
 from docxtpl import DocxTemplate
-from rapidfuzz import process
 
+# from rapidfuzz import process
 from .computils import find_comps
 from .dataqueries import address_candidates_query, ecdf, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
@@ -33,11 +33,19 @@ def address_candidates(input_data, cutoff_info):
     # mini = address_candidates_query(region, st_num)
     candidates = address_candidates_query(region, st_num)
     print("ran address candidates query, processing string keys")
-    parcel_dict = {p.street_name.upper(): p.as_dict() for p in candidates}
-    results = process.extract(st_name.upper(), parcel_dict.keys(), score_cutoff=50)
-    print("ran fuzzy match")
+    # parcel_dict = {p.street_name.upper(): p.as_dict() for p in candidates}
+    # results = process.extract(st_name.upper(), parcel_dict.keys(), score_cutoff=50)
+    # print("ran fuzzy match")
 
-    selected = pd.DataFrame([parcel_dict[r[0]] for r in results])
+    # selected = pd.DataFrame([parcel_dict[r[0]] for r in results])
+    # TODO: Re add
+    selected = pd.DataFrame(
+        [
+            c.as_dict()
+            for c in candidates
+            if c.street_name.upper() == st_name.strip().upper()
+        ]
+    )
 
     selected["Distance"] = 0
     selected["address"] = selected["street_number"] + " " + selected["street_name"]
