@@ -32,6 +32,7 @@ def address_candidates(input_data, cutoff_info):
 
     # mini = address_candidates_query(region, st_num)
     candidates = address_candidates_query(region, st_num)
+    print(str(candidates))
     print("ran address candidates query, processing string keys")
     # parcel_dict = {p.street_name.upper(): p.as_dict() for p in candidates}
     # results = process.extract(st_name.upper(), parcel_dict.keys(), score_cutoff=50)
@@ -46,6 +47,7 @@ def address_candidates(input_data, cutoff_info):
             if c.street_name.upper() == st_name.strip().upper()
         ]
     )
+    print("created data frame")
 
     selected["Distance"] = 0
     selected["address"] = selected["street_number"] + " " + selected["street_name"]

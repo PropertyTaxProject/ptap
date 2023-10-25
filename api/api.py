@@ -58,8 +58,10 @@ with application.app_context():
 
     @event.listens_for(db.engine, "connect")
     def load_spatialite(dbapi_conn, connection_record):
+        print("loading extensions")
         dbapi_conn.enable_load_extension(True)
         dbapi_conn.load_extension("mod_spatialite")
+        print("extensions loaded")
 
 
 CORS(application)
