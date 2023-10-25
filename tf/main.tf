@@ -284,7 +284,8 @@ module "lambda" {
     PTAP_MAIL           = "test@example.com",
     UOFM_MAIL           = "test@example.com",
     CHICAGO_MAIL        = "test@example.com",
-    PTAP_SHEET_SID      = ""
+    PTAP_SHEET_SID      = "",
+    FLASK_DEBUG         = "True" # TODO: Remove
   }
 
   tags = local.tags
