@@ -8,8 +8,8 @@ from flask_mail import Mail
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sqlalchemy import event
-from werkzeug.exceptions import HTTPException
 
+# from werkzeug.exceptions import HTTPException
 from .db import db
 from .logging import logger
 from .mainfct import (
@@ -148,9 +148,9 @@ def page_not_found(error):
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-@application.errorhandler(Exception)
-def handle_error(error):
-    if isinstance(error, HTTPException):
-        return error
+# @application.errorhandler(Exception)
+# def handle_error(error):
+#     if isinstance(error, HTTPException):
+#         return error
 
-    return jsonify({"error": str(error)}), 500
+#     return jsonify({"error": str(error)}), 500
