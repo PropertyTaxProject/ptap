@@ -81,7 +81,9 @@ def handle_form0():
     print("PAGE DATA", request.json)
     print("REQUEST OBJECT", request)
     response_dict = address_candidates(pf_data, {"detroit": 150000, "cook": 225000})
+    print("got address candidates")
     response_dict["uuid"] = logger(pf_data, "address_finder")
+    print("ran logger")
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp

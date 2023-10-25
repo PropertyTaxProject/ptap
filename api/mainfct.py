@@ -52,20 +52,26 @@ def address_candidates(input_data, cutoff_info):
     selected["Distance"] = 0
     selected["address"] = selected["street_number"] + " " + selected["street_name"]
 
+    print("Created address")
+
     # if input_data["appeal_type"] == "detroit_single_family":
     #     selected = prettify_detroit(selected, False)
     # elif input_data["appeal_type"] == "cook_county_single_family":
     #     selected = prettify_cook(selected, False)
 
     selected["eligible"] = selected.assessed_value <= cutoff
+    print("set eligible")
     # TODO: Is this still needed?
     # selected.dropna(axis=0, inplace=True)
     # Don't need this to be returned so dropping
     selected.drop("geom", axis=1, inplace=True)
     output["candidates"] = selected.to_dict(orient="records")
+    print("created candidates")
+    print(output["candidates"])
 
     if len(output["candidates"]) == 0:  # if none found raise
         raise Exception("No Matches Found")
+    print("returning")
     return output
 
 
