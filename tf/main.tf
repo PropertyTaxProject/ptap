@@ -233,6 +233,10 @@ data "aws_ssm_parameter" "sentry_dsn" {
   name = "/${local.name}/sentry_dsn"
 }
 
+data "aws_ssm_parameter" "google_service_account" {
+  name = "/${local.name}/google_service_account"
+}
+
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
@@ -258,16 +262,17 @@ module "lambda" {
   }
 
   environment_variables = {
-    SECRET_KEY          = data.aws_ssm_parameter.secret_key.value,
-    SENDGRID_USERNAME   = data.aws_ssm_parameter.sendgrid_username.value
-    SENDGRID_API_KEY    = data.aws_ssm_parameter.sendgrid_api_key.value,
-    SENTRY_DSN          = data.aws_ssm_parameter.sentry_dsn.value,
-    DATABASE_URL        = "postgresql+psycopg2://${local.db_username}:${local.db_password}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
-    MAIL_DEFAULT_SENDER = "test@example.com",
-    PTAP_MAIL           = "test@example.com",
-    UOFM_MAIL           = "test@example.com",
-    CHICAGO_MAIL        = "test@example.com",
-    PTAP_SHEET_SID      = "",
+    SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
+    SENDGRID_USERNAME       = data.aws_ssm_parameter.sendgrid_username.value
+    SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value,
+    SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value,
+    GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
+    DATABASE_URL            = "postgresql+psycopg2://${local.db_username}:${local.db_password}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
+    MAIL_DEFAULT_SENDER     = "test@example.com",
+    PTAP_MAIL               = "test@example.com",
+    UOFM_MAIL               = "test@example.com",
+    CHICAGO_MAIL            = "test@example.com",
+    PTAP_SHEET_SID          = "",
   }
 
   tags = local.tags

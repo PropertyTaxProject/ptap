@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import uuid
@@ -6,13 +7,15 @@ import gspread
 import pandas as pd
 from google.oauth2 import service_account
 
-gsheet = None
-gsheet2 = None
+gsheet_logs = None
+gsheet_submission = None
 
-if os.path.exists("api/.googleenv/ptap-904555bfffb0.json"):
-    # open connection with google sheets personal log
-    credentials = service_account.Credentials.from_service_account_file(
-        "api/.googleenv/ptap-904555bfffb0.json",
+LOGGING_ENABLED = os.getenv("GOOGLE_LOGGING_ENABLED")
+
+if os.getenv("GOOGLE_SERVICE_ACCOUNT"):
+    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT"))
+    credentials = service_account.Credentials.from_service_account_info(
+        credentials_json,
         scopes=[
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/spreadsheets",
@@ -22,25 +25,15 @@ if os.path.exists("api/.googleenv/ptap-904555bfffb0.json"):
     )
 
     client = gspread.authorize(credentials)
-    gsheet = client.open("ptap-log").sheet1
+    gsheet_logs = client.open("Copy of ptap-log").sheet1
 
-    # # open connection with google sheets submission account
-    credentials2 = service_account.Credentials.from_service_account_file(
-        "api/.googleenv/ptap-297022-09570cc5b389.json",
-        scopes=[
-            "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-
-    client2 = gspread.authorize(credentials2)
-    gsheet2 = client2.open("PTAP_Submissions").sheet1
+    # gsheet_submission = client.open("PTAP_Submissions").sheet1
 
 
+# TODO: Parse logs from CloudWatch and submit those to Google instead?
+# TODO: Run in background process
 def record_log(uuid_val, process_step_id, exception, form_data):
-    if gsheet is None:
+    if gsheet_logs is None or not LOGGING_ENABLED:
         return
 
     new = {}
@@ -53,10 +46,10 @@ def record_log(uuid_val, process_step_id, exception, form_data):
     cnt = 1
     for i, j in form_data.items():
         if i == "target_pin":
-            new[i] = j["PIN"]
+            new[i] = j["pin"]
         elif i in ["comparables", "comparablesPool", "selectedComparables"]:
             for comp in j:
-                new["comp_" + str(cnt)] = comp["PIN"]
+                new["comp_" + str(cnt)] = comp["pin"]
                 cnt += 1
         else:
             new[i] = j
@@ -69,21 +62,20 @@ def record_log(uuid_val, process_step_id, exception, form_data):
         )
         print(tmp.T)
 
-    gsheet.append_rows([list(new.keys())] + [list(new.values())])
+    gsheet_logs.append_rows([list(new.keys())] + [list(new.values())])
 
 
 def record_final_submission(sub_dict):
-    if gsheet2 is None:
+    if gsheet_submission is None or not LOGGING_ENABLED:
         return
 
     # add values
-    gsheet2.append_rows([list(sub_dict.values())])
+    gsheet_submission.append_rows([list(sub_dict.values())])
     # make url
-    val_list = gsheet2.col_values(1)
+    val_list = gsheet_submission.col_values(1)
     base_url = "https://docs.google.com/spreadsheets/d/"
-    sid = os.getenv("PTAP_SHEET_SID")
 
-    return base_url + sid + "/edit#gid=0&range=A" + str(len(val_list))
+    return f"{base_url}{gsheet_submission.id}/edit#gid=0&range=A{len(val_list)}"
 
 
 def logger(form_data, process_step_id, exception=""):
