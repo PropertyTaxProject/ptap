@@ -1,0 +1,9 @@
+{
+  "name": "Test Person",
+  "email": "test@example.com",
+  "phone": "555-555-5555",
+  "address": "1234 Fake St",
+  "city": "Detroit",
+  "state": "MI",
+  "zip": "55555"
+}

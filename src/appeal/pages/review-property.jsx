@@ -43,7 +43,7 @@ const Characteristics = (props) => {
 
       <Form
         form={form}
-        name="Housing Information"
+        name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"
         scrollToFirstError

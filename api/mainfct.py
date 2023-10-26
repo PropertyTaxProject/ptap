@@ -3,6 +3,7 @@ import os
 import string
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from docxtpl import DocxTemplate
 from rapidfuzz import process
@@ -49,6 +50,7 @@ def address_candidates(input_data, cutoff_info):
     # selected.dropna(axis=0, inplace=True)
     # Don't need this to be returned so dropping
     selected.drop("geom", axis=1, inplace=True)
+    selected.replace({np.nan: None}, inplace=True)
     output["candidates"] = selected.to_dict(orient="records")
 
     if len(output["candidates"]) == 0:  # if none found raise
@@ -127,8 +129,8 @@ def comparables(input_data, sales_comps=False):
     cur_comps = cur_comps.round(2).drop(["dist_dist", "val_dist"], axis=1)
 
     output = {}
-    new_targ = new_targ.fillna("")
-    cur_comps = cur_comps.fillna("")
+    new_targ = new_targ.fillna("").replace({np.nan: None})
+    cur_comps = cur_comps.fillna("").replace({np.nan: None})
 
     if "sale_date" in cur_comps:
         cur_comps["sale_date"] = cur_comps["sale_date"].apply(

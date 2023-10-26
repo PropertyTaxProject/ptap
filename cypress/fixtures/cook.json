@@ -1,0 +1,19 @@
+{
+  "region": "cook",
+  "appealUrl": "/cook",
+  "pin": "20172270220000",
+  "street_number": "5818",
+  "street_name": "S MORGAN",
+  "assessed_value": "10,300",
+  "updated_assessed_value": "8,500",
+  "comparables": [
+    {
+      "street_number": "6850",
+      "street_name": "S MORGAN ST"
+    },
+    {
+      "street_number": "5550",
+      "street_name": "S SHIELDS AVE"
+    }
+  ]
+}

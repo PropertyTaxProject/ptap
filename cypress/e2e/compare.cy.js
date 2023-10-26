@@ -1,7 +1,16 @@
-describe("Detroit search and compare", () => {
-  it("Searches and submits for an address", () => {
-    cy.fixture("detroit_property").then(
+describe("Search and compare flow", () => {
+  let detroit
+  before(() => {
+    cy.fixture("detroit").then((f) => {
+      detroit = f
+    })
+  })
+
+  it("Searches and submits an address", () => {
+    const regions = [detroit]
+    regions.forEach(
       ({
+        compareUrl,
         pin,
         street_number,
         street_name,
@@ -9,8 +18,8 @@ describe("Detroit search and compare", () => {
         updated_assessed_value,
         comparables,
       }) => {
-        cy.visit("/detroit")
-        cy.get("input[type=number]").type(street_number)
+        cy.visit(compareUrl)
+        cy.get("input[placeholder=number]").type(street_number)
         cy.get("input[placeholder=street]").type(street_name)
         cy.get("button[type=submit]").click()
         cy.get(".ant-table-content").contains(pin).should("exist")
@@ -21,10 +30,7 @@ describe("Detroit search and compare", () => {
         comparables.forEach(({ street_number, street_name }) => {
           cy.get(".ant-table-content")
             .last()
-            .contains("td", street_number)
-            .should("exist")
-            .parent()
-            .contains("td", street_name)
+            .contains("td", `${street_number} ${street_name}`)
             .should("exist")
             .parent()
             .find("button")
