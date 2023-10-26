@@ -130,7 +130,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
             + literal_column("distance") / MILE_IN_METERS
         )
 
-    # TODO: Modify weighting of distance
+    # TODO: Modify weighting
     query = (
         db.session.query(
             aliased(model, distance_subquery),

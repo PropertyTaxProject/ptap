@@ -51,10 +51,8 @@ def submit_cook_sf(comp_submit, mail):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # generate docx
-    output_name = os.path.join(
-        base_dir,
-        "tmp_data",
-        f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
+    output_name = (
+        f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
     )
     comp_submit["output_name"] = output_name
     doc = DocxTemplate(
@@ -190,12 +188,9 @@ def submit_detroit_sf(comp_submit, mail):
     # generate docx
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    output_name = os.path.join(
-        base_dir,
-        "tmp_data",
+    comp_submit["output_name"] = (
         f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
     )
-    comp_submit["output_name"] = output_name
     doc = DocxTemplate(
         os.path.join(base_dir, "templates", "docs", "detroit_template_2022.docx")
     )
@@ -230,7 +225,6 @@ def submit_detroit_sf(comp_submit, mail):
     }
 
     doc.render(context)
-    doc.save(output_name)
 
     output = {}
     if download:

@@ -118,7 +118,10 @@ def handle_form3():
     response_dict = process_estimate(est_data, True)
     logger(est_data, "est_submit")
     return send_file(
-        response_dict["file_stream"], as_attachment=True, download_name="test.docx"
+        response_dict["file_stream"],
+        mimetype="application/octet-stream",
+        as_attachment=True,
+        download_name="test.docx",
     )
 
 

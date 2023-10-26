@@ -10,7 +10,9 @@ def lambda_handler(event, context):
     if "httpMethod" not in event:
         return {"statusCode": 200, "body": json.dumps({"message": "warm"})}
 
-    return awsgi.response(application, event, context)
+    return awsgi.response(
+        application, event, context, base64_content_types={"application/octet-stream"}
+    )
 
 
 if __name__ == "__main__":

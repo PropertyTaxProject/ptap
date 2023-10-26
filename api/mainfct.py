@@ -188,10 +188,6 @@ def process_estimate(form_data, download):
 
     # generate docx
     if download:
-        output_name = os.path.join(
-            base_dir, "tmp_data", f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
-        )
-
         doc = DocxTemplate(
             os.path.join(
                 base_dir,
@@ -263,14 +259,13 @@ def process_estimate(form_data, download):
         }
 
         doc.render(context)
-        doc.save(output_name)
 
         # also save a byte object to return
         file_stream = io.BytesIO()
         doc.save(file_stream)  # save to stream
         file_stream.seek(0)  # reset pointer to head
         output["file_stream"] = file_stream
-        output["output_name"] = output_name
+        output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
     else:
         # serve information for website display
         delta = (comps_avg / 2) - pin_av
