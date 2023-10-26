@@ -29,7 +29,6 @@ describe("Search and compare flow", () => {
 
         comparables.forEach(({ street_number, street_name }) => {
           cy.get(".ant-table-content")
-            .last()
             .contains("td", `${street_number} ${street_name}`)
             .should("exist")
             .parent()

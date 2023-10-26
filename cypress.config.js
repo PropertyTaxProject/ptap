@@ -13,4 +13,5 @@ module.exports = defineConfig({
     baseUrl: process.env.BASE_URL || "http://localhost:5000",
     experimentalRunAllSpecs: true,
   },
+  defaultCommandTimeout: 10000,
 })
