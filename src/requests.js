@@ -47,7 +47,7 @@ export const submitAppeal = async (
 }
 
 export const submitEstimate = async (
-  targetProperty,
+  parcel,
   uuid,
   comparablesPool,
   selectedComparables
@@ -61,7 +61,7 @@ export const submitEstimate = async (
     today.getFullYear()
   try {
     const body = {
-      target_pin: targetProperty,
+      target_pin: parcel,
       comparablesPool,
       uuid,
       selectedComparables,
@@ -71,7 +71,10 @@ export const submitEstimate = async (
       responseType: download ? "blob" : "json",
     })
     if (download === true) {
-      saveAs(resp.data, `${targetProperty.Address + " " + date} Appendix.docx`)
+      saveAs(
+        resp.data,
+        `${parcel.street_number}_${parcel.street_name}_${date}_Appendix.docx`
+      )
     } else {
       console.log(resp)
     }

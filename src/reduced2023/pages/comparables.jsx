@@ -2,17 +2,11 @@ import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { submitEstimate, submitEstimate2 } from "../../requests"
 import { Form, Button, Table, Divider } from "antd"
+import { cleanParcel, DISPLAY_FIELDS } from "../../utils"
 
-const { Column } = Table
-const re = /(\b[a-z](?!\s))/g
-const createTitle = (title) =>
-  title.replace("_", " ").replace(re, (x) => x.toUpperCase())
-
-//show comparables
-const ComparablesTable = (props) => {
+const Comparables = (props) => {
   const {
     comparablesPool,
-    headers,
     propInfo,
     targetProperty,
     Uuid,
@@ -20,36 +14,20 @@ const ComparablesTable = (props) => {
     setEstimate,
   } = props
 
-  const [candidates, setCandidates] = useState([])
+  const candidates = comparablesPool.map(cleanParcel)
   const [selectedComparables, setSelected] = useState([])
   const [form] = Form.useForm()
 
-  if (
-    (candidates === undefined || candidates.length === 0) &&
-    selectedComparables.length === 0
-  ) {
-    setCandidates(comparablesPool) //initialize comparables pool
-  }
-
   const showSelected = selectedComparables.length > 0
 
-  const excludeColumns = [
-    "pin",
-    "total_sqft",
-    "total_acre",
-    "Total Floor Area",
-    "score",
-  ]
-
-  let Columns = []
-  for (const header of headers) {
-    if (excludeColumns.includes(header) === false) {
-      Columns.push(
-        <Column title={createTitle(header)} dataIndex={header} key={header} />
-      )
-    }
-  }
-  Columns = Columns.sort()
+  const targetColumns = DISPLAY_FIELDS.filter(
+    ({ title }) => title !== "Distance"
+  ).map(({ title, field }) => (
+    <Table.Column title={title} dataIndex={field} key={field} />
+  ))
+  const comparableColumns = DISPLAY_FIELDS.map(({ title, field }) => (
+    <Table.Column title={title} dataIndex={field} key={field} />
+  ))
 
   return (
     <>
@@ -60,8 +38,8 @@ const ComparablesTable = (props) => {
         similar homes, the City is over assessing your property value.
       </h2>
       <p>Below is the data that the Assessor has on file for your property.</p>
-      <Table dataSource={[targetProperty]} scroll={{ x: true }}>
-        {Columns}
+      <Table dataSource={[cleanParcel(targetProperty)]} scroll={{ x: true }}>
+        {targetColumns}
       </Table>
       {propInfo}
       <Divider />
@@ -74,16 +52,15 @@ const ComparablesTable = (props) => {
       </h2>
 
       <p>
-        {" "}
         <i>
           Tip: Make sure the property you select is not in much worse condition
           than your home. If you can, walk or drive by the property to check it
-          out.{" "}
+          out.
         </i>
       </p>
       <Table dataSource={candidates} scroll={{ x: true }}>
-        {Columns}
-        <Column
+        {comparableColumns}
+        <Table.Column
           title="Action"
           key="action"
           render={(record) => {
@@ -147,47 +124,11 @@ const ComparablesTable = (props) => {
   )
 }
 
-ComparablesTable.propTypes = {
-  comparablesPool: PropTypes.array,
-  headers: PropTypes.array,
-  propInfo: PropTypes.object,
-  targetProperty: PropTypes.string,
-  Uuid: PropTypes.string,
-  setStep: PropTypes.func,
-  setEstimate: PropTypes.func,
-}
-
-const Comparables = (props) => {
-  const {
-    comparablesPool,
-    headers,
-    targetProperty,
-    propInfo,
-    Uuid,
-    setStep,
-    setEstimate,
-  } = props
-
-  return (
-    <>
-      <ComparablesTable
-        propInfo={propInfo}
-        targetProperty={targetProperty}
-        comparablesPool={comparablesPool}
-        headers={headers}
-        Uuid={Uuid}
-        setStep={setStep}
-        setEstimate={setEstimate}
-      />
-    </>
-  )
-}
-
 Comparables.propTypes = {
   comparablesPool: PropTypes.array,
   headers: PropTypes.array,
   propInfo: PropTypes.object,
-  targetProperty: PropTypes.string,
+  targetProperty: PropTypes.object,
   Uuid: PropTypes.string,
   setStep: PropTypes.func,
   setEstimate: PropTypes.func,

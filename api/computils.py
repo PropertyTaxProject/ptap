@@ -9,8 +9,7 @@ from .models import CookParcel, DetroitParcel
 MILE_IN_METERS = 1609.34
 
 
-# TODO: Use this one instead
-def calculate_comps_alt(targ, region, sales_comps, multiplier):
+def calculate_comps(targ, region, sales_comps, multiplier):
     if region == "detroit":
         model = DetroitParcel
         floor_dif = 100 * multiplier
@@ -110,19 +109,25 @@ def calculate_comps_alt(targ, region, sales_comps, multiplier):
     elif region == "cook":
         diff_score = (
             func.abs(model_alias.age - int(targ["age"].values[0])) / 15
-            + func.abs(
-                model_alias.building_sq_ft - float(targ["building_sq_ft"].values[0])
+            + (
+                func.abs(
+                    model_alias.building_sq_ft - float(targ["building_sq_ft"].values[0])
+                )
+                / (float(targ["building_sq_ft"].values[0]) * 0.10)
             )
-            / (float(targ["building_sq_ft"].values[0]) * 0.10)
-            + func.abs(model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0]))
-            / (float(targ["land_sq_ft"].values[0]) * 0.10)
+            + (
+                func.abs(model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0]))
+                / (float(targ["land_sq_ft"].values[0]) * 0.10)
+            )
             + func.abs(model_alias.rooms - int(targ["rooms"].values[0])) / 1.5
-            + func.abs(model_alias.bedrooms - int(targ["bedrooms"].values[0])) / 1.5,
-            +func.abs(
-                model_alias.assessed_value - float(targ["assessed_value"].values[0])
+            + func.abs(model_alias.bedrooms - int(targ["bedrooms"].values[0])) / 1.5
+            + (
+                func.abs(
+                    model_alias.assessed_value - float(targ["assessed_value"].values[0])
+                )
+                / (float(targ["assessed_value"].values[0]) * 0.5)
             )
-            / (float(targ["assessed_value"].values[0]) * 0.5)
-            + literal_column("distance") / MILE_IN_METERS,
+            + literal_column("distance") / MILE_IN_METERS
         )
 
     # TODO: Modify weighting of distance
@@ -147,7 +152,7 @@ def calculate_comps_alt(targ, region, sales_comps, multiplier):
 
 def find_comps(targ, region, sales_comps, multiplier=1):
     multiplier = 8
-    new_targ, cur_comps = calculate_comps_alt(targ, region, sales_comps, multiplier)
+    new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
     # TODO: Fix this check
     if multiplier > 8:  # no comps found within maximum search area---hault
         raise Exception("Comparables not found with given search")

@@ -18,10 +18,14 @@ def submit_cook_sf(comp_submit, mail):
     download = False  # boolean to turn download on/off
 
     rename_dict = {
+        "address": "Address",
+        "bedrooms": "Beds",
+        "age": "Age",
+        "stories": "Stories",
         "assessed_value": "Assessed Value",
-        "building_sqft": "Square Footage",
-        "Exterior": "Exterior Material",
-        "Distance": "Dist.",
+        "building_sq_ft": "Square Footage",
+        "wall_material": "Exterior Material",
+        "distance": "Dist.",
     }
 
     t_df = pd.DataFrame([comp_submit["target_pin"]])
@@ -124,9 +128,10 @@ def submit_cook_sf(comp_submit, mail):
     log_url = record_final_submission(sub_dict)
     comp_submit['log_url'] = log_url
     """
-    comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
-        "PTAP_SHEET_SID"
-    )
+    if os.getenv("PTAP_SHEET_SID"):
+        comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
+            "PTAP_SHEET_SID"
+        )
 
     # send email
     cook_submission_email(mail, comp_submit)
@@ -142,23 +147,26 @@ def submit_detroit_sf(comp_submit, mail):
     download = False  # boolean to turn download on/off
 
     rename_dict = {
-        "PIN": "Parcel ID",
+        "pin": "Parcel ID",
+        "address": "Address",
         "assessed_value": "Assessed Value",
-        "total_acre": "Acres",
-        "total_floorarea": "Floor Area",
-        "total_sqft": "Square Footage (Abv. Ground)",
-        "Age": "Year Built",
-        "Exterior": "Exterior Material",
-        "Distance": "Dist.",
-        "Stories (not including basement)": "Number of Stories",
+        "total_acreage": "Acres",
+        "total_floor_area": "Floor Area",
+        "total_sq_ft": "Square Footage (Abv. Ground)",
+        "year_built": "Year Built",
+        "exterior_category": "Exterior Material",
+        "distance": "Dist.",
+        "stories": "Number of Stories",
+        "sale_price": "Sale Price",
+        "neighborhood": "Neighborhood",
+        "baths": "Baths",
+        "sale_date": "Sale Date",
     }
     t_df = pd.DataFrame([comp_submit["target_pin"]])
     comps_df = pd.DataFrame(comp_submit["comparables"])
     pin_av = t_df.assessed_value[0]
     pin = t_df.pin[0]
-    comps_avg = (
-        comps_df["Sale Price"].map(lambda x: float(x[1:].replace(",", ""))).mean()
-    )
+    comps_avg = comps_df["sale_price"].mean()
 
     # rename cols
     t_df = t_df.rename(columns=rename_dict)
@@ -236,7 +244,9 @@ def submit_detroit_sf(comp_submit, mail):
     targ = get_pin("detroit", pin)
 
     if comp_submit["validcharacteristics"] == "No":
-        c_flag = "Yes. Homeowner Input: " + comp_submit["characteristicsinput"]
+        c_flag = "Yes. Homeowner Input: " + (
+            comp_submit["characteristicsinput"] or "No"
+        )
     else:
         c_flag = "No"
 
@@ -252,7 +262,7 @@ def submit_detroit_sf(comp_submit, mail):
         "Eligibility Flag": comp_submit["eligibility"],
         "Characteristics Flag": c_flag,
         "SEV": str(pin_av),
-        "TV": targ["taxable_va"].to_string(index=False),
+        "TV": targ["taxable_value"].to_string(index=False),
         "CV": str(comps_avg),
     }
 

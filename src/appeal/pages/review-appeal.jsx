@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { Button, Divider, Table } from "antd"
 import { Link } from "react-router-dom"
 import PropertyInfo from "../shared/property-info"
+import { cleanParcel } from "../../utils"
 
 const userCols = [
   {
@@ -55,54 +56,31 @@ const compCols = [
   },
   {
     title: "Assessed Value",
-    dataIndex: "assessed_value",
-    key: "assessed_value",
+    dataIndex: "assessed_value_display",
+    key: "assessed_value_display",
   },
   {
     title: "Sale Price (if available)",
-    dataIndex: "Sale Price",
-    key: "Sale Price",
+    dataIndex: "sale_price_display",
+    key: "sale_price_display",
   },
   {
     title: "Sale Date",
-    dataIndex: "Sale Date",
-    key: "Sale Date",
+    dataIndex: "sale_date",
+    key: "sale_date",
   },
 ]
 
-const OtherInfo = (props) => {
-  const { confirmInfo, userInfo, comparables, back } = props
-
-  return (
-    <>
-      <h1>Your Information</h1>
-      <Table dataSource={[userInfo]} columns={userCols} />
-      <h1>Your Comparables</h1>
-      <p>
-        We automatically include comparables until five are selected here. This
-        can be changed later.
-      </p>
-      <Table dataSource={comparables} columns={compCols} />
-      <Button type="danger" onClick={back}>
-        Back
-      </Button>
-      <Button type="primary" onClick={confirmInfo}>
-        <Link to="/completedappeal">Finalize Application</Link>
-      </Button>
-    </>
-  )
-}
-
-OtherInfo.propTypes = {
-  confirmInfo: PropTypes.func,
-  userInfo: PropTypes.object,
-  comparables: PropTypes.array,
-  back: PropTypes.func,
-}
-
 const ReviewAppeal = (props) => {
-  const { targetProperty, propInfo, userInfo, comparables, confirmInfo, back } =
-    props
+  const {
+    city,
+    targetProperty,
+    propInfo,
+    userInfo,
+    comparables,
+    confirmInfo,
+    back,
+  } = props
   return (
     <>
       <h1>Your Appeal</h1>
@@ -116,18 +94,26 @@ const ReviewAppeal = (props) => {
         “back button” to make those changes.
       </p>
       <PropertyInfo
+        city={city}
         targetProperty={targetProperty}
         cols={5}
         propInfo={propInfo}
       />
       <Divider />
-      <OtherInfo
-        confirmInfo={confirmInfo}
-        propInfo={propInfo}
-        userInfo={userInfo}
-        comparables={comparables}
-        back={back}
-      />
+      <h1>Your Information</h1>
+      <Table dataSource={[userInfo]} columns={userCols} />
+      <h1>Your Comparables</h1>
+      <p>
+        We automatically include comparables until five are selected here. This
+        can be changed later.
+      </p>
+      <Table dataSource={comparables.map(cleanParcel)} columns={compCols} />
+      <Button type="danger" onClick={back}>
+        Back
+      </Button>
+      <Button type="primary" onClick={confirmInfo}>
+        <Link to="/completedappeal">Finalize Application</Link>
+      </Button>
       <br></br>
       <br></br>
       <p>Page 5 of 5</p>
@@ -136,6 +122,7 @@ const ReviewAppeal = (props) => {
 }
 
 ReviewAppeal.propTypes = {
+  city: PropTypes.string,
   targetProperty: PropTypes.object,
   propInfo: PropTypes.object,
   userInfo: PropTypes.object,

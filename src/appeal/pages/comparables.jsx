@@ -2,32 +2,27 @@ import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { Button, Table, Row, Col, Space, Divider } from "antd"
 import PropertyInfo from "../shared/property-info"
+import { cleanParcel, DISPLAY_FIELDS, DISPLAY_FIELDS_COOK } from "../../utils"
 
-const { Column } = Table
-const re = /(\b[a-z](?!\s))/g
-const createTitle = (title) =>
-  title.replace("_", " ").replace(re, (x) => x.toUpperCase())
+const Characteristics = (props) => {
+  const {
+    city,
+    comparablesPool,
+    targetProperty,
+    propInfo,
+    logComparables,
+    back,
+  } = props
 
-//show comparables
-const CharacteristicsTable = (props) => {
-  const { comparablesPool, headers, logComparables, back } = props
-
-  const [candidates, setCandidates] = useState([])
   const [selectedComparables, setSelected] = useState([])
-  const [showSelected, setShowSelected] = useState(false)
-
-  if (
-    (candidates === undefined || candidates.length === 0) &&
-    selectedComparables.length === 0
-  ) {
-    setCandidates(comparablesPool) //initialize comparables pool
-  }
-
-  if (selectedComparables.length > 0 && showSelected === false) {
-    setShowSelected(true) //show selected once one is selected
-  }
+  const showSelected = selectedComparables.length > 0
+  const selectedPins = selectedComparables.map(({ pin }) => pin)
+  const candidates = comparablesPool
+    .filter(({ pin }) => !selectedPins.includes(pin))
+    .map(cleanParcel)
 
   const advancePage = () => {
+    // TODO: Should remove likely
     //add up to exactly five on advance, update on submit
     while (selectedComparables.length < 5) {
       selectedComparables.push(comparablesPool.shift())
@@ -35,134 +30,15 @@ const CharacteristicsTable = (props) => {
     logComparables(selectedComparables)
   }
 
-  const excludeColumns = [
-    "pin",
-    "total_sqft",
-    "total_acre",
-    "Total Floor Area",
-    "score",
-  ]
-
-  let Columns = []
-  for (const header of headers) {
-    if (excludeColumns.includes(header) === false) {
-      Columns.push(
-        <Column title={createTitle(header)} dataIndex={header} key={header} />
-      )
-    }
-  }
-  Columns = Columns.sort()
-
-  return (
-    <>
-      {showSelected && (
-        <>
-          <h3>Your Selected Comparables</h3>
-          <p>
-            This table includes properties you have selected as comparables to
-            yours. Click &apos;Delete&apos; to remove the property from your
-            selection.
-          </p>
-        </>
-      )}
-      <Table
-        dataSource={selectedComparables}
-        scroll={{ x: true }}
-        style={showSelected ? { display: "" } : { display: "none" }}
-      >
-        {Columns}
-        <Column
-          title="Action"
-          key="action"
-          render={(record) => (
-            <Button
-              danger
-              onClick={() => {
-                setSelected(
-                  selectedComparables.filter(
-                    (candidate) => candidate.pin !== record.pin
-                  )
-                )
-                setCandidates(candidates.concat(record))
-              }}
-            >
-              Delete
-            </Button>
-          )}
-        />
-      </Table>
-      <h3>Properties Recently Sold Near You</h3>
-      <p>
-        This table includes properties which might be similar to yours. Click
-        &apos;Add&apos; to add the property to your selected comparables.
-      </p>
-      <Table dataSource={candidates} scroll={{ x: true }}>
-        {Columns}
-        <Column
-          title="Action"
-          key="action"
-          render={(record) => (
-            <Button
-              primary
-              onClick={() => {
-                if (selectedComparables.length >= 5) {
-                  alert(
-                    "You may only add up to 5 comparables. In order to continue adding this property, you must remove one you have already added."
-                  )
-                } else {
-                  setCandidates(
-                    candidates.filter(
-                      (candidate) => candidate.pin !== record.pin
-                    )
-                  )
-                  setSelected(selectedComparables.concat(record))
-                }
-              }}
-            >
-              Add
-            </Button>
-          )}
-        />
-      </Table>
-      <Space>
-        <Button type="danger" onClick={back}>
-          Back
-        </Button>
-        {showSelected && (
-          <Button type="primary" onClick={advancePage}>
-            Next Page
-          </Button>
-        )}
-        {showSelected === false && (
-          <Button type="primary" onClick={advancePage}>
-            Skip this step
-          </Button>
-        )}
-      </Space>
-    </>
-  )
-}
-
-CharacteristicsTable.propTypes = {
-  comparablesPool: PropTypes.array,
-  headers: PropTypes.array,
-  logComparables: PropTypes.array,
-  back: PropTypes.func,
-}
-
-const Characteristics = (props) => {
-  const {
-    comparablesPool,
-    headers,
-    targetProperty,
-    propInfo,
-    logComparables,
-    back,
-  } = props
+  const baseFields = city === "cook" ? DISPLAY_FIELDS_COOK : DISPLAY_FIELDS
+  const comparableColumns = baseFields.map(({ title, field }) => (
+    <Table.Column title={title} dataIndex={field} key={field} />
+  ))
 
   return (
     <>
       <PropertyInfo
+        city={city}
         targetProperty={targetProperty}
         cols={5}
         propInfo={propInfo}
@@ -185,12 +61,86 @@ const Characteristics = (props) => {
           </p>
         </Col>
       </Row>
-      <CharacteristicsTable
-        comparablesPool={comparablesPool}
-        headers={headers}
-        logComparables={logComparables}
-        back={back}
-      />
+      <>
+        {showSelected && (
+          <>
+            <h3>Your Selected Comparables</h3>
+            <p>
+              This table includes properties you have selected as comparables to
+              yours. Click &apos;Delete&apos; to remove the property from your
+              selection.
+            </p>
+          </>
+        )}
+        <Table
+          dataSource={selectedComparables}
+          scroll={{ x: true }}
+          style={showSelected ? { display: "" } : { display: "none" }}
+        >
+          {comparableColumns}
+          <Table.Column
+            title="Action"
+            key="action"
+            render={(record) => (
+              <Button
+                danger
+                onClick={() => {
+                  setSelected(
+                    selectedComparables.filter(
+                      (candidate) => candidate.pin !== record.pin
+                    )
+                  )
+                }}
+              >
+                Delete
+              </Button>
+            )}
+          />
+        </Table>
+        <h3>Properties Recently Sold Near You</h3>
+        <p>
+          This table includes properties which might be similar to yours. Click
+          &apos;Add&apos; to add the property to your selected comparables.
+        </p>
+        <Table dataSource={candidates} scroll={{ x: true }}>
+          {comparableColumns}
+          <Table.Column
+            title="Action"
+            key="action"
+            render={(record) => (
+              <Button
+                primary
+                onClick={() => {
+                  if (selectedComparables.length >= 5) {
+                    alert(
+                      "You may only add up to 5 comparables. In order to continue adding this property, you must remove one you have already added."
+                    )
+                  } else {
+                    setSelected(selectedComparables.concat(record))
+                  }
+                }}
+              >
+                Add
+              </Button>
+            )}
+          />
+        </Table>
+        <Space>
+          <Button type="danger" onClick={back}>
+            Back
+          </Button>
+          {showSelected && (
+            <Button type="primary" onClick={advancePage}>
+              Next Page
+            </Button>
+          )}
+          {showSelected === false && (
+            <Button type="primary" onClick={advancePage}>
+              Skip this step
+            </Button>
+          )}
+        </Space>
+      </>
       <br></br>
       <p>Page 4 of 5</p>
     </>
@@ -198,6 +148,7 @@ const Characteristics = (props) => {
 }
 
 Characteristics.propTypes = {
+  city: PropTypes.string,
   comparablesPool: PropTypes.array,
   headers: PropTypes.array,
   targetProperty: PropTypes.object,

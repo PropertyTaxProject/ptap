@@ -7,15 +7,14 @@ from flask_mail import Message
 def detroit_submission_email(mail, data):
     # email to ptap account with info
     name = data["name"]
-    addr = data["target_pin"]["Address"]
+    addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
     ptap = [os.getenv("PTAP_MAIL")]
     uofm = [os.getenv("UOFM_MAIL")]
 
     subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
     body = render_template(
-        "emails/submission_log.html",
-        {"name": name, "address": addr, "log_url": data["log_url"]},
+        "emails/submission_log.html", name=name, address=addr, log_url=data["log_url"]
     )
     msg = Message(subj, recipients=uofm, cc=ptap)
     msg.html = body
@@ -27,9 +26,7 @@ def detroit_submission_email(mail, data):
         )
     mail.send(msg)
 
-    body = render_template(
-        "emails/submission_detroit.html", {"name": name, "address": addr}
-    )
+    body = render_template("emails/submission_detroit.html", name=name, address=addr)
     msg2 = Message(subj, recipients=submit_email, reply_to=uofm[0])
     msg2.html = body
     mail.send(msg2)
@@ -39,15 +36,17 @@ def detroit_submission_email(mail, data):
 def cook_submission_email(mail, data):
     # email to ptap account with info
     name = data["name"]
-    addr = data["target_pin"]["Address"]
+    addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
-    ptap = [os.getenv("PTAP_MAIL")]
-    ptap_chi = [os.getenv("CHICAGO_MAIL")]
+    ptap = [os.getenv("PTAP_MAIL", "")]
+    ptap_chi = [os.getenv("CHICAGO_MAIL", "")]
 
     subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
     body = render_template(
         "emails/submission_log.html",
-        {"name": name, "address": addr, "log_url": data["log_url"]},
+        name=name,
+        address=addr,
+        log_url=data.get("log_url"),
     )
 
     msg = Message(subj, recipients=ptap_chi, cc=ptap)
@@ -61,9 +60,7 @@ def cook_submission_email(mail, data):
     mail.send(msg)
 
     # receipt to user
-    body = render_template(
-        "emails/submission_cook.html", {"name": name, "address": addr}
-    )
+    body = render_template("emails/submission_cook.html", name=name, address=addr)
     msg2 = Message(subj, recipients=submit_email, reply_to=ptap_chi[0])
     msg2.html = body
     mail.send(msg2)

@@ -91,6 +91,7 @@ const Appeal = (props) => {
   if (targetProperty != null) {
     view = (
       <ReviewProperty
+        city={city}
         targetProperty={targetProperty}
         propInfo={propInfo}
         submitPropReview={async (info) => {
@@ -110,6 +111,7 @@ const Appeal = (props) => {
   if (reviewComps != null) {
     view = (
       <ComparablesForm
+        city={city}
         comparablesPool={comparablesPool}
         headers={headers}
         targetProperty={targetProperty}
@@ -131,6 +133,7 @@ const Appeal = (props) => {
   if (reviewAppeal != null) {
     view = (
       <ReviewAppeal
+        city={city}
         targetProperty={targetProperty}
         propInfo={propInfo}
         userInfo={userInfo}

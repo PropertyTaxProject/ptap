@@ -130,12 +130,10 @@ def comparables(input_data, sales_comps=False):
     new_targ = new_targ.fillna("")
     cur_comps = cur_comps.fillna("")
 
-    # new_targ["sale_date"] = new_targ["sale_date"].apply(
-    #     lambda v: v.strftime("%Y-%m-%d")
-    # )
-    cur_comps["sale_date"] = cur_comps["sale_date"].apply(
-        lambda v: v.strftime("%Y-%m-%d")
-    )
+    if "sale_date" in cur_comps:
+        cur_comps["sale_date"] = cur_comps["sale_date"].apply(
+            lambda v: v.strftime("%Y-%m-%d")
+        )
     output["target_pin"] = new_targ.drop(["geom"], axis=1).to_dict(orient="records")
     output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(orient="records")
     output["labeled_headers"] = cur_comps.columns.tolist()
@@ -221,25 +219,25 @@ def process_estimate(form_data, download):
             comp_contents.append(
                 [
                     comp_rec["street_number"] + " " + comp_rec["street_name"],
-                    comp_rec["distance"],
-                    "{:,.0f}".format(comp_rec["sale_price"]),
+                    format_distance(comp_rec["distance"]),
+                    "${:,.0f}".format(comp_rec["sale_price"]),
                     comp_rec["sale_date"],
-                    comp_rec["baths"],
+                    format_baths(comp_rec["baths"]),
                     comp_rec["total_sq_ft"],
                     comp_rec["year_built"],
-                    comp_rec["exterior_category"],
-                    comp_rec["stories"],
+                    format_exterior_category(comp_rec["exterior_category"]),
+                    format_stories(comp_rec["stories"]),
                     comp_rec["neighborhood"],
                 ]
             )
 
         target_rec_base = t_df.to_dict(orient="records")[0]
         target_rec = [
-            target_rec_base["baths"],
+            format_baths(target_rec_base["baths"]),
             target_rec_base["total_sq_ft"],
             target_rec_base["year_built"],
-            target_rec_base["exterior_category"],
-            target_rec_base["stories"],
+            format_exterior_category(target_rec_base["exterior_category"]),
+            format_stories(target_rec_base["stories"]),
             target_rec_base["neighborhood"],
         ]
 
@@ -249,15 +247,15 @@ def process_estimate(form_data, download):
             + " "
             + target_rec_base["street_name"],
             "comp_address": comp_contents[0][0],
-            "comp_sale": "{:,.0f}".format(comp_records[0]["sale_price"]),
+            "comp_sale": "${:,.0f}".format(comp_records[0]["sale_price"]),
             "comp_date": comp_records[0]["sale_date"],
-            "current_sev": "{:,.0f}".format(pin_av),
+            "current_sev": "${:,.0f}".format(pin_av),
             "current_faircash": "${:,.0f}".format(pin_av * 2),
-            "contention_sev": "{:,.0f}".format(comps_avg / 2),
+            "contention_sev": "${:,.0f}".format(comps_avg / 2),
             "contention_faircash": "${:,.0f}".format(comps_avg),
             "target_labels": target_cols,
             "target_contents": [target_rec],
-            "target_contents2": comp_contents[:1],
+            "target_contents2": [comp_contents[0][4:]],
             "comp_labels": comp_labels,
             "comp_contents": comp_contents,
         }
@@ -334,3 +332,28 @@ def process_comps_input(comp_submit, mail):
 
     elif comp_submit["appeal_type"] == "cook_county_single_family":
         return submit_cook_sf(comp_submit, mail)
+
+
+def format_baths(baths):
+    return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(baths, baths)
+
+
+def format_exterior_category(exterior):
+    return {
+        1: "Siding",
+        2: "Brick/other",
+        3: "Brick",
+        4: "Other",
+    }.get(exterior, exterior)
+
+
+def format_distance(distance):
+    return round(distance / 1609.344, 2)
+
+
+def format_stories(stories):
+    return {
+        1: "1 to 1.5",
+        2: "1.5 to 2.5",
+        3: "3+",
+    }.get(stories, stories)

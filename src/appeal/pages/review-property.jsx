@@ -26,7 +26,7 @@ const formItemLayout = {
 }
 
 const Characteristics = (props) => {
-  const { targetProperty, submitPropReview, back } = props
+  const { city, targetProperty, submitPropReview, back } = props
 
   const [form] = Form.useForm()
   const [showCharInput, updateCharInput] = useState(false)
@@ -38,7 +38,7 @@ const Characteristics = (props) => {
 
   return (
     <>
-      <PropertyInfo targetProperty={targetProperty} cols={5} />
+      <PropertyInfo city={city} targetProperty={targetProperty} cols={5} />
       <Divider />
 
       <Form
@@ -101,6 +101,7 @@ const Characteristics = (props) => {
 }
 
 Characteristics.propTypes = {
+  city: PropTypes.string,
   targetProperty: PropTypes.string,
   submitPropReview: PropTypes.func,
   back: PropTypes.func,
