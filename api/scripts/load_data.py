@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlalchemy import text
 
-from api.api import application
+from api.api import app
 from api.db import db
 from api.models import CookParcel, DetroitParcel
 
@@ -12,7 +12,7 @@ DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database"
 )
 
-with application.app_context():
+with app.app_context():
     db.session.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
     db.session.commit()
     db.create_all()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                     geom=point,
                 )
             )
-        with application.app_context():
+        with app.app_context():
             db.session.bulk_save_objects(cook_parcels)
             db.session.commit()
 
@@ -120,6 +120,6 @@ if __name__ == "__main__":
                     geom=point,
                 )
             )
-        with application.app_context():
+        with app.app_context():
             db.session.bulk_save_objects(detroit_parcels)
             db.session.commit()

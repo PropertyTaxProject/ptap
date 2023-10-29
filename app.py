@@ -2,7 +2,7 @@ import json
 
 import awsgi
 
-from api.api import application
+from api.api import app
 
 
 def lambda_handler(event, context):
@@ -11,9 +11,9 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": json.dumps({"message": "warm"})}
 
     return awsgi.response(
-        application, event, context, base64_content_types={"application/octet-stream"}
+        app, event, context, base64_content_types={"application/octet-stream"}
     )
 
 
 if __name__ == "__main__":
-    application.run(host="0.0.0.0")
+    app.run(host="0.0.0.0")

@@ -13,4 +13,4 @@ COPY . ./
 
 ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
 
-CMD ["application.lambda_handler"]
+CMD ["app.lambda_handler"]

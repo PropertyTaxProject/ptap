@@ -8,7 +8,7 @@ To install Python dependencies and run locally, you'll need [Poetry](https://pyt
 
 ```
 poetry install
-poetry run python application.py
+poetry run python app.py
 ```
 
 ## Rebuild Frontend

@@ -28,39 +28,39 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
 )
 
-application = Flask(
+app = Flask(
     __name__,
     static_folder=os.path.join(STATIC_BUILD_DIR, "static"),
     template_folder="./templates/",
 )
-application.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-application.config["MAIL_SERVER"] = "smtp.sendgrid.net"
-application.config["MAIL_PORT"] = 587
-application.config["MAIL_USE_TLS"] = True
-application.config["MAIL_USERNAME"] = os.getenv("SENDGRID_USERNAME")
-application.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
-application.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
-application.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["MAIL_SERVER"] = "smtp.sendgrid.net"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.getenv("SENDGRID_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("SENDGRID_API_KEY")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
-# application.config["JSON_PROVIDER_CLASS"] = "api.json.SQLAlchemyJSONProvider"
+# app.config["JSON_PROVIDER_CLASS"] = "api.json.SQLAlchemyJSONProvider"
 # TODO: Figure this out
-# application.json_provider_class = SQLAlchemyJSONProvider
-# application.json = application.json_provider_class(application)
-# application.config["SQLALCHEMY_ECHO"] = True
+# app.json_provider_class = SQLAlchemyJSONProvider
+# app.json = app.json_provider_class(app)
+# app.config["SQLALCHEMY_ECHO"] = True
 
-db.init_app(application)
-
-
-CORS(application)
-mail = Mail(application)
+db.init_app(app)
 
 
-@application.route("/")
+CORS(app)
+mail = Mail(app)
+
+
+@app.route("/")
 def index():
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-@application.route("/api_v1/pin-lookup", methods=["POST"])
+@app.route("/api_v1/pin-lookup", methods=["POST"])
 def handle_form0():
     # get pin from address / send to owner input page
     print("pin finder submit")
@@ -76,7 +76,7 @@ def handle_form0():
     return resp
 
 
-@application.route("/api_v1/submit", methods=["POST"])
+@app.route("/api_v1/submit", methods=["POST"])
 def handle_form():
     # owner information submit / get comps / send to comps select page
     print("owner info submit")
@@ -90,7 +90,7 @@ def handle_form():
     return resp
 
 
-@application.route("/api_v1/submit2", methods=["POST"])
+@app.route("/api_v1/submit2", methods=["POST"])
 def handle_form2():
     # submit selected comps / finalize appeal / send to summary or complete page
     print("page 2 submit")
@@ -110,7 +110,7 @@ def handle_form2():
     return resp
 
 
-@application.route("/api_v1/estimates", methods=["POST"])
+@app.route("/api_v1/estimates", methods=["POST"])
 def handle_form3():
     # given pin and select comp, generate estimate/appendix file
     print("estimate submit")
@@ -125,7 +125,7 @@ def handle_form3():
     )
 
 
-@application.route("/api_v1/estimates2", methods=["POST"])
+@app.route("/api_v1/estimates2", methods=["POST"])
 def handle_form4():
     # given pin and select comp, generate estimate/appendix file
     print("estimate submit")
@@ -137,12 +137,12 @@ def handle_form4():
     return resp
 
 
-@application.errorhandler(404)
+@app.errorhandler(404)
 def page_not_found(error):
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-@application.errorhandler(Exception)
+@app.errorhandler(Exception)
 def handle_error(error):
     if isinstance(error, HTTPException):
         return error
