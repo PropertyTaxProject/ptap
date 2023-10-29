@@ -11,7 +11,9 @@ const PropertyInfo = (props) => {
     textAlign: "center",
   }
   const parcel = cleanParcel(targetProperty)
-  const baseFields = city === "cook" ? DISPLAY_FIELDS_COOK : DISPLAY_FIELDS
+  const baseFields = ["chicago", "cook"].includes(city)
+    ? DISPLAY_FIELDS_COOK
+    : DISPLAY_FIELDS
   const fields = baseFields.filter(({ title }) => title !== "Distance")
   return (
     <>

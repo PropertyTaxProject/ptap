@@ -83,7 +83,7 @@ export const DISPLAY_FIELDS_COOK = [
   },
   {
     title: "Exterior",
-    field: "wall_material_display",
+    field: "exterior_display",
   },
   {
     title: "Garage",
@@ -114,21 +114,22 @@ export function cleanParcel(parcel) {
   if (parcel.street_number && parcel.street_name) {
     parcel.address = `${parcel.street_number} ${parcel.street_name}`
   }
-  if (parcel.hasOwnProperty("exterior_category")) {
-    parcel.exterior_display = {
-      1: "Siding",
-      2: "Brick/other",
-      3: "Brick",
-      4: "Other",
-    }[parcel.exterior_category]
-  }
-  if (parcel.hasOwnProperty("wall_material")) {
-    parcel.wall_material_display = {
-      1: "Wood",
-      2: "Masonry",
-      3: "Wood/Masonry",
-      4: "Stucco",
-    }[+parcel.wall_material]
+  if (parcel.hasOwnProperty("exterior")) {
+    // Proxy for cook vs detroit
+    const exteriorMap = parcel.hasOwnProperty("building_sq_ft")
+      ? {
+          1: "Wood",
+          2: "Masonry",
+          3: "Wood/Masonry",
+          4: "Stucco",
+        }
+      : {
+          1: "Siding",
+          2: "Brick/other",
+          3: "Brick",
+          4: "Other",
+        }
+    parcel.exterior_display = exteriorMap[parcel.exterior]
   }
   if (parcel.hasOwnProperty("baths")) {
     parcel.baths_display = {
@@ -157,7 +158,7 @@ export function cleanParcel(parcel) {
     }[parcel.stories]
   }
   if (parcel.hasOwnProperty("basement")) {
-    parcel.basement_display = parcel.hasOwnProperty("wall_material")
+    parcel.basement_display = parcel.hasOwnProperty("exterior")
       ? parcel.basement
         ? "Full"
         : "Partial/None"

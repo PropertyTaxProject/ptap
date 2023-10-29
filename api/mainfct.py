@@ -219,7 +219,7 @@ def process_estimate(form_data, download):
                     format_baths(comp_rec["baths"]),
                     comp_rec["total_sq_ft"],
                     comp_rec["year_built"],
-                    format_exterior_category(comp_rec["exterior_category"]),
+                    format_exterior(comp_rec["exterior"]),
                     format_stories(comp_rec["stories"]),
                     comp_rec["neighborhood"],
                 ]
@@ -230,7 +230,7 @@ def process_estimate(form_data, download):
             format_baths(target_rec_base["baths"]),
             target_rec_base["total_sq_ft"],
             target_rec_base["year_built"],
-            format_exterior_category(target_rec_base["exterior_category"]),
+            format_exterior(target_rec_base["exterior"]),
             format_stories(target_rec_base["stories"]),
             target_rec_base["neighborhood"],
         ]
@@ -331,7 +331,7 @@ def format_baths(baths):
     return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(baths, baths)
 
 
-def format_exterior_category(exterior):
+def format_exterior(exterior):
     return {
         1: "Siding",
         2: "Brick/other",

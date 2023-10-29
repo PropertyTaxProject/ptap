@@ -1,6 +1,6 @@
 import pandas as pd
 from geoalchemy2.functions import ST_DistanceSphere
-from sqlalchemy import func, literal_column
+from sqlalchemy import Integer, func, literal_column
 from sqlalchemy.orm import aliased
 
 from .db import db
@@ -29,10 +29,12 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
     # construct query
     pin_val = targ["pin"].values[0]
+
+    # Not using a query for the absolute value on the diff so that we can take advantage
+    # of the compound index scan, which isn't triggered for abs()
     query_filters = [
         model.pin != pin_val,
-        model.age >= int(targ["age"].values[0]) - age_dif,
-        model.age <= int(targ["age"].values[0]) + age_dif,
+        *min_max_query(model, "age", int, targ["age"].values[0], age_dif),
     ]
 
     if sales_comps:
@@ -52,30 +54,42 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     if region == "detroit":
         query_filters.extend(
             [
-                model.total_floor_area
-                >= float(targ["total_floor_area"].values[0]) - floor_dif,
-                model.total_floor_area
-                <= float(targ["total_floor_area"].values[0]) + floor_dif,
-                model.exterior_category == int(targ["exterior_category"].values[0]),
+                *min_max_query(
+                    model,
+                    "total_floor_area",
+                    float,
+                    targ["total_floor_area"].values[0],
+                    floor_dif,
+                ),
+                model.exterior == int(targ["exterior"].values[0]),
             ]
         )
     elif region == "cook":
         query_filters.extend(
             [
                 model.property_class == targ["property_class"].values[0],
-                model.building_sq_ft
-                >= float(targ["building_sq_ft"].values[0]) - build_dif,
-                model.building_sq_ft
-                <= float(targ["building_sq_ft"].values[0]) + build_dif,
-                model.land_sq_ft >= float(targ["land_sq_ft"].values[0]) - land_dif,
-                model.land_sq_ft <= float(targ["land_sq_ft"].values[0]) + land_dif,
-                model.rooms >= int(targ["rooms"].values[0]) - rooms_dif,
-                model.rooms <= int(targ["rooms"].values[0]) + rooms_dif,
-                model.bedrooms >= int(targ["bedrooms"].values[0]) - bedroom_dif,
-                model.bedrooms <= int(targ["bedrooms"].values[0]) + bedroom_dif,
-                model.assessed_value >= int(targ["assessed_value"].values[0]) - av_dif,
-                model.assessed_value <= int(targ["assessed_value"].values[0]) + av_dif,
-                model.wall_material == targ["wall_material"].values[0],
+                *min_max_query(
+                    model,
+                    "building_sq_ft",
+                    float,
+                    targ["building_sq_ft"].values[0],
+                    build_dif,
+                ),
+                *min_max_query(
+                    model, "land_sq_ft", float, targ["land_sq_ft"].values[0], land_dif
+                ),
+                *min_max_query(model, "rooms", int, targ["rooms"].values[0], rooms_dif),
+                *min_max_query(
+                    model, "bedrooms", int, targ["bedrooms"].values[0], bedroom_dif
+                ),
+                *min_max_query(
+                    model,
+                    "assessed_value",
+                    int,
+                    targ["assessed_value"].values[0],
+                    av_dif,
+                ),
+                model.exterior == int(targ["exterior"].values[0]),
                 model.stories == int(targ["stories"].values[0]),
                 model.basement == bool(targ["basement"].values[0]),
                 model.garage == bool(targ["garage"].values[0]),
@@ -96,19 +110,25 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         .subquery()
     )
     model_alias = aliased(model, distance_subquery)
-    diff_score = None
+
+    # TODO: dist_weight 1, valuation weight 3, neighborhood match detroit
+    diff_score = (
+        literal_column("distance") / MILE_IN_METERS
+        + func.abs(model_alias.age - int(targ["age"].values[0])) / 15
+    )
+
     if region == "detroit":
         diff_score = (
-            func.abs(
+            diff_score
+            + func.abs(
                 model_alias.total_floor_area - float(targ["total_floor_area"].values[0])
             )
             / 100
-            + func.abs(model_alias.age - int(targ["age"].values[0])) / 15
-            + literal_column("distance") / MILE_IN_METERS
+            - (model_alias.neighborhood == targ["neighborhood"].values[0]).cast(Integer)
         )
     elif region == "cook":
         diff_score = (
-            func.abs(model_alias.age - int(targ["age"].values[0])) / 15
+            diff_score
             + (
                 func.abs(
                     model_alias.building_sq_ft - float(targ["building_sq_ft"].values[0])
@@ -127,10 +147,8 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 )
                 / (float(targ["assessed_value"].values[0]) * 0.5)
             )
-            + literal_column("distance") / MILE_IN_METERS
         )
 
-    # TODO: Modify weighting
     query = (
         db.session.query(
             aliased(model, distance_subquery),
@@ -142,7 +160,9 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         .limit(10)
     )
 
-    result = pd.DataFrame([{**m.as_dict(), "distance": d} for (m, d, _) in query])
+    result = pd.DataFrame(
+        [{**m.as_dict(), "distance": d, "diff_score": s} for (m, d, s) in query]
+    )
 
     if region == "detroit":
         return targ, result
@@ -151,10 +171,18 @@ def calculate_comps(targ, region, sales_comps, multiplier):
 
 
 def find_comps(targ, region, sales_comps, multiplier=1):
-    multiplier = 8
+    multiplier = 4
     new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
     # TODO: Fix this check
-    if multiplier > 8:  # no comps found within maximum search area---hault
+    if multiplier > 4:  # no comps found within maximum search area---hault
         raise Exception("Comparables not found with given search")
     else:  # return best comps
         return new_targ, cur_comps
+
+
+# Using this rather than func.abs to make sure compound index is used
+def min_max_query(model, attr, type_, value, diff):
+    return [
+        getattr(model, attr) >= type_(value) - diff,
+        getattr(model, attr) <= type_(value) + diff,
+    ]

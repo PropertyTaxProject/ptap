@@ -24,7 +24,7 @@ def submit_cook_sf(comp_submit, mail):
         "stories": "Stories",
         "assessed_value": "Assessed Value",
         "building_sq_ft": "Square Footage",
-        "wall_material": "Exterior Material",
+        "exterior": "Exterior Material",
         "distance": "Dist.",
     }
 
@@ -152,7 +152,7 @@ def submit_detroit_sf(comp_submit, mail):
         "total_floor_area": "Floor Area",
         "total_sq_ft": "Square Footage (Abv. Ground)",
         "year_built": "Year Built",
-        "exterior_category": "Exterior Material",
+        "exterior": "Exterior Material",
         "distance": "Dist.",
         "stories": "Number of Stories",
         "sale_price": "Sale Price",

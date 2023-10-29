@@ -30,7 +30,9 @@ const Characteristics = (props) => {
     logComparables(selectedComparables)
   }
 
-  const baseFields = city === "cook" ? DISPLAY_FIELDS_COOK : DISPLAY_FIELDS
+  const baseFields = ["cook", "chicago"].includes(city)
+    ? DISPLAY_FIELDS_COOK
+    : DISPLAY_FIELDS
   const comparableColumns = baseFields.map(({ title, field }) => (
     <Table.Column title={title} dataIndex={field} key={field} />
   ))

@@ -30,18 +30,18 @@ class CookParcel(db.Model):
     street_number = db.Column(db.String(64), index=True)
     street_name = db.Column(db.String(64), index=True)
     neighborhood = db.Column(db.String(64), index=True)
+    assessed_value = db.Column(db.Float)
     sale_price = db.Column(db.Float)
     sale_year = db.Column(db.Integer)
-    assessed_value = db.Column(db.Float)
     property_class = db.Column(db.String(10))
     age = db.Column(db.Integer)
     building_sq_ft = db.Column(db.Float)
     land_sq_ft = db.Column(db.Float)
     price_per_sq_ft = db.Column(db.Float)
+    stories = db.Column(db.Integer)
     rooms = db.Column(db.Integer)
     bedrooms = db.Column(db.Integer)
-    wall_material = db.Column(db.String(32))
-    stories = db.Column(db.Integer)
+    exterior = db.Column(db.Integer)
     basement = db.Column(db.Boolean)
     garage = db.Column(db.Boolean)
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
@@ -60,7 +60,7 @@ class CookParcel(db.Model):
             "rooms",
             "bedrooms",
             "assessed_value",
-            "wall_material",
+            "exterior",
             "stories",
             "basement",
             "garage",
@@ -88,9 +88,9 @@ class DetroitParcel(db.Model):
     total_floor_area = db.Column(db.Float)
     stories = db.Column(db.Integer)
     baths = db.Column(db.Integer)
-    exterior_category = db.Column(db.Integer)
     basement = db.Column(db.Boolean)
     garage = db.Column(db.Boolean)
+    exterior = db.Column(db.Integer)
     taxpayer = db.Column(db.String(128))
     homestead_exemption = db.Column(db.String(64))
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
@@ -104,6 +104,6 @@ class DetroitParcel(db.Model):
             "sale_price",
             "sale_year",
             "total_floor_area",
-            "exterior_category",
+            "exterior",
         ),
     )
