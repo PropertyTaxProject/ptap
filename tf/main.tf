@@ -189,6 +189,42 @@ module "s3" {
   }
 }
 
+data "aws_iam_policy_document" "s3_uploads_public" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    actions   = ["s3:GetObject"]
+    resources = ["${module.s3_uploads.s3_bucket_arn}/*"]
+  }
+}
+
+module "s3_uploads" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.15.1"
+
+  bucket        = "${local.name}-testing-uploads"
+  acl           = "public-read"
+  attach_policy = true
+  policy        = data.aws_iam_policy_document.s3_uploads_public.json
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+
+  cors_rule = [
+    {
+      allowed_methods = ["GET", "PUT", "POST"],
+      allowed_origins = ["*"]
+    }
+  ]
+}
+
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.6.0"
@@ -250,6 +286,18 @@ module "lambda" {
 
   image_uri = "${module.ecr.repository_url}:${var.lambda_image_tag}"
 
+  attach_policy_json = true
+  policy_json = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Action"   = ["s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl"],
+        "Effect"   = "Allow",
+        "Resource" = [module.s3_uploads.s3_bucket_arn, "${module.s3_uploads.s3_bucket_arn}/*"]
+      }
+    ]
+  })
+
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {
       service = "apigateway"
@@ -267,6 +315,7 @@ module "lambda" {
     SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value,
     SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value,
     GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
+    S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
     DATABASE_URL            = "postgresql+psycopg2://${local.db_username}:${local.db_password}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER     = "test@example.com",
     PTAP_MAIL               = "test@example.com",

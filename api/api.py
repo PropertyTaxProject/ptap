@@ -1,6 +1,8 @@
 import os
 import time
+import uuid
 
+import boto3
 import sentry_sdk
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
@@ -135,6 +137,17 @@ def handle_form4():
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
+
+
+@app.route("/api/upload", methods=["POST"])
+def handle_upload():
+    s3_client = boto3.client("s3")
+    s3_key = f"{uuid.uuid4()}/{request.json['filename']}"
+    return jsonify(
+        s3_client.generate_presigned_post(
+            os.getenv("S3_UPLOADS_BUCKET"), s3_key, ExpiresIn=3600
+        )
+    )
 
 
 @app.errorhandler(404)
