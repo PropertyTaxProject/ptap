@@ -1,7 +1,5 @@
 FROM python:3.11-slim-bullseye
 
-# TODO: Figure out asset building in here
-
 RUN apt-get update -y && \
     apt-get install -y gcc libpq-dev gdal-bin
 

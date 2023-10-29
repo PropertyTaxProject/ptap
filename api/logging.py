@@ -31,7 +31,6 @@ if os.getenv("GOOGLE_SERVICE_ACCOUNT"):
 
 
 # TODO: Parse logs from CloudWatch and submit those to Google instead?
-# TODO: Run in background process
 def record_log(uuid_val, process_step_id, exception, form_data):
     if gsheet_logs is None or not LOGGING_ENABLED:
         return

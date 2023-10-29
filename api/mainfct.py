@@ -13,7 +13,6 @@ from .dataqueries import address_candidates_query, ecdf, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
 
 
-# TODO: fuzzy string search
 # TODO: Pydantic to enforce types on input? https://pypi.org/project/Flask-Pydantic/
 def address_candidates(input_data, cutoff_info):
     """
@@ -46,8 +45,6 @@ def address_candidates(input_data, cutoff_info):
     #     selected = prettify_cook(selected, False)
 
     selected["eligible"] = selected.assessed_value <= cutoff
-    # TODO: Is this still needed?
-    # selected.dropna(axis=0, inplace=True)
     # Don't need this to be returned so dropping
     selected.drop("geom", axis=1, inplace=True)
     selected.replace({np.nan: None}, inplace=True)
@@ -58,7 +55,6 @@ def address_candidates(input_data, cutoff_info):
     return output
 
 
-# TODO: This is the entrypoint that needs to be modified
 def comparables(input_data, sales_comps=False):
     """
     Returns comparables

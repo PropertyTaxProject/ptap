@@ -23,7 +23,6 @@ def ecdf(x):
 # TODO: autocomplete/typeahead?
 # sql query things
 def address_candidates_query(region, st_num):
-    # TODO: Fix this
     model = None
     if region == "cook":
         model = CookParcel
