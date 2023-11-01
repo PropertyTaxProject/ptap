@@ -28,9 +28,6 @@ locals {
   tags = {
     project = "ptap"
   }
-
-  db_username = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["username"]
-  db_password = jsondecode(data.aws_secretsmanager_secret_version.db.secret_string)["password"]
 }
 
 module "iam_github_oidc_provider" {
@@ -102,11 +99,6 @@ resource "aws_iam_policy" "read_access" {
         Action   = ["ssm:Get*"],
         Effect   = "Allow",
         Resource = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/*"
-      },
-      {
-        Action   = ["secretsmanager:GetSecretValue"],
-        Effect   = "Allow",
-        Resource = [module.rds.db_instance_master_user_secret_arn, "${module.rds.db_instance_master_user_secret_arn}*"]
       },
       {
         Action   = ["rds:ListTagsForResource"],
@@ -219,8 +211,10 @@ module "s3_uploads" {
 
   cors_rule = [
     {
-      allowed_methods = ["GET", "PUT", "POST"],
+      allowed_methods = ["HEAD", "GET", "PUT", "POST"]
+      allowed_headers = ["*"]
       allowed_origins = ["*"]
+      max_age_seconds = 3600
     }
   ]
 }
@@ -273,6 +267,14 @@ data "aws_ssm_parameter" "google_service_account" {
   name = "/${local.name}/google_service_account"
 }
 
+data "aws_ssm_parameter" "db_username" {
+  name = "/${local.name}/db_username"
+}
+
+data "aws_ssm_parameter" "db_password" {
+  name = "/${local.name}/db_password"
+}
+
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
@@ -316,7 +318,7 @@ module "lambda" {
     SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value,
     GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
     S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
-    DATABASE_URL            = "postgresql+psycopg2://${local.db_username}:${local.db_password}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
+    DATABASE_URL            = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER     = "test@example.com",
     PTAP_MAIL               = "test@example.com",
     UOFM_MAIL               = "test@example.com",
@@ -381,10 +383,6 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
 
-data "aws_secretsmanager_secret_version" "db" {
-  secret_id = module.rds.db_instance_master_user_secret_arn
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -430,8 +428,12 @@ module "rds" {
   allocated_storage     = 5
   max_allocated_storage = 20
 
-  db_name = local.name
-  port    = 5432
+  db_name  = local.name
+  port     = 5432
+  username = data.aws_ssm_parameter.db_username.value
+  password = data.aws_ssm_parameter.db_password.value
+
+  manage_master_user_password = false
 
   multi_az               = false
   db_subnet_group_name   = module.vpc.database_subnet_group
