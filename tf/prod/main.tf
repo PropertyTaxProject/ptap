@@ -1,10 +1,9 @@
 terraform {
   required_version = ">= 1.0"
 
-  # TODO:
   backend "s3" {
-    bucket = "pjsier-ptap-testing-terraform-state"
-    key    = "ptap/terraform.tfstate"
+    bucket = "ptap-terraform-state"
+    key    = "production/terraform.tfstate"
     region = "us-east-1"
   }
 
@@ -24,12 +23,46 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  name = "ptap"
+  name            = "ptap"
+  env             = "prod"
+  state_bucket    = "ptap-terraform-state"
+  github_subjects = ["pjsier/ptap:*"] # TODO:
+
   tags = {
-    project = "ptap"
+    project     = local.name
+    environment = local.env
   }
 }
 
+data "aws_ssm_parameter" "secret_key" {
+  name = "/${local.name}/${local.env}/secret_key"
+}
+
+data "aws_ssm_parameter" "sendgrid_username" {
+  name = "/${local.name}/${local.env}/sendgrid_username"
+}
+
+data "aws_ssm_parameter" "sendgrid_api_key" {
+  name = "/${local.name}/${local.env}/sendgrid_api_key"
+}
+
+data "aws_ssm_parameter" "sentry_dsn" {
+  name = "/${local.name}/${local.env}/sentry_dsn"
+}
+
+data "aws_ssm_parameter" "google_service_account" {
+  name = "/${local.name}/${local.env}/google_service_account"
+}
+
+data "aws_ssm_parameter" "db_username" {
+  name = "/${local.name}/${local.env}/db_username"
+}
+
+data "aws_ssm_parameter" "db_password" {
+  name = "/${local.name}/${local.env}/db_password"
+}
+
+# Use OIDC across multiple environments
 module "iam_github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
   version = "5.30.0"
@@ -44,10 +77,9 @@ resource "aws_iam_policy" "update_access" {
       {
         Action = ["s3:*"]
         Effect = "Allow"
-        # TODO: Update this
         Resource = [
-          "arn:aws:s3:::pjsier-ptap-testing-terraform-state",
-          "arn:aws:s3:::pjsier-ptap-testing-terraform-state/*"
+          "arn:aws:s3:::${local.state_bucket}",
+          "arn:aws:s3:::${local.state_bucket}/*"
         ]
       },
       {
@@ -56,8 +88,8 @@ resource "aws_iam_policy" "update_access" {
         ]
         Effect = "Allow"
         Resource = [
-          module.lambda.lambda_function_arn,
-          "${module.lambda.lambda_function_arn}:*"
+          "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.name}*",
+          "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.name}*:*"
         ]
       },
       {
@@ -66,8 +98,8 @@ resource "aws_iam_policy" "update_access" {
         ]
         Effect = "Allow"
         Resource = [
-          module.s3.s3_bucket_arn,
-          "${module.s3.s3_bucket_arn}/*"
+          "arn:aws:s3:::${local.name}*",
+          "arn:aws:s3:::${local.name}*/*"
         ]
       },
     ]
@@ -138,7 +170,7 @@ module "iam_github_oidc_role" {
   version = "5.30.0"
 
   name     = "${local.name}-terraform-github-role"
-  subjects = ["pjsier/ptap:*"] # TODO:
+  subjects = local.github_subjects
 
   policies = {
     UpdateAccess = aws_iam_policy.update_access.arn
@@ -163,7 +195,7 @@ module "s3" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.15.1"
 
-  bucket        = "${local.name}-testing-assets"
+  bucket        = "${local.name}-${local.env}-assets"
   acl           = "public-read"
   attach_policy = true
   policy        = data.aws_iam_policy_document.s3_public.json
@@ -196,7 +228,7 @@ module "s3_uploads" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.15.1"
 
-  bucket        = "${local.name}-testing-uploads"
+  bucket        = "${local.name}-${local.env}-uploads"
   acl           = "public-read"
   attach_policy = true
   policy        = data.aws_iam_policy_document.s3_uploads_public.json
@@ -219,6 +251,7 @@ module "s3_uploads" {
   ]
 }
 
+# Use for both environments
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.6.0"
@@ -231,11 +264,25 @@ module "ecr" {
     rules = [
       {
         rulePriority = 1,
-        description  = "Keep last 10 images",
+        description  = "Keep last 10 prod images",
         selection = {
-          tagStatus   = "any",
-          countType   = "imageCountMoreThan",
-          countNumber = 10
+          tagStatus     = "tagged",
+          tagPrefixList = ["prod-"],
+          countType     = "imageCountMoreThan",
+          countNumber   = 10
+        },
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 2,
+        description  = "Keep last 10 dev images",
+        selection = {
+          tagStatus     = "tagged",
+          tagPrefixList = ["dev-"],
+          countType     = "imageCountMoreThan",
+          countNumber   = 10
         },
         action = {
           type = "expire"
@@ -247,39 +294,11 @@ module "ecr" {
   tags = local.tags
 }
 
-data "aws_ssm_parameter" "secret_key" {
-  name = "/${local.name}/secret_key"
-}
-
-data "aws_ssm_parameter" "sendgrid_username" {
-  name = "/${local.name}/sendgrid_username"
-}
-
-data "aws_ssm_parameter" "sendgrid_api_key" {
-  name = "/${local.name}/sendgrid_api_key"
-}
-
-data "aws_ssm_parameter" "sentry_dsn" {
-  name = "/${local.name}/sentry_dsn"
-}
-
-data "aws_ssm_parameter" "google_service_account" {
-  name = "/${local.name}/google_service_account"
-}
-
-data "aws_ssm_parameter" "db_username" {
-  name = "/${local.name}/db_username"
-}
-
-data "aws_ssm_parameter" "db_password" {
-  name = "/${local.name}/db_password"
-}
-
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
 
-  function_name  = local.name
+  function_name  = "${local.name}-${local.env}"
   package_type   = "Image"
   create_package = false
   publish        = true
@@ -324,19 +343,20 @@ module "lambda" {
     UOFM_MAIL               = "test@example.com",
     CHICAGO_MAIL            = "test@example.com",
     PTAP_SHEET_SID          = "",
+    ENVIRONMENT             = local.env
   }
 
   tags = local.tags
 }
 
 resource "aws_cloudwatch_event_rule" "keep_warm" {
-  name                = "${local.name}-keep-lambda-warm"
+  name                = "${local.name}-${local.env}-keep-lambda-warm"
   schedule_expression = "rate(5 minutes)"
 }
 
 resource "aws_cloudwatch_event_target" "keep_warm" {
   rule      = aws_cloudwatch_event_rule.keep_warm.name
-  target_id = local.name
+  target_id = "${local.name}-${local.env}"
   arn       = module.lambda.lambda_function_arn
 }
 
@@ -344,7 +364,7 @@ module "apigw" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "2.2.2"
 
-  name          = local.name
+  name          = "${local.name}-${local.env}"
   protocol_type = "HTTP"
 
   cors_configuration = {
@@ -376,6 +396,8 @@ module "apigw" {
 
   tags = local.tags
 }
+
+# Reuse for multiple environments
 data "aws_availability_zones" "available" {}
 
 locals {

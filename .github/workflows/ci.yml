@@ -114,7 +114,7 @@ jobs:
 
       - name: Download and restore database
         env:
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_BUCKET: ptap-dev-assets
           DATABASE_URL: postgresql://ptap:postgres@localhost:${{ job.services.postgres.ports[5432] }}/ptap
         run: |
           make download-data
@@ -152,6 +152,9 @@ jobs:
     # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
+    env:
+      DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -172,16 +175,16 @@ jobs:
           restore-keys: |
             npm-
 
-      - name: Build assets for production
+      - name: Build assets for ${{ env.DEPLOY_ENV }}
         env:
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
-          PUBLIC_URL: https://${{ vars.S3_BUCKET }}.s3.amazonaws.com
+          S3_BUCKET: ptap-${{ env.DEPLOY_ENV }}-assets
+          PUBLIC_URL: https://ptap-${{ env.DEPLOY_ENV }}-assets.s3.amazonaws.com
         run: |
           npm ci --prefer-offline --no-audit --no-optional
           npm run build
 
       - env:
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_BUCKET: ptap-${{ env.DEPLOY_ENV }}-assets
         run: aws s3 cp ./build/ s3://$S3_BUCKET/ --cache-control no-cache --recursive
 
       - name: Login to Amazon ECR
@@ -193,7 +196,7 @@ jobs:
         continue-on-error: true
         env:
           REPOSITORY: ptap
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ env.DEPLOY_ENV}}-${{ github.sha }}
         run: aws ecr describe-images --repository-name=$REPOSITORY --image-ids=imageTag=$IMAGE_TAG
 
       - name: Build, tag, and push docker image to ECR
@@ -211,7 +214,7 @@ jobs:
           terraform_version: 1.1.7
 
       - name: Update Lambda with Terraform
-        working-directory: ./tf
+        working-directory: ./tf/${{ env.DEPLOY_ENV }}
         env:
           TF_VAR_lambda_image_tag: ${{ github.sha }}
         run: |

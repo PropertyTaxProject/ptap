@@ -25,6 +25,7 @@ STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "build")
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
+    environment=os.getenv("ENVIRONMENT", "dev"),
     integrations=[AwsLambdaIntegration(), FlaskIntegration()],
     traces_sample_rate=1.0,
     profiles_sample_rate=1.0,
