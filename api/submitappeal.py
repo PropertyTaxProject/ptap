@@ -15,7 +15,6 @@ def submit_cook_sf(comp_submit, mail):
     Output:
     Word Document
     """
-    download = False  # boolean to turn download on/off
 
     rename_dict = {
         "address": "Address",
@@ -95,7 +94,6 @@ def submit_cook_sf(comp_submit, mail):
     file_stream = io.BytesIO()
     doc.save(file_stream)  # save to stream
     file_stream.seek(0)  # reset pointer to head
-    output["file_stream"] = file_stream
     comp_submit["file_stream"] = file_stream
     """
     # update submission log
@@ -141,7 +139,6 @@ def submit_detroit_sf(comp_submit, mail):
     Output:
     Word Document
     """
-    download = False  # boolean to turn download on/off
 
     rename_dict = {
         "pin": "Parcel ID",
@@ -230,7 +227,6 @@ def submit_detroit_sf(comp_submit, mail):
     file_stream = io.BytesIO()
     doc.save(file_stream)  # save to stream
     file_stream.seek(0)  # reset pointer to head
-    output["file_stream"] = file_stream
     comp_submit["file_stream"] = file_stream
 
     # update submission log
