@@ -183,7 +183,6 @@ module "lambda" {
 
   environment_variables = {
     ENVIRONMENT             = local.env
-    LOGGING_ENABLED         = "true"
     SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
     SENDGRID_USERNAME       = data.aws_ssm_parameter.sendgrid_username.value
     SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value
@@ -196,6 +195,7 @@ module "lambda" {
     PTAP_MAIL               = "test@example.com"
     UOFM_MAIL               = "test@example.com"
     CHICAGO_MAIL            = "test@example.com"
+    # GOOGLE_LOGGING_ENABLED  = "true"
   }
 
   tags = local.tags

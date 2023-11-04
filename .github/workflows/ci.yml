@@ -196,7 +196,7 @@ jobs:
         continue-on-error: true
         env:
           REPOSITORY: ptap
-          IMAGE_TAG: ${{ env.DEPLOY_ENV}}-${{ github.sha }}
+          IMAGE_TAG: ${{ env.DEPLOY_ENV }}-${{ github.sha }}
         run: aws ecr describe-images --repository-name=$REPOSITORY --image-ids=imageTag=$IMAGE_TAG
 
       - name: Build, tag, and push docker image to ECR
@@ -204,7 +204,7 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ptap
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ env.DEPLOY_ENV }}-${{ github.sha }}
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
@@ -216,7 +216,7 @@ jobs:
       - name: Update Lambda with Terraform
         working-directory: ./tf/${{ env.DEPLOY_ENV }}
         env:
-          TF_VAR_lambda_image_tag: ${{ github.sha }}
+          TF_VAR_lambda_image_tag: ${{ env.DEPLOY_ENV }}-${{ github.sha }}
         run: |
           terraform init
           terraform apply -auto-approve

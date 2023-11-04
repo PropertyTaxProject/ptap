@@ -65,7 +65,7 @@ def record_log(uuid_val, process_step_id, exception, form_data):
 
 
 def record_final_submission(sub_dict):
-    if gsheet_submission is None or not LOGGING_ENABLED:
+    if gsheet_submission is None:
         return
 
     # add values
