@@ -27,7 +27,7 @@ if os.getenv("GOOGLE_SERVICE_ACCOUNT"):
     client = gspread.authorize(credentials)
     gsheet_logs = client.open("Copy of ptap-log").sheet1
 
-    # gsheet_submission = client.open("PTAP_Submissions").sheet1
+    gsheet_submission = client.open("PTAP_Submissions").sheet1
 
 
 # TODO: Parse logs from CloudWatch and submit those to Google instead?

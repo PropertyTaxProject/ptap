@@ -62,6 +62,10 @@ data "aws_ssm_parameter" "db_password" {
   name = "/${local.name}/${local.env}/db_password"
 }
 
+data "aws_ssm_parameter" "google_sheet_sid" {
+  name = "/${local.name}/${local.env}/google_sheet_sid"
+}
+
 # Use OIDC across multiple environments
 module "iam_github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
@@ -331,19 +335,20 @@ module "lambda" {
   }
 
   environment_variables = {
+    ENVIRONMENT             = local.env
+    LOGGING_ENABLED         = "true"
     SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
     SENDGRID_USERNAME       = data.aws_ssm_parameter.sendgrid_username.value
-    SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value,
-    SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value,
+    SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value
+    SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value
     GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
+    GOOGLE_SHEET_SID        = data.aws_ssm_parameter.google_sheet_sid.value
     S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
     DATABASE_URL            = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
-    MAIL_DEFAULT_SENDER     = "test@example.com",
-    PTAP_MAIL               = "test@example.com",
-    UOFM_MAIL               = "test@example.com",
-    CHICAGO_MAIL            = "test@example.com",
-    PTAP_SHEET_SID          = "",
-    ENVIRONMENT             = local.env
+    MAIL_DEFAULT_SENDER     = "test@example.com"
+    PTAP_MAIL               = "test@example.com"
+    UOFM_MAIL               = "test@example.com"
+    CHICAGO_MAIL            = "test@example.com"
   }
 
   tags = local.tags
@@ -377,7 +382,7 @@ module "apigw" {
 
   # Custom domain TODO:
   # domain_name                 = "terraform-aws-modules.modules.tf"
-  # domain_name_certificate_arn = "arn:aws:acm:eu-west-1:052235179155:certificate/2b3a7ed9-05e1-4f9e-952b-27744ba06da6"
+  # domain_name_certificate_arn = "arn:aws:acm:eu-west-1:052235179155:certificate/2b3a7ed9-05e1-4f9e-952b-27744ba06da6" # TODO: wildcard certificate
 
   # payload_format_version 1.0 is needed for awsgi
   integrations = {

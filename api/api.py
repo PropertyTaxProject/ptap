@@ -160,5 +160,5 @@ def page_not_found(error):
 def handle_error(error):
     if isinstance(error, HTTPException):
         return error
-
+    sentry_sdk.capture_exception(error)
     return jsonify({"error": str(error)}), 500

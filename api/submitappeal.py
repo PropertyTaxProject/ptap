@@ -89,7 +89,6 @@ def submit_cook_sf(comp_submit, mail):
     print(context)
 
     doc.render(context)
-    doc.save(output_name)
 
     output = {}
     if download:
@@ -126,9 +125,9 @@ def submit_cook_sf(comp_submit, mail):
     log_url = record_final_submission(sub_dict)
     comp_submit['log_url'] = log_url
     """
-    if os.getenv("PTAP_SHEET_SID"):
+    if os.getenv("GOOGLE_SHEET_SID"):
         comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
-            "PTAP_SHEET_SID"
+            "GOOGLE_SHEET_SID"
         )
 
     # send email
