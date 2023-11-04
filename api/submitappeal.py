@@ -91,12 +91,12 @@ def submit_cook_sf(comp_submit, mail):
     doc.render(context)
 
     output = {}
-    if download:
-        # also save a byte object to return
-        file_stream = io.BytesIO()
-        doc.save(file_stream)  # save to stream
-        file_stream.seek(0)  # reset pointer to head
-        output["file_stream"] = file_stream
+
+    file_stream = io.BytesIO()
+    doc.save(file_stream)  # save to stream
+    file_stream.seek(0)  # reset pointer to head
+    output["file_stream"] = file_stream
+    comp_submit["file_stream"] = file_stream
     """
     # update submission log
     targ = get_pin('detroit', pin)
@@ -226,12 +226,12 @@ def submit_detroit_sf(comp_submit, mail):
     doc.render(context)
 
     output = {}
-    if download:
-        # also save a byte object to return
-        file_stream = io.BytesIO()
-        doc.save(file_stream)  # save to stream
-        file_stream.seek(0)  # reset pointer to head
-        output["file_stream"] = file_stream
+
+    file_stream = io.BytesIO()
+    doc.save(file_stream)  # save to stream
+    file_stream.seek(0)  # reset pointer to head
+    output["file_stream"] = file_stream
+    comp_submit["file_stream"] = file_stream
 
     # update submission log
     targ = get_pin("detroit", pin)

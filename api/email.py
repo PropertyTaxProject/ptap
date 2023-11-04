@@ -18,12 +18,11 @@ def detroit_submission_email(mail, data):
     )
     msg = Message(subj, recipients=uofm, cc=ptap)
     msg.html = body
-    with open(data["output_name"], "rb") as f:
-        msg.attach(
-            data["output_name"][13:],
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            f.read(),
-        )
+    msg.attach(
+        data["output_name"][13:],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        data["file_stream"].getvalue(),
+    )
     mail.send(msg)
 
     body = render_template("emails/submission_detroit.html", name=name, address=addr)
@@ -51,12 +50,11 @@ def cook_submission_email(mail, data):
 
     msg = Message(subj, recipients=ptap_chi, cc=ptap)
     msg.html = body
-    with open(data["output_name"], "rb") as f:
-        msg.attach(
-            data["output_name"][13:],
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            f.read(),
-        )
+    msg.attach(
+        data["output_name"][13:],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        data["file_stream"].getvalue(),
+    )
     mail.send(msg)
 
     # receipt to user
