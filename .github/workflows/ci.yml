@@ -106,12 +106,6 @@ jobs:
       - name: Install GDAL dependencies
         run: sudo apt-get update -y && sudo apt-get install -y gdal-bin
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ptap-terraform-github-role
-          aws-region: us-east-1
-
       - name: Download and restore database
         env:
           S3_BUCKET: ptap-dev-assets

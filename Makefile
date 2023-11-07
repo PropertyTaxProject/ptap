@@ -8,7 +8,7 @@ data:
 
 .PHONY: download-data
 download-data:
-	aws s3 cp s3://$(S3_BUCKET)/data.dump .
+	wget https://$(S3_BUCKET).s3.amazonaws.com/data.dump
 
 .PHONY: deploy-data
 deploy-data: data.dump
