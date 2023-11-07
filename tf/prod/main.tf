@@ -39,12 +39,12 @@ data "aws_ssm_parameter" "secret_key" {
   name = "/${local.name}/${local.env}/secret_key"
 }
 
-data "aws_ssm_parameter" "sendgrid_username" {
-  name = "/${local.name}/${local.env}/sendgrid_username"
+data "aws_ssm_parameter" "mail_username" {
+  name = "/${local.name}/${local.env}/mail_username"
 }
 
-data "aws_ssm_parameter" "sendgrid_api_key" {
-  name = "/${local.name}/${local.env}/sendgrid_api_key"
+data "aws_ssm_parameter" "mail_password" {
+  name = "/${local.name}/${local.env}/mail_password"
 }
 
 data "aws_ssm_parameter" "sentry_dsn" {
@@ -355,9 +355,11 @@ module "lambda" {
 
   environment_variables = {
     ENVIRONMENT             = local.env
-    SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
-    SENDGRID_USERNAME       = data.aws_ssm_parameter.sendgrid_username.value
-    SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value
+    SECRET_KEY              = data.aws_ssm_parameter.secret_key.value
+    MAIL_SERVER             = "email-smtp.us-east-1.amazonaws.com"
+    MAIL_PORT               = 587
+    MAIL_USERNAME           = data.aws_ssm_parameter.mail_username.value
+    MAIL_PASSWORD           = data.aws_ssm_parameter.mail_password.value
     SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value
     GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
     GOOGLE_SHEET_SID        = data.aws_ssm_parameter.google_sheet_sid.value
@@ -548,4 +550,27 @@ module "rds" {
 
   monitoring_role_name            = "${local.name}-rds-monitoring-role-name"
   monitoring_role_use_name_prefix = true
+}
+
+resource "aws_iam_user" "mail" {
+  name = "${local.name}-mail"
+  tags = local.tags
+}
+
+resource "aws_iam_user_policy_attachment" "send_mail" {
+  policy_arn = aws_iam_policy.send_mail.arn
+  user       = aws_iam_user.mail.name
+}
+
+resource "aws_iam_policy" "send_mail" {
+  name   = "${local.name}-send-mail"
+  policy = data.aws_iam_policy_document.send_mail.json
+  tags   = local.tags
+}
+
+data "aws_iam_policy_document" "send_mail" {
+  statement {
+    actions   = ["ses:SendRawEmail"]
+    resources = ["*"]
+  }
 }

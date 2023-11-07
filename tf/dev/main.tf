@@ -26,7 +26,8 @@ locals {
   name            = "ptap"
   env             = "dev"
   state_bucket    = "ptap-terraform-state"
-  github_subjects = ["pjsier/ptap:*"] # TODO:
+  domain          = "propertytaxproject.com"
+  github_subjects = ["PropertyTaxProject/ptap:*"]
 
   tags = {
     project     = local.name
@@ -38,12 +39,12 @@ data "aws_ssm_parameter" "secret_key" {
   name = "/${local.name}/${local.env}/secret_key"
 }
 
-data "aws_ssm_parameter" "sendgrid_username" {
-  name = "/${local.name}/${local.env}/sendgrid_username"
+data "aws_ssm_parameter" "mail_username" {
+  name = "/${local.name}/${local.env}/mail_username"
 }
 
-data "aws_ssm_parameter" "sendgrid_api_key" {
-  name = "/${local.name}/${local.env}/sendgrid_api_key"
+data "aws_ssm_parameter" "mail_password" {
+  name = "/${local.name}/${local.env}/mail_password"
 }
 
 data "aws_ssm_parameter" "sentry_dsn" {
@@ -64,6 +65,18 @@ data "aws_ssm_parameter" "db_password" {
 
 data "aws_ssm_parameter" "google_sheet_sid" {
   name = "/${local.name}/${local.env}/google_sheet_sid"
+}
+
+data "aws_ssm_parameter" "ptap_mail" {
+  name = "/${local.name}/${local.env}/ptap_mail"
+}
+
+data "aws_ssm_parameter" "uofm_mail" {
+  name = "/${local.name}/${local.env}/uofm_mail"
+}
+
+data "aws_ssm_parameter" "chicago_mail" {
+  name = "/${local.name}/${local.env}/chicago_mail"
 }
 
 data "aws_iam_policy_document" "s3_public" {
@@ -184,17 +197,19 @@ module "lambda" {
   environment_variables = {
     ENVIRONMENT             = local.env
     SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
-    SENDGRID_USERNAME       = data.aws_ssm_parameter.sendgrid_username.value
-    SENDGRID_API_KEY        = data.aws_ssm_parameter.sendgrid_api_key.value
+    MAIL_SERVER             = "email-smtp.us-east-1.amazonaws.com"
+    MAIL_PORT               = 587
+    MAIL_USERNAME           = data.aws_ssm_parameter.mail_username.value
+    MAIL_PASSWORD           = data.aws_ssm_parameter.mail_password.value
     SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value
     GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
     GOOGLE_SHEET_SID        = data.aws_ssm_parameter.google_sheet_sid.value
     S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
     DATABASE_URL            = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${data.aws_db_instance.app.endpoint}/${data.aws_db_instance.app.db_name}"
-    MAIL_DEFAULT_SENDER     = "mail@propertytaxproject.com"
-    PTAP_MAIL               = "test@example.com"
-    UOFM_MAIL               = "test@example.com"
-    CHICAGO_MAIL            = "test@example.com"
+    MAIL_DEFAULT_SENDER     = "mail@${local.domain}"
+    PTAP_MAIL               = data.aws_ssm_parameter.ptap_mail.value
+    UOFM_MAIL               = data.aws_ssm_parameter.uofm_mail.value
+    CHICAGO_MAIL            = data.aws_ssm_parameter.chicago_mail.value
     # GOOGLE_LOGGING_ENABLED  = "true"
   }
 
@@ -212,6 +227,28 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   arn       = module.lambda.lambda_function_arn
 }
 
+
+data "aws_route53_zone" "domain" {
+  name = local.domain
+}
+
+resource "aws_route53_record" "api" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = "dev.${local.domain}"
+  type    = "A"
+
+  alias {
+    name    = module.apigw.apigatewayv2_domain_name_target_domain_name
+    zone_id = module.apigw.apigatewayv2_domain_name_hosted_zone_id
+
+    evaluate_target_health = false
+  }
+}
+
+data "aws_acm_certificate" "cert" {
+  domain = local.domain
+}
+
 module "apigw" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "2.2.2"
@@ -225,11 +262,8 @@ module "apigw" {
     allow_origins = ["*"]
   }
 
-  create_api_domain_name = false
-
-  # Custom domain TODO:
-  # domain_name                 = "terraform-aws-modules.modules.tf"
-  # domain_name_certificate_arn = "arn:aws:acm:eu-west-1:052235179155:certificate/2b3a7ed9-05e1-4f9e-952b-27744ba06da6"
+  domain_name                 = "dev.${local.domain}"
+  domain_name_certificate_arn = data.aws_acm_certificate.cert.arn
 
   # payload_format_version 1.0 is needed for awsgi
   integrations = {
