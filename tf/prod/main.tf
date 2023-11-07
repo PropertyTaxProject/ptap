@@ -27,7 +27,7 @@ locals {
   env             = "prod"
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
-  github_subjects = ["PropertyTaxProject/ptap:*", "pjsier/ptap:*"]
+  github_subjects = ["PropertyTaxProject/ptap:*"]
 
   tags = {
     project     = local.name
