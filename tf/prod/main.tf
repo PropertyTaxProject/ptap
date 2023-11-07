@@ -286,6 +286,10 @@ module "ecr" {
   repository_type = "private"
 
   repository_read_write_access_arns = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+  repository_lambda_read_access_arns = [
+    "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.name}*",
+    "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.name}*:*",
+  ]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
