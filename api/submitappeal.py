@@ -184,9 +184,9 @@ def submit_detroit_sf(comp_submit, mail):
     # generate docx
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    comp_submit["output_name"] = (
-        f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
-    )
+    comp_submit[
+        "output_name"
+    ] = f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
     doc = DocxTemplate(
         os.path.join(base_dir, "templates", "docs", "detroit_template_2022.docx")
     )
