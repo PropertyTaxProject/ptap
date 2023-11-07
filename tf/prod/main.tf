@@ -171,7 +171,13 @@ resource "aws_iam_policy" "read_access" {
           "ec2:Describe*",
           "rds:Describe*",
           "rds:List*",
-          "apigateway:GET"
+          "apigateway:GET",
+          "route53:Get*",
+          "route53:Describe*",
+          "route53:List*",
+          "acm:Get*",
+          "acm:Describe*",
+          "acm:List*",
         ]
         Effect   = "Allow"
         Resource = "*"
