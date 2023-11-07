@@ -67,6 +67,18 @@ data "aws_ssm_parameter" "google_sheet_sid" {
   name = "/${local.name}/${local.env}/google_sheet_sid"
 }
 
+data "aws_ssm_parameter" "ptap_mail" {
+  name = "/${local.name}/${local.env}/ptap_mail"
+}
+
+data "aws_ssm_parameter" "uofm_mail" {
+  name = "/${local.name}/${local.env}/uofm_mail"
+}
+
+data "aws_ssm_parameter" "chicago_mail" {
+  name = "/${local.name}/${local.env}/chicago_mail"
+}
+
 # Use OIDC across multiple environments
 module "iam_github_oidc_provider" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
@@ -345,10 +357,10 @@ module "lambda" {
     GOOGLE_SHEET_SID        = data.aws_ssm_parameter.google_sheet_sid.value
     S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
     DATABASE_URL            = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
-    MAIL_DEFAULT_SENDER     = "test@example.com"
-    PTAP_MAIL               = "test@example.com"
-    UOFM_MAIL               = "test@example.com"
-    CHICAGO_MAIL            = "test@example.com"
+    MAIL_DEFAULT_SENDER     = "mail@${local.domain}"
+    PTAP_MAIL               = data.aws_ssm_parameter.ptap_mail.value
+    UOFM_MAIL               = data.aws_ssm_parameter.uofm_mail.value
+    CHICAGO_MAIL            = data.aws_ssm_parameter.chicago_mail.value
     # GOOGLE_LOGGING_ENABLED  = "true"
   }
 
