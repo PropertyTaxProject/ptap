@@ -26,7 +26,8 @@ locals {
   name            = "ptap"
   env             = "prod"
   state_bucket    = "ptap-terraform-state"
-  github_subjects = ["pjsier/ptap:*"] # TODO:
+  domain          = "propertytaxproject.com"
+  github_subjects = ["PropertyTaxProject/ptap:*", "pjsier/ptap:*"]
 
   tags = {
     project     = local.name
@@ -365,6 +366,41 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   arn       = module.lambda.lambda_function_arn
 }
 
+data "aws_route53_zone" "domain" {
+  name = local.domain
+}
+
+resource "aws_route53_record" "api" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = "app.${local.domain}"
+  type    = "A"
+
+  alias {
+    name    = module.apigw.apigatewayv2_domain_name_target_domain_name
+    zone_id = module.apigw.apigatewayv2_domain_name_hosted_zone_id
+
+    evaluate_target_health = false
+  }
+}
+
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
+
+  domain_name = local.domain
+  zone_id     = data.aws_route53_zone.domain.zone_id
+
+  validation_method = "DNS"
+
+  subject_alternative_names = [
+    "*.${local.domain}"
+  ]
+
+  wait_for_validation = true
+
+  tags = local.tags
+}
+
 module "apigw" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "2.2.2"
@@ -378,11 +414,8 @@ module "apigw" {
     allow_origins = ["*"]
   }
 
-  create_api_domain_name = false
-
-  # Custom domain TODO:
-  # domain_name                 = "terraform-aws-modules.modules.tf"
-  # domain_name_certificate_arn = "arn:aws:acm:eu-west-1:052235179155:certificate/2b3a7ed9-05e1-4f9e-952b-27744ba06da6" # TODO: wildcard certificate
+  domain_name                 = "app.${local.domain}"
+  domain_name_certificate_arn = module.acm.acm_certificate_arn
 
   # payload_format_version 1.0 is needed for awsgi
   integrations = {
