@@ -227,28 +227,6 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   arn       = module.lambda.lambda_function_arn
 }
 
-
-data "aws_route53_zone" "domain" {
-  name = local.domain
-}
-
-resource "aws_route53_record" "api" {
-  zone_id = data.aws_route53_zone.domain.zone_id
-  name    = "dev.${local.domain}"
-  type    = "A"
-
-  alias {
-    name    = module.apigw.apigatewayv2_domain_name_target_domain_name
-    zone_id = module.apigw.apigatewayv2_domain_name_hosted_zone_id
-
-    evaluate_target_health = false
-  }
-}
-
-data "aws_acm_certificate" "cert" {
-  domain = local.domain
-}
-
 module "apigw" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "2.2.2"
@@ -262,8 +240,7 @@ module "apigw" {
     allow_origins = ["*"]
   }
 
-  domain_name                 = "dev.${local.domain}"
-  domain_name_certificate_arn = data.aws_acm_certificate.cert.arn
+  create_api_domain_name = false
 
   # payload_format_version 1.0 is needed for awsgi
   integrations = {

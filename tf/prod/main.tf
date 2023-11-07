@@ -178,6 +178,9 @@ resource "aws_iam_policy" "read_access" {
           "acm:Get*",
           "acm:Describe*",
           "acm:List*",
+          "cloudfront:Get*",
+          "cloudfront:Describe*",
+          "cloudfront:List*",
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -396,8 +399,8 @@ resource "aws_route53_record" "api" {
   type    = "A"
 
   alias {
-    name    = module.apigw.apigatewayv2_domain_name_target_domain_name
-    zone_id = module.apigw.apigatewayv2_domain_name_hosted_zone_id
+    name    = module.cloudfront.cloudfront_distribution_domain_name
+    zone_id = module.cloudfront.cloudfront_distribution_hosted_zone_id
 
     evaluate_target_health = false
   }
@@ -434,8 +437,7 @@ module "apigw" {
     allow_origins = ["*"]
   }
 
-  domain_name                 = "app.${local.domain}"
-  domain_name_certificate_arn = module.acm.acm_certificate_arn
+  create_api_domain_name = false
 
   # payload_format_version 1.0 is needed for awsgi
   integrations = {
@@ -453,6 +455,44 @@ module "apigw" {
   }
 
   tags = local.tags
+}
+
+module "cloudfront" {
+  source  = "terraform-aws-modules/cloudfront/aws"
+  version = "3.2.1"
+
+  aliases = ["app.${local.domain}"]
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  price_class         = "PriceClass_100"
+  retain_on_delete    = false
+  wait_for_deployment = true
+
+  origin = {
+    app = {
+      domain_name = module.apigw.default_apigatewayv2_stage_domain_name
+      custom_origin_config = {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "match-viewer"
+        origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+      }
+    }
+  }
+
+  default_cache_behavior = {
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "app"
+    viewer_protocol_policy = "redirect-to-https"
+    query_string           = true
+  }
+
+  viewer_certificate = {
+    acm_certificate_arn = module.acm.acm_certificate_arn
+    ssl_support_method  = "sni-only"
+  }
 }
 
 # Reuse for multiple environments
