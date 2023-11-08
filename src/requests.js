@@ -50,7 +50,8 @@ export const submitEstimate = async (
   parcel,
   uuid,
   comparablesPool,
-  selectedComparables
+  selectedComparables,
+  files = []
 ) => {
   let today = new Date()
   let date =
@@ -65,6 +66,7 @@ export const submitEstimate = async (
       comparablesPool,
       uuid,
       selectedComparables,
+      files,
     }
     const download = true
     const resp = await axios.post(`${BASE_URL}/api_v1/estimates`, body, {
@@ -119,4 +121,8 @@ export const estimatePin = async (data) => {
   } catch (err) {
     return []
   }
+}
+
+export const createDirectUpload = async (filename) => {
+  return (await axios.post(`${BASE_URL}/api/upload`, { filename })).data
 }
