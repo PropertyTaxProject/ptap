@@ -2,10 +2,13 @@ import io
 import os
 import string
 from datetime import datetime
+from tempfile import NamedTemporaryFile
 
 import numpy as np
 import pandas as pd
-from docxtpl import DocxTemplate
+import requests
+from docx.shared import Inches
+from docxtpl import DocxTemplate, InlineImage
 from rapidfuzz import process
 
 from .computils import find_comps
@@ -181,7 +184,7 @@ def process_estimate(form_data, download):
                 base_dir,
                 "templates",
                 "docs",
-                "detroit_template_2023.docx",
+                "detroit_template_2023_alt.docx",
             )
         )
         # tbl cols
@@ -227,6 +230,9 @@ def process_estimate(form_data, download):
             target_rec_base["neighborhood"],
         ]
 
+        images = process_images(doc, form_data["files"])
+
+        # TODO: https://stackoverflow.com/a/70257870
         # TODO: Need to add files into here, now in form_data["files"] with url, name
         context = {
             "pin": pin,
@@ -245,6 +251,7 @@ def process_estimate(form_data, download):
             "target_contents2": [comp_contents[0][4:]],
             "comp_labels": comp_labels,
             "comp_contents": comp_contents,
+            "images": images,
         }
 
         doc.render(context)
@@ -292,6 +299,26 @@ def process_estimate(form_data, download):
         output["estimate"] = l1 + l2 + l3 + l4 + l5
 
     return output
+
+
+def process_images(doc, files):
+    """Process images individually after upload"""
+    images = []
+    for file in files:
+        res = requests.get(file["url"])
+        if res.status_code != 200:
+            continue
+        # TODO: Move this to use a temporary directory, context manager for deletion
+        temp_file = NamedTemporaryFile(
+            suffix=f'.{file["url"].split(".")[-1]}', delete=False
+        )
+        with open(temp_file.name, "wb") as f:
+            f.write(res.content)
+        # TODO: Resize more intelligently
+        images.append(
+            InlineImage(doc, temp_file.name, width=Inches(2), height=Inches(2))
+        )
+    return images
 
 
 def process_comps_input(comp_submit, mail):
