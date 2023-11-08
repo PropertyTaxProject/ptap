@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { submitEstimate, submitEstimate2 } from "../../requests"
 import { Form, Button, Table, Divider } from "antd"
 import { cleanParcel, DISPLAY_FIELDS } from "../../utils"
+import { FileUpload } from "../../components/file-upload"
 
 const Comparables = (props) => {
   const {
@@ -16,6 +17,7 @@ const Comparables = (props) => {
 
   const candidates = comparablesPool.map(cleanParcel)
   const [selectedComparables, setSelected] = useState([])
+  const [files, setFiles] = useState([])
   const [form] = Form.useForm()
 
   const showSelected = selectedComparables.length > 0
@@ -86,6 +88,11 @@ const Comparables = (props) => {
           }}
         />
       </Table>
+      <p>
+        Step 5. Upload any images of damage that would impact your assessed
+        value.
+      </p>
+      <FileUpload files={files} onChange={setFiles} />
       {showSelected && (
         <Form
           form={form}
@@ -96,7 +103,8 @@ const Comparables = (props) => {
               targetProperty,
               Uuid,
               comparablesPool,
-              selectedComparables
+              selectedComparables,
+              files
             )
             setStep(3)
             const resp2 = await submitEstimate2(

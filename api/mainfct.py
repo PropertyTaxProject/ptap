@@ -143,14 +143,6 @@ def comparables(input_data, sales_comps=False):
 
 def process_estimate(form_data, download):
     # TODO: Should break this into two requests, one to do the logic, one to format
-    """
-    {
-        'target_pin': [{}],
-        'comparablesPool': [{},{},{},{}]
-        'uuid': '',
-        'selectedComparables': [{}]
-    }
-    """
 
     # rename_dict = {
     #     "pin": "Parcel ID",
@@ -235,6 +227,7 @@ def process_estimate(form_data, download):
             target_rec_base["neighborhood"],
         ]
 
+        # TODO: Need to add files into here, now in form_data["files"] with url, name
         context = {
             "pin": pin,
             "address": target_rec_base["street_number"]
