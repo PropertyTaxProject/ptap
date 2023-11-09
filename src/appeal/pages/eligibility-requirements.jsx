@@ -175,6 +175,7 @@ const PinLookup = (props) => {
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
+        size="large"
       >
         <p style={{ width: "400px" }}>
           Enter your street number and street name below and then hit search.
@@ -286,6 +287,7 @@ const Lookup = (props) => {
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
+        size="large"
       >
         <Form.Item
           name="residence"

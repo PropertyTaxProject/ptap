@@ -122,6 +122,7 @@ const Comparables = (props) => {
           labelAlign="left"
           scrollToFirstError
           autoComplete="off"
+          size="large"
         >
           <Form.Item>
             <Button type="primary" htmlType="submit">

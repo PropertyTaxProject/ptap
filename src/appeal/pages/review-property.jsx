@@ -48,6 +48,7 @@ const Characteristics = (props) => {
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
+        size="large"
         {...formItemLayout}
       >
         <Row>
