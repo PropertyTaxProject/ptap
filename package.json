@@ -3,10 +3,8 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "start": "WATCHPACK_POLLING=true react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite serve",
+    "build": "vite build",
     "lint": "eslint \"./src/**/*.{js,jsx,ts}\"",
     "lint:fix": "eslint --quiet --fix \"./src/**/*.{js,jsx,ts}\"",
     "prettier": "prettier --check \"./src/**/*.{js,jsx,css}\"",
@@ -20,8 +18,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-ga": "^3.3.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
@@ -29,16 +26,19 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.22.20",
     "@babel/preset-react": "^7.22.15",
+    "@vitejs/plugin-react": "^4.1.1",
     "axe-core": "^4.8.2",
     "cypress": "^13.3.2",
     "cypress-axe": "^1.5.0",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.0.3",
-    "prettier-eslint": "^15.0.1"
+    "prettier-eslint": "^15.0.1",
+    "vite": "^4.5.0"
   },
   "eslintConfig": {
     "extends": [

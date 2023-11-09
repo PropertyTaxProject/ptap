@@ -31,7 +31,7 @@ start-py:
 
 .PHONY: start-js
 start-js:
-	REACT_APP_BASE_URL=http://localhost:5000 npm start
+	VITE_PUBLIC_URL="" VITE_BASE_URL=http://localhost:5000 npm start
 
 .PHONY: install
 install: install-js install-py

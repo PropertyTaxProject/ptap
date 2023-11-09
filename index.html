@@ -2,23 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="%VITE_PUBLIC_URL%/favicon.ico" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="%PUBLIC_URL%/apple-touch-icon.png"
+      href="%VITE_PUBLIC_URL%/apple-touch-icon.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="%PUBLIC_URL%/favicon-32x32.png"
+      href="%VITE_PUBLIC_URL%/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="%PUBLIC_URL%/favicon-16x16.png"
+      href="%VITE_PUBLIC_URL%/favicon-16x16.png"
     />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,12 +27,15 @@
       name="description"
       content="Appeal your property taxes in Detroit and Cook County, Illinois"
     />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="%VITE_PUBLIC_URL%/manifest.json" />
+
+    <meta name="baseurl" content="%VITE_BASE_URL%" />
 
     <title>Property Tax Appeal Project: Automated Appeal System</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>

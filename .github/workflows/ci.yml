@@ -2,6 +2,8 @@ name: CI
 
 env:
   POETRY_VIRTUALENVS_IN_PROJECT: true
+  VITE_PUBLIC_URL: ""
+  VITE_BASE_URL: ""
 
 permissions:
   id-token: write
@@ -116,6 +118,8 @@ jobs:
 
       - uses: cypress-io/github-action@v4.1.0
         env:
+          VITE_BASE_URL: "http://localhost:5000"
+          VITE_PUBLIC_URL: ""
           DATABASE_URL: postgresql://ptap:postgres@localhost:${{ job.services.postgres.ports[5432] }}/ptap
         with:
           config-file: cypress.config.js
@@ -171,7 +175,8 @@ jobs:
       - name: Build assets for ${{ env.DEPLOY_ENV }}
         env:
           S3_BUCKET: ptap-${{ env.DEPLOY_ENV }}-assets
-          PUBLIC_URL: https://ptap-${{ env.DEPLOY_ENV }}-assets.s3.amazonaws.com
+          VITE_PUBLIC_URL: https://ptap-${{ env.DEPLOY_ENV }}-assets.s3.amazonaws.com
+          VITE_BASE_URL: ""
         run: |
           npm ci --prefer-offline --no-audit --no-optional
           npm run build

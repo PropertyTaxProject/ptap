@@ -1,7 +1,7 @@
 import axios from "axios"
 import { saveAs } from "file-saver"
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || ""
+const BASE_URL = document.querySelector("meta[name=baseurl]").content || ""
 
 export const submitForm = async (info) => {
   try {
