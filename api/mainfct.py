@@ -2,13 +2,14 @@ import io
 import os
 import string
 from datetime import datetime
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 import numpy as np
 import pandas as pd
 import requests
 from docx.shared import Inches
 from docxtpl import DocxTemplate, InlineImage
+from PIL import Image
 from rapidfuzz import process
 
 from .computils import find_comps
@@ -230,10 +231,6 @@ def process_estimate(form_data, download):
             target_rec_base["neighborhood"],
         ]
 
-        images = process_images(doc, form_data["files"])
-
-        # TODO: https://stackoverflow.com/a/70257870
-        # TODO: Need to add files into here, now in form_data["files"] with url, name
         context = {
             "pin": pin,
             "address": target_rec_base["street_number"]
@@ -251,17 +248,17 @@ def process_estimate(form_data, download):
             "target_contents2": [comp_contents[0][4:]],
             "comp_labels": comp_labels,
             "comp_contents": comp_contents,
-            "images": images,
         }
 
-        doc.render(context)
-
-        # also save a byte object to return
-        file_stream = io.BytesIO()
-        doc.save(file_stream)  # save to stream
-        file_stream.seek(0)  # reset pointer to head
-        output["file_stream"] = file_stream
-        output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
+        with TemporaryDirectory() as temp_dir:
+            images = process_images(doc, form_data["files"], temp_dir)
+            doc.render({**context, "images": images, "has_images": len(images) > 0})
+            # also save a byte object to return
+            file_stream = io.BytesIO()
+            doc.save(file_stream)  # save to stream
+            file_stream.seek(0)  # reset pointer to head
+            output["file_stream"] = file_stream
+            output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
     else:
         # serve information for website display
         delta = (comps_avg / 2) - pin_av
@@ -301,23 +298,26 @@ def process_estimate(form_data, download):
     return output
 
 
-def process_images(doc, files):
+def process_images(doc, files, temp_dir):
     """Process images individually after upload"""
+    MAX_WIDTH = Inches(5.5)
+    MAX_HEIGHT = Inches(4)
     images = []
     for file in files:
         res = requests.get(file["url"])
         if res.status_code != 200:
             continue
-        # TODO: Move this to use a temporary directory, context manager for deletion
         temp_file = NamedTemporaryFile(
-            suffix=f'.{file["url"].split(".")[-1]}', delete=False
+            dir=temp_dir, suffix=f'.{file["url"].split(".")[-1]}', delete=False
         )
         with open(temp_file.name, "wb") as f:
             f.write(res.content)
-        # TODO: Resize more intelligently
-        images.append(
-            InlineImage(doc, temp_file.name, width=Inches(2), height=Inches(2))
+        img = Image.open(temp_file.name)
+        # Only constrain the larger dimension
+        img_kwargs = (
+            {"height": MAX_HEIGHT} if img.height > img.width else {"width": MAX_WIDTH}
         )
+        images.append(InlineImage(doc, temp_file.name, **img_kwargs))
     return images
 
 
