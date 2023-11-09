@@ -21,7 +21,7 @@ from .mainfct import (
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "build")
+STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
@@ -33,7 +33,7 @@ sentry_sdk.init(
 
 app = Flask(
     __name__,
-    static_folder=os.path.join(STATIC_BUILD_DIR, "static"),
+    static_folder=os.path.join(STATIC_BUILD_DIR, "assets"),
     template_folder="./templates/",
 )
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")

@@ -4,6 +4,8 @@ api/tmp_data/*
 tmp_log.csv
 __pycache__
 .env
+.env*
+!.env.sample
 .ipynb_checkpoints
 *.sqlite
 *.db
@@ -19,6 +21,7 @@ __pycache__
 *.ipynb
 .vscode*
 .ruff_cache
+dist/*
 build/*
 !build/.keep
 cypress/downloads
