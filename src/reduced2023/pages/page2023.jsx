@@ -28,6 +28,7 @@ const CompsLookup = (props) => {
         form={form}
         name="Eligibility"
         layout="vertical"
+        size="large"
         onFinish={async () => {
           setSelect(false)
           var pin = targRecord.pin

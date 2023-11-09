@@ -100,6 +100,7 @@ const PinLookup = (props) => {
         labelAlign="left"
         scrollToFirstError
         autoComplete="off"
+        size="large"
       >
         <p style={{ width: "350px" }}>
           Enter your street number and street name.
