@@ -90,7 +90,8 @@ const Comparables = (props) => {
       </Table>
       <h2>Step 5</h2>
       <p>
-        Upload any images of damage to your property that would impact your assessed value.
+        Upload any images of damage to your property that would impact your
+        assessed value.
       </p>
       <FileUpload files={files} onChange={setFiles} />
       <Divider />
