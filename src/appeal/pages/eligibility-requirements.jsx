@@ -186,9 +186,9 @@ const PinLookup = (props) => {
           <Form.Item
             style={{ width: "100px" }}
             name="st_num"
-            rules={[{ required: true, message: "Street name is required." }]}
+            rules={[{ required: true, message: "Street number is required." }]}
           >
-            <Input type="number" placeholder="number" />
+            <Input inputMode="numeric" placeholder="number" />
           </Form.Item>
           <Form.Item
             style={{ width: "300px" }}
