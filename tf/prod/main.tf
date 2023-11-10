@@ -294,12 +294,12 @@ module "ecr" {
     rules = [
       {
         rulePriority = 1,
-        description  = "Keep last 10 prod images",
+        description  = "Keep last 5 prod images",
         selection = {
           tagStatus     = "tagged",
           tagPrefixList = ["prod-"],
           countType     = "imageCountMoreThan",
-          countNumber   = 10
+          countNumber   = 5
         },
         action = {
           type = "expire"
@@ -307,12 +307,24 @@ module "ecr" {
       },
       {
         rulePriority = 2,
-        description  = "Keep last 10 dev images",
+        description  = "Keep last 5 dev images",
         selection = {
           tagStatus     = "tagged",
           tagPrefixList = ["dev-"],
           countType     = "imageCountMoreThan",
-          countNumber   = 10
+          countNumber   = 5
+        },
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 3,
+        description  = "Keept last 5 of any other image",
+        selection = {
+          tagStatus   = "any",
+          countType   = "imageCountMoreThan",
+          countNumber = 5
         },
         action = {
           type = "expire"
