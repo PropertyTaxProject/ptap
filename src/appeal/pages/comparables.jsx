@@ -69,7 +69,7 @@ const Characteristics = (props) => {
             <h3>Your Selected Comparables</h3>
             <p>
               This table includes properties you have selected as comparables to
-              yours. Click &apos;Delete&apos; to remove the property from your
+              yours. Click &apos;Remove&apos; to remove the property from your
               selection.
             </p>
           </>
@@ -94,7 +94,7 @@ const Characteristics = (props) => {
                   )
                 }}
               >
-                Delete
+                Remove
               </Button>
             )}
           />
