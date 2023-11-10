@@ -1,163 +1,61 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
-import { lookupPin } from "../../requests"
-import { Form, Input, Button, Table } from "antd"
+import PinChooser from "../../components/pin-chooser"
+import PinLookup from "../../components/pin-lookup"
 
-var submitted = false
-var selected = false
+const PIN_HEADERS = [
+  {
+    title: "Address",
+    field: "address",
+  },
+  {
+    title: "PIN",
+    field: "pin",
+  },
+]
 
-const PinLookup = (props) => {
-  const [form] = Form.useForm()
-  const [pins, setPin] = useState([])
-  const { logPin, logUuid, setRecord, setSelect, appealType } = props
-
-  const selectPin = (record) => {
-    //log pin
-    logPin(record.pin)
-    setPin([record])
-    setRecord(record)
-    selected = true
-    setSelect(true)
-    submitted = true
-  }
-
-  const logResponse = (theResponse) => {
-    submitted = true
-    selected = false
-    try {
-      setPin(theResponse.candidates)
-      logUuid(theResponse.uuid)
-    } catch (err) {
-      setPin([])
-    }
-  }
-
-  var columns = [
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Pin",
-      dataIndex: "pin",
-      key: "pin",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (record) => (
-        <Button
-          onClick={() => {
-            selectPin(record)
-          }}
-        >
-          Select
-        </Button>
-      ),
-    },
-  ]
-
-  if (selected) {
-    columns = [
-      {
-        title: "Address",
-        dataIndex: "address",
-        key: "address",
-      },
-      {
-        title: "Pin",
-        dataIndex: "pin",
-        key: "pin",
-      },
-      {
-        title: "Action",
-        key: "action",
-        render: (record) => (
-          <Button
-            type="primary"
-            onClick={() => {
-              selectPin(record)
-            }}
-          >
-            Selected
-          </Button>
-        ),
-      },
-    ]
-  }
+const PinLookupPage = ({ appealType, onSelect }) => {
+  const [propertyOptions, setPropertyOptions] = useState(null)
 
   return (
     <>
-      <h1>Step 1: Enter your address into the search bar.</h1>
-      <Form
-        form={form}
-        name="Pin Lookup"
-        layout="vertical"
-        onFinish={async (data) => {
-          logResponse(await lookupPin({ appeal_type: appealType, ...data }))
-        }}
-        labelAlign="left"
-        scrollToFirstError
-        autoComplete="off"
-        size="large"
-      >
-        <p style={{ width: "350px" }}>
-          Enter your street number and street name.
-        </p>
-
-        <Input.Group compact>
-          <Form.Item
-            style={{ width: "100px" }}
-            name="st_num"
-            rules={[{ required: true, message: "Street number is required." }]}
-          >
-            <Input inputMode="numeric" placeholder="number" />
-          </Form.Item>
-          <Form.Item
-            style={{ width: "300px" }}
-            name="st_name"
-            rules={[{ required: true, message: "Street name is required." }]}
-          >
-            <Input placeholder="street" />
-          </Form.Item>
-          <Button type="primary" htmlType="submit">
-            Search
-          </Button>
-        </Input.Group>
-      </Form>
-
-      {pins.length !== 0 ? (
+      <h1>Step 1</h1>
+      <p>Enter your address into the search bar.</p>
+      <PinLookup
+        appealType={appealType}
+        onSearch={(opts) => setPropertyOptions(opts)}
+      />
+      {propertyOptions?.length > 0 && (
         <>
-          <br />
-          {submitted && (
-            <h1>
-              {" "}
-              Step 2. Select your property from the table and then click “Get
-              Sales Data.”
-            </h1>
-          )}
-          <Table key={pins.pin} columns={columns} dataSource={pins} />
-          {submitted && (
-            <p>
-              After searching for your home, please hit <b>Select</b> next to
-              your property
-            </p>
-          )}
+          <h1>Step 2</h1>
+          <p>
+            Select your property from the table and then click “Get Sales Data.”
+          </p>
+          <p>
+            After searching for your home, please hit <b>Select</b> next to
+            your property
+          </p>
+          <PinChooser
+            headers={PIN_HEADERS}
+            propertyOptions={propertyOptions}
+            max={1}
+            isSelectLabels
+            onChange={(selectedProperties) =>
+              onSelect(selectedProperties.length === 0 ? null : selectedProperties[0])
+            }
+          />
         </>
-      ) : submitted ? (
-        "Your property could not be found. Please try searching again. NOTE: Homes which are NEZs cannot be processed by this tool."
-      ) : null}
+      )}
+      {propertyOptions && propertyOptions.length === 0 && (
+        <p>Your property could not be found. Please try searching again. NOTE: Homes which are NEZs cannot be processed by this tool.</p>
+      )}
     </>
   )
 }
 
-PinLookup.propTypes = {
-  logPin: PropTypes.func,
-  logUuid: PropTypes.func,
-  setRecord: PropTypes.func,
-  setSelect: PropTypes.func,
+PinLookupPage.propTypes = {
   appealType: PropTypes.string,
+  onSelect: PropTypes.func,
 }
 
-export default PinLookup
+export default PinLookupPage
