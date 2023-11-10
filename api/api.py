@@ -70,6 +70,10 @@ def handle_form0():
     pf_data = request.json
     print("PAGE DATA", request.json)
     print("REQUEST OBJECT", request)
+    # pf_data["st_num"] = pf_data["street_num"]
+    if "street_number" in pf_data:
+        pf_data["st_num"] = pf_data.pop("street_number")
+        pf_data["st_name"] = pf_data.pop("street_name")
     response_dict = address_candidates(pf_data, {"detroit": 150000, "cook": 225000})
     print("got address candidates")
     response_dict["uuid"] = logger(pf_data, "address_finder")
@@ -156,9 +160,9 @@ def page_not_found(error):
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-@app.errorhandler(Exception)
-def handle_error(error):
-    if isinstance(error, HTTPException):
-        return error
-    sentry_sdk.capture_exception(error)
-    return jsonify({"error": str(error)}), 500
+# @app.errorhandler(Exception)
+# def handle_error(error):
+#     if isinstance(error, HTTPException):
+#         return error
+#     sentry_sdk.capture_exception(error)
+#     return jsonify({"error": str(error)}), 500
