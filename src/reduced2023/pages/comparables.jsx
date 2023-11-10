@@ -82,7 +82,7 @@ const Comparables = (props) => {
                   )
                 }
               >
-                {isSelected ? "Delete" : "Add"}
+                {isSelected ? "Remove" : "Add"}
               </Button>
             )
           }}
