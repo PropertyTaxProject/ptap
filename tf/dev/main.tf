@@ -110,6 +110,15 @@ module "s3" {
   website = {
     index_document = "index.html"
   }
+
+  cors_rule = [
+    {
+      allowed_methods = ["HEAD", "GET"]
+      allowed_headers = ["*"]
+      allowed_origins = ["*"]
+      max_age_seconds = 3600
+    }
+  ]
 }
 
 data "aws_iam_policy_document" "s3_uploads_public" {
