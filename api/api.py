@@ -27,8 +27,8 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     environment=os.getenv("ENVIRONMENT", "dev"),
     integrations=[AwsLambdaIntegration(), FlaskIntegration()],
-    traces_sample_rate=1.0,
-    profiles_sample_rate=1.0,
+    traces_sample_rate=0.1,
+    profiles_sample_rate=0.1,
 )
 
 app = Flask(
