@@ -26,6 +26,7 @@ boto3 = "^1.28.73"
 aws-wsgi = "^0.2.7"
 awslambdaric = "^2.0.7"
 sentry-sdk = {extras = ["flask"], version = "^1.32.0"}
+pillow-heif = "^0.13.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"

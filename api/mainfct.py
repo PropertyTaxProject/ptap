@@ -10,6 +10,7 @@ import requests
 from docx.shared import Inches
 from docxtpl import DocxTemplate, InlineImage
 from PIL import Image
+from pillow_heif import register_heif_opener
 from rapidfuzz import process
 
 from .computils import find_comps
@@ -300,6 +301,8 @@ def process_estimate(form_data, download):
 
 def process_images(doc, files, temp_dir):
     """Process images individually after upload"""
+    register_heif_opener()
+
     MAX_WIDTH = Inches(5.5)
     MAX_HEIGHT = Inches(4)
     images = []
@@ -307,12 +310,9 @@ def process_images(doc, files, temp_dir):
         res = requests.get(file["url"])
         if res.status_code != 200:
             continue
-        temp_file = NamedTemporaryFile(
-            dir=temp_dir, suffix=f'.{file["url"].split(".")[-1]}', delete=False
-        )
-        with open(temp_file.name, "wb") as f:
-            f.write(res.content)
-        img = Image.open(temp_file.name)
+        img = Image.open(io.BytesIO(res.content))
+        temp_file = NamedTemporaryFile(dir=temp_dir, suffix=".jpg", delete=False)
+        img.save(temp_file.name, format="JPEG")
         # Only constrain the larger dimension
         img_kwargs = (
             {"height": MAX_HEIGHT} if img.height > img.width else {"width": MAX_WIDTH}
