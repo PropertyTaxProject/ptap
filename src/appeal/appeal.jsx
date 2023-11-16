@@ -31,6 +31,7 @@ const Appeal = (props) => {
     useState(null) /*boolean to adv to review page*/
   const [reviewComps, setReviewComps] =
     useState(null) /*boolean to adv to comps page*/
+  const [files, setFiles] = useState([])
   const history = useHistory() /*allow redirects*/
   /*
   Appeal has a series of pages viewed in seq order
@@ -138,13 +139,16 @@ const Appeal = (props) => {
         propInfo={propInfo}
         userInfo={userInfo}
         comparables={comparables}
+        files={files}
+        onChangeFiles={setFiles}
         confirmInfo={() => {
           submitAppeal(
             targetProperty,
             comparables,
             userInfo,
             userPropInfo,
-            sessionUuid
+            sessionUuid,
+            files
           )
         }}
         back={() => {
