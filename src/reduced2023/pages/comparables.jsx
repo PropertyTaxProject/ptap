@@ -45,13 +45,14 @@ const Comparables = (props) => {
       </Table>
       {propInfo}
       <Divider />
-      <h2>
-        Step 4. Select the sale in your neighborhood that is most similar to
-        your property. If you aren’t sure, pick the home that is closest to
-        yours. Click the “Generate Appeal Evidence” button to receive the
-        property sales data that you can attach as evidence to your property tax
+      <h2>Step 4</h2>
+      <p>
+        Select the sale in your neighborhood that is most similar to your
+        property. If you aren’t sure, pick the home that is closest to yours.
+        Click the “Generate Appeal Evidence” button to receive the property
+        sales data that you can attach as evidence to your property tax
         assessment appeal.
-      </h2>
+      </p>
 
       <p>
         <i>
@@ -93,7 +94,11 @@ const Comparables = (props) => {
         Upload any images of damage to your property that would impact your
         assessed value.
       </p>
-      <FileUpload files={files} onChange={setFiles} />
+      <FileUpload
+        accept="image/*,.heic,.heif"
+        files={files}
+        onChange={setFiles}
+      />
       <Divider />
       {showSelected && (
         <Form

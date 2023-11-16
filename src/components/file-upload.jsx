@@ -10,10 +10,11 @@ const mapImageObject = ({ name, response, url }) => ({
   url: url || response?.url,
 })
 
-export const FileUpload = ({ files, onChange }) => {
+export const FileUpload = ({ accept, files, onChange }) => {
   return (
     <Upload
       listType="picture"
+      accept={accept || ""}
       defaultFileList={[...files]}
       onChange={({ fileList }) => onChange(fileList.map(mapImageObject))}
       customRequest={async ({ file, onError, onSuccess, onProgress }) => {
@@ -54,6 +55,7 @@ export const FileUpload = ({ files, onChange }) => {
 }
 
 FileUpload.propTypes = {
+  accept: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func,
 }
