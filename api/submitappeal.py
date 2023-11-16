@@ -1,4 +1,3 @@
-import io
 import os
 from datetime import datetime
 
@@ -8,6 +7,7 @@ from docxtpl import DocxTemplate
 from .dataqueries import avg_ecf, get_pin
 from .email import cook_submission_email, detroit_submission_email
 from .logging import record_final_submission
+from .utils import render_doc_to_bytes
 
 
 def submit_cook_sf(comp_submit, mail):
@@ -55,7 +55,7 @@ def submit_cook_sf(comp_submit, mail):
     )
     comp_submit["output_name"] = output_name
     doc = DocxTemplate(
-        os.path.join(base_dir, "templates", "docs", "dentons_cook_template.docx")
+        os.path.join(base_dir, "templates", "docs", "cook_template_2024.docx")
     )
 
     allinfo = []
@@ -86,15 +86,11 @@ def submit_cook_sf(comp_submit, mail):
     }
 
     print(context)
-
-    doc.render(context)
-
+    # TODO: What is this used for?
     output = {}
 
-    file_stream = io.BytesIO()
-    doc.save(file_stream)  # save to stream
-    file_stream.seek(0)  # reset pointer to head
-    comp_submit["file_stream"] = file_stream
+    comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
+
     """
     # update submission log
     targ = get_pin('detroit', pin)
@@ -220,14 +216,10 @@ def submit_detroit_sf(comp_submit, mail):
         "propinfo": propinfo,
     }
 
-    doc.render(context)
-
+    # TODO:
     output = {}
 
-    file_stream = io.BytesIO()
-    doc.save(file_stream)  # save to stream
-    file_stream.seek(0)  # reset pointer to head
-    comp_submit["file_stream"] = file_stream
+    comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
 
     # update submission log
     targ = get_pin("detroit", pin)

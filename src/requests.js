@@ -18,13 +18,15 @@ export const submitAppeal = async (
   comparables,
   userInfo,
   userPropInfo,
-  uuid
+  uuid,
+  files = []
 ) => {
   try {
     const body = {
       target_pin: targetProperty,
       comparables,
       uuid,
+      files,
       ...userInfo,
       ...userPropInfo,
     }

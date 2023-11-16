@@ -4,6 +4,7 @@ import { Button, Divider, Table } from "antd"
 import { Link } from "react-router-dom"
 import PropertyInfo from "../shared/property-info"
 import { cleanParcel } from "../../utils"
+import { FileUpload } from "../../components/file-upload"
 
 const userCols = [
   {
@@ -80,6 +81,8 @@ const ReviewAppeal = (props) => {
     comparables,
     confirmInfo,
     back,
+    files,
+    onChangeFiles,
   } = props
   return (
     <>
@@ -108,6 +111,17 @@ const ReviewAppeal = (props) => {
         can be changed later.
       </p>
       <Table dataSource={comparables.map(cleanParcel)} columns={compCols} />
+      <h1>Upload images</h1>
+      <p>
+        Upload any images of damange to your property that would impact your
+        assessed value.
+      </p>
+      <FileUpload
+        accept="image/*,.heic,.heif"
+        files={files}
+        onChange={onChangeFiles}
+      />
+      <Divider />
       <Button type="danger" onClick={back}>
         Back
       </Button>
@@ -127,6 +141,8 @@ ReviewAppeal.propTypes = {
   propInfo: PropTypes.object,
   userInfo: PropTypes.object,
   comparables: PropTypes.array,
+  files: PropTypes.array,
+  onChangeFiles: PropTypes.func,
   confirmInfo: PropTypes.object,
   back: PropTypes.func,
 }

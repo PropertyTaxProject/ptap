@@ -1,21 +1,16 @@
-import io
 import os
 import string
 from datetime import datetime
-from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 import numpy as np
 import pandas as pd
-import requests
-from docx.shared import Inches
-from docxtpl import DocxTemplate, InlineImage
-from PIL import Image
-from pillow_heif import register_heif_opener
+from docxtpl import DocxTemplate
 from rapidfuzz import process
 
 from .computils import find_comps
 from .dataqueries import address_candidates_query, ecdf, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
+from .utils import render_doc_to_bytes
 
 
 # TODO: Pydantic to enforce types on input? https://pypi.org/project/Flask-Pydantic/
@@ -186,7 +181,7 @@ def process_estimate(form_data, download):
                 base_dir,
                 "templates",
                 "docs",
-                "detroit_template_2023_alt.docx",
+                "detroit_template_2024.docx",
             )
         )
         # tbl cols
@@ -251,15 +246,8 @@ def process_estimate(form_data, download):
             "comp_contents": comp_contents,
         }
 
-        with TemporaryDirectory() as temp_dir:
-            images = process_images(doc, form_data["files"], temp_dir)
-            doc.render({**context, "images": images, "has_images": len(images) > 0})
-            # also save a byte object to return
-            file_stream = io.BytesIO()
-            doc.save(file_stream)  # save to stream
-            file_stream.seek(0)  # reset pointer to head
-            output["file_stream"] = file_stream
-            output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
+        output["file_stream"] = render_doc_to_bytes(doc, context, form_data["files"])
+        output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
     else:
         # serve information for website display
         delta = (comps_avg / 2) - pin_av
@@ -297,28 +285,6 @@ def process_estimate(form_data, download):
         output["estimate"] = l1 + l2 + l3 + l4 + l5
 
     return output
-
-
-def process_images(doc, files, temp_dir):
-    """Process images individually after upload"""
-    register_heif_opener()
-
-    MAX_WIDTH = Inches(5.5)
-    MAX_HEIGHT = Inches(4)
-    images = []
-    for file in files:
-        res = requests.get(file["url"])
-        if res.status_code != 200:
-            continue
-        img = Image.open(io.BytesIO(res.content))
-        temp_file = NamedTemporaryFile(dir=temp_dir, suffix=".jpg", delete=False)
-        img.save(temp_file.name, format="JPEG")
-        # Only constrain the larger dimension
-        img_kwargs = (
-            {"height": MAX_HEIGHT} if img.height > img.width else {"width": MAX_WIDTH}
-        )
-        images.append(InlineImage(doc, temp_file.name, **img_kwargs))
-    return images
 
 
 def process_comps_input(comp_submit, mail):
