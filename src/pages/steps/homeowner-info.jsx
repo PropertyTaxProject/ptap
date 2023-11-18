@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { Form, Input, Button, Radio, Row, Col, Space, Select } from "antd"
-
+import { getAppealType } from "../../utils"
 const { Option } = Select
 
 const formItemLayout = {
@@ -36,12 +36,23 @@ const tailFormItemLayout = {
   },
 }
 
-const ContactInfo = (props) => {
+const HomeownerInfo = ({ submitForm, city, pin, eligibility, uuid, back }) => {
   const [form] = Form.useForm()
-  const { onFinish, back } = props
   const [showMailingAddr, updateMailingAddr] = useState(false)
   const [showAltContact, updateAltContact] = useState(false)
   const [showReferral, updateReferral] = useState(false)
+
+  const onFinish = (values) => {
+    const info = {
+      ...values,
+      pin,
+      appeal_type: getAppealType(city),
+      eligibility,
+      uuid,
+    }
+    console.log("Received values of form: ", info)
+    submitForm(info)
+  }
 
   return (
     <>
@@ -404,33 +415,6 @@ const ContactInfo = (props) => {
           </Space>
         </Form.Item>
       </Form>
-    </>
-  )
-}
-
-ContactInfo.propTypes = {
-  onFinish: PropTypes.func,
-  back: PropTypes.func,
-}
-
-const HomeownerInfo = (props) => {
-  const { submitForm, city, pin, eligibility, uuid, back } = props
-
-  const onFinish = (values) => {
-    let appealType
-    if (city === "detroit") {
-      appealType = "detroit_single_family"
-    } else if (city === "chicago") {
-      appealType = "cook_county_single_family"
-    }
-    const info = { ...values, pin, appeal_type: appealType, eligibility, uuid }
-    console.log("Received values of form: ", info)
-    submitForm(info)
-  }
-
-  return (
-    <>
-      <ContactInfo onFinish={onFinish} back={back} />
       <p>Page 2 of 5</p>
     </>
   )

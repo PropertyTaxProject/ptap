@@ -29,6 +29,7 @@ const PinChooser = ({
         key: pin,
       }))}
       scroll={{ x: true }}
+      pagination={false}
     >
       {headers.map(({ title, field }) => (
         <Table.Column title={title} dataIndex={field} key={field} />

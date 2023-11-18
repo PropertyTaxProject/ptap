@@ -7,13 +7,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import { createBrowserHistory } from "history"
 import ReactGA from "react-ga"
 
-import Header from "./general/header"
-/*import DetroitLandingPage from './landing/detroit-landing-page';*/
-import Appeal from "./appeal/appeal"
-import SelectRegion from "./landing/select-region"
-import FinalPage from "./landing/final-page"
-import Estimator from "./estimator/estimator"
-import Reduced2023 from "./reduced2023/reduced2023"
+import Header from "./components/header"
+import Appeal from "./pages/appeal"
+import SelectRegion from "./pages/select-region"
+import FinalPage from "./pages/final-page"
+import Reduced2023 from "./pages/reduced2023"
 
 const { Content, Footer } = Layout
 
@@ -38,10 +36,6 @@ const Page = () => {
             <Switch>
               <Route path="/detroit" render={() => <Reduced2023 />} />
               <Route path="/detroit2023" render={() => <Reduced2023 />} />
-              <Route
-                path="/estimate"
-                render={() => <Estimator city="detroit" />}
-              />
               <Route
                 path="/internaldetroitappeal"
                 render={() => <Appeal city="detroit" />}

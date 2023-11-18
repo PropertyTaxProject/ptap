@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button, Divider, Table } from "antd"
+import { Button, Divider } from "antd"
 import { submitForm, submitEstimate, submitEstimate2 } from "../requests"
 import PinLookup from "../components/pin-lookup"
 import ToolIntro from "./content/tool-intro"
@@ -7,8 +7,7 @@ import PinChooser from "../components/pin-chooser"
 import { DISPLAY_FIELDS, cleanParcel } from "../utils"
 import { FileUpload } from "../components/file-upload"
 import PtapLanguage from "./content/ptap-language"
-
-const appealType = "detroit_single_family"
+import PropertyInfo from "../components/property-info"
 
 const Reduced2023 = () => {
   const [state, setState] = useState({
@@ -25,12 +24,6 @@ const Reduced2023 = () => {
     propertyOptions: null,
     files: [],
   })
-
-  const targetColumns = DISPLAY_FIELDS.filter(
-    ({ title }) => title !== "Distance"
-  ).map(({ title, field }) => (
-    <Table.Column title={title} dataIndex={field} key={field} />
-  ))
 
   const onSubmit = async () => {
     const [, res] = await Promise.all([
@@ -64,7 +57,7 @@ const Reduced2023 = () => {
           <h2>Step 1</h2>
           <p>Enter your address into the search bar.</p>
           <PinLookup
-            appealType={appealType}
+            city={"detroit"}
             onSearch={(propertyOptions) =>
               setState({ ...state, propertyOptions })
             }
@@ -116,7 +109,7 @@ const Reduced2023 = () => {
             disabled={state.pin === null}
             onClick={async () => {
               const res = await submitForm({
-                appeal_type: appealType,
+                appeal_type: "detroit_single_family",
                 pin: state.pin,
               })
               if (res === null) return
@@ -147,10 +140,7 @@ const Reduced2023 = () => {
           <p>
             Below is the data that the Assessor has on file for your property.
           </p>
-          <Table dataSource={[cleanParcel(state.target)]} scroll={{ x: true }}>
-            {targetColumns}
-          </Table>
-          {state.propertyInfo}
+          <PropertyInfo city={"detroit"} target={state.target} />
           <Divider />
           <h2>Step 4</h2>
           <p>
@@ -179,6 +169,7 @@ const Reduced2023 = () => {
               })
             }
           />
+          <Divider />
           <h2>Step 5</h2>
           <p>
             Upload any images of damage to your property that would impact your
