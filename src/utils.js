@@ -171,3 +171,15 @@ export function cleanParcel(parcel) {
   }
   return parcel
 }
+
+export const getAppealType = (city) => {
+  if (city === "detroit") {
+    return "detroit_single_family"
+  } else if (city === "chicago") {
+    return "cook_county_single_family"
+  }
+  return city
+}
+
+export const detroitPropertyInfo = ({ taxpayer, homestead_exemption }) =>
+  `Taxpayer of Record: ${taxpayer}. Current Principal Residence Exemption (PRE) Exemption Status: ${homestead_exemption}%.`

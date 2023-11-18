@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { Form, Button, Row, Col, Space, Divider, Input, Radio } from "antd"
-import PropertyInfo from "../shared/property-info"
+import PropertyInfo from "../../components/property-info"
 
 const { TextArea } = Input
 
@@ -25,9 +25,7 @@ const formItemLayout = {
   },
 }
 
-const Characteristics = (props) => {
-  const { city, targetProperty, submitPropReview, back } = props
-
+const ReviewProperty = ({ city, target, submitPropReview, back }) => {
   const [form] = Form.useForm()
   const [showCharInput, updateCharInput] = useState(false)
 
@@ -38,9 +36,10 @@ const Characteristics = (props) => {
 
   return (
     <>
-      <PropertyInfo city={city} targetProperty={targetProperty} cols={5} />
+      <h1>Your Property Information</h1>
+      <p>Below is the data that the Assessor has on file for your property.</p>
+      <PropertyInfo city={city} target={target} cols={5} />
       <Divider />
-
       <Form
         form={form}
         name="Housing_Information"
@@ -101,11 +100,11 @@ const Characteristics = (props) => {
   )
 }
 
-Characteristics.propTypes = {
+ReviewProperty.propTypes = {
   city: PropTypes.string,
-  targetProperty: PropTypes.string,
+  target: PropTypes.string,
   submitPropReview: PropTypes.func,
   back: PropTypes.func,
 }
 
-export default Characteristics
+export default ReviewProperty

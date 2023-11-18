@@ -1,6 +1,6 @@
 import React from "react"
 import { Layout, Menu } from "antd"
-import coalition from "./coalition_logo.png"
+import coalition from "../assets/coalition_logo.png"
 
 const { Header } = Layout
 
