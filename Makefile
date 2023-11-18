@@ -27,7 +27,7 @@ start:
 
 .PHONY: start-py
 start-py:
-	poetry run flask --debug run
+	poetry run flask --debug run --host=0.0.0.0
 
 .PHONY: start-js
 start-js:
