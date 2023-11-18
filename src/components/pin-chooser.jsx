@@ -2,19 +2,34 @@ import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import { Button, Table } from "antd"
 
-const PinChooser = ({ headers, propertyOptions, onChange, max, isSelectLabels = false }) => {
+const PinChooser = ({
+  headers,
+  propertyOptions,
+  onChange,
+  max,
+  isSelectLabels = false,
+}) => {
   // TODO: Maybe manage state outside?
   const [selectedPins, setSelectedPins] = useState([])
 
   const maxOptions = max > 0 ? max : propertyOptions.length
-  const [addLabel, removeLabel] = isSelectLabels ? ["Select", "Remove"] : ["Add", "Remove"]
+  const [addLabel, removeLabel] = isSelectLabels
+    ? ["Select", "Remove"]
+    : ["Add", "Remove"]
 
   useEffect(() => {
     onChange(selectedPins)
   }, [selectedPins])
 
   return (
-    <Table dataSource={propertyOptions.map(({pin, ...data}) => ({...data, pin, key: pin }))} scroll={{ x: true }}>
+    <Table
+      dataSource={propertyOptions.map(({ pin, ...data }) => ({
+        ...data,
+        pin,
+        key: pin,
+      }))}
+      scroll={{ x: true }}
+    >
       {headers.map(({ title, field }) => (
         <Table.Column title={title} dataIndex={field} key={field} />
       ))}
@@ -49,7 +64,7 @@ PinChooser.propTypes = {
   propertyOptions: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func,
   max: PropTypes.number,
-  isSelectLabels: PropTypes.bool
+  isSelectLabels: PropTypes.bool,
 }
 
 export default PinChooser

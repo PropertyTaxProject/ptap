@@ -13,7 +13,7 @@ const PinLookup = ({ appealType, onSearch }) => {
       layout="vertical"
       onFinish={async (data) => {
         const { candidates } = await lookupPin({
-            ...data,
+          ...data,
           appeal_type: appealType,
         })
         onSearch(candidates)
