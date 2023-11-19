@@ -36,7 +36,15 @@ const tailFormItemLayout = {
   },
 }
 
-const HomeownerInfo = ({ submitForm, city, user, pin, eligibility, uuid, back }) => {
+const HomeownerInfo = ({
+  submitForm,
+  city,
+  user,
+  pin,
+  eligibility,
+  uuid,
+  back,
+}) => {
   const [form] = Form.useForm()
   const [showMailingAddr, updateMailingAddr] = useState(false)
   const [showAltContact, updateAltContact] = useState(false)
