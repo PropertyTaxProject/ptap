@@ -52,18 +52,10 @@ class CookParcel(db.Model):
             "cook_compound_match_index",
             "pin",
             "age",
-            "sale_price",
-            "sale_year",
             "property_class",
             "building_sq_ft",
             "land_sq_ft",
-            "rooms",
-            "bedrooms",
-            "assessed_value",
             "exterior",
-            "stories",
-            "basement",
-            "garage",
         ),
     )
 
