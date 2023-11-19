@@ -101,7 +101,7 @@ const Appeal = (props) => {
         back={() => {
           setState({
             ...state,
-            step: 2
+            step: 2,
           })
         }}
       />
@@ -137,7 +137,7 @@ const Appeal = (props) => {
         back={() =>
           setState({
             ...state,
-            step: 3
+            step: 3,
           })
         }
       />
