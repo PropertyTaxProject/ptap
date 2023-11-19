@@ -55,6 +55,7 @@ def address_candidates(input_data, cutoff_info):
 
 
 def comparables(input_data, sales_comps=False):
+    # TODO: sales_comps is never used
     """
     Returns comparables
     """

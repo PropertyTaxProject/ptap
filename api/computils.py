@@ -18,13 +18,10 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         debug = False
     elif region == "cook":
         model = CookParcel
-        age_dif = 15 * multiplier
-        build_dif = 0.10 * targ["building_sq_ft"].values[0] * multiplier
-        land_dif = 0.25 * targ["land_sq_ft"].values[0] * multiplier
-        rooms_dif = 1.5 * multiplier
-        bedroom_dif = 1.5 * multiplier
-        av_dif = 0.5 * targ["assessed_value"].values[0] * multiplier
-        distance = MILE_IN_METERS * multiplier  # miles
+        age_dif = 15
+        build_dif = (0.1 * multiplier) * targ["building_sq_ft"].values[0]
+        land_dif = (0.1 * multiplier) * targ["land_sq_ft"].values[0]
+        distance = MILE_IN_METERS * multiplier
         debug = True
 
     # construct query
@@ -37,6 +34,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         *min_max_query(model, "age", int, targ["age"].values[0], age_dif),
     ]
 
+    # TODO: sales_comps never used
     if sales_comps:
         query_filters.extend(
             [
@@ -67,6 +65,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     elif region == "cook":
         query_filters.extend(
             [
+                # TODO: Neighborhood, but not loaded
                 model.property_class == targ["property_class"].values[0],
                 *min_max_query(
                     model,
@@ -78,21 +77,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 *min_max_query(
                     model, "land_sq_ft", float, targ["land_sq_ft"].values[0], land_dif
                 ),
-                *min_max_query(model, "rooms", int, targ["rooms"].values[0], rooms_dif),
-                *min_max_query(
-                    model, "bedrooms", int, targ["bedrooms"].values[0], bedroom_dif
-                ),
-                *min_max_query(
-                    model,
-                    "assessed_value",
-                    int,
-                    targ["assessed_value"].values[0],
-                    av_dif,
-                ),
                 model.exterior == int(targ["exterior"].values[0]),
-                model.stories == int(targ["stories"].values[0]),
-                model.basement == bool(targ["basement"].values[0]),
-                model.garage == bool(targ["garage"].values[0]),
             ]
         )
     else:
@@ -139,14 +124,6 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 func.abs(model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0]))
                 / (float(targ["land_sq_ft"].values[0]) * 0.10)
             )
-            + func.abs(model_alias.rooms - int(targ["rooms"].values[0])) / 1.5
-            + func.abs(model_alias.bedrooms - int(targ["bedrooms"].values[0])) / 1.5
-            + (
-                func.abs(
-                    model_alias.assessed_value - float(targ["assessed_value"].values[0])
-                )
-                / (float(targ["assessed_value"].values[0]) * 0.5)
-            )
         )
 
     query = (
@@ -170,8 +147,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         return targ, result
 
 
-def find_comps(targ, region, sales_comps, multiplier=1):
-    multiplier = 4
+def find_comps(targ, region, sales_comps, multiplier=2.5):
     new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
     # TODO: Fix this check
     if multiplier > 4:  # no comps found within maximum search area---hault
