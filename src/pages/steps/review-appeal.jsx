@@ -119,7 +119,7 @@ const ReviewAppeal = ({
     <Divider />
     <h2>Upload images</h2>
     <p>
-      Upload any images of damange to your property that would impact your
+      Upload any images of damage to your property that would impact your
       assessed value.
     </p>
     <FileUpload

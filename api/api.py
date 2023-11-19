@@ -45,11 +45,6 @@ app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
-# app.config["JSON_PROVIDER_CLASS"] = "api.json.SQLAlchemyJSONProvider"
-# TODO: Figure this out
-# app.json_provider_class = SQLAlchemyJSONProvider
-# app.json = app.json_provider_class(app)
-# app.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(app)
 
@@ -160,9 +155,9 @@ def page_not_found(error):
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
-# @app.errorhandler(Exception)
-# def handle_error(error):
-#     if isinstance(error, HTTPException):
-#         return error
-#     sentry_sdk.capture_exception(error)
-#     return jsonify({"error": str(error)}), 500
+@app.errorhandler(Exception)
+def handle_error(error):
+    if isinstance(error, HTTPException):
+        return error
+    sentry_sdk.capture_exception(error)
+    return jsonify({"error": str(error)}), 500

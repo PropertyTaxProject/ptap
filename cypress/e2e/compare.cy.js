@@ -25,7 +25,7 @@ describe("Search and compare flow", () => {
         cy.get(".ant-table-content").contains(pin).should("exist")
 
         cy.get(".ant-table-cell button").click()
-        cy.get("#Eligibility button").click()
+        cy.get("button").contains("Get Sales Data").click()
 
         comparables.forEach(({ street_number, street_name }) => {
           cy.get(".ant-table-content")

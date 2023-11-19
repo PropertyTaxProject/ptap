@@ -1,5 +1,4 @@
 import os
-import string
 from datetime import datetime
 
 import numpy as np
@@ -70,14 +69,6 @@ def comparables(input_data, sales_comps=False):
         if targ.empty:
             raise Exception("Invalid PIN")
         targ["Distance"] = 0
-        partone = "Taxpayer of Record: " + targ["taxpayer"].to_string(index=False) + "."
-        partone = string.capwords(partone)
-        parttwo = (
-            " Current Principal Residence Exemption (PRE)  Exemption Status: "
-            + targ["homestead_exemption"].to_string(index=False)
-            + "%."
-        )
-        prop_info = partone + parttwo
     elif input_data["appeal_type"] == "cook_county_single_family":
         max_comps = 9
         sales_comps = False
@@ -86,7 +77,6 @@ def comparables(input_data, sales_comps=False):
         if targ.empty:
             raise Exception("Invalid PIN")
         targ["Distance"] = 0
-        prop_info = ""
 
     # call comp funtion
     new_targ, cur_comps = find_comps(targ, region, sales_comps)
@@ -135,7 +125,6 @@ def comparables(input_data, sales_comps=False):
     output["target_pin"] = new_targ.drop(["geom"], axis=1).to_dict(orient="records")
     output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(orient="records")
     output["labeled_headers"] = cur_comps.columns.tolist()
-    output["prop_info"] = prop_info
     output["pinav"] = new_targ.assessed_value.mean()
 
     return output
@@ -157,6 +146,7 @@ def process_estimate(form_data, download):
     # }
 
     t_df = pd.DataFrame([form_data["target_pin"]])
+    # TODO: Load comparables from DB, PINs instead
     c_df = pd.DataFrame(form_data["selectedComparables"])
     comps_df = pd.DataFrame(form_data["comparablesPool"])
 
