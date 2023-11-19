@@ -36,7 +36,7 @@ const tailFormItemLayout = {
   },
 }
 
-const HomeownerInfo = ({ submitForm, city, pin, eligibility, uuid, back }) => {
+const HomeownerInfo = ({ submitForm, city, user, pin, eligibility, uuid, back }) => {
   const [form] = Form.useForm()
   const [showMailingAddr, updateMailingAddr] = useState(false)
   const [showAltContact, updateAltContact] = useState(false)
@@ -72,6 +72,7 @@ const HomeownerInfo = ({ submitForm, city, pin, eligibility, uuid, back }) => {
       </Row>
       <Form
         form={form}
+        initialValues={user || {}}
         name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"
@@ -423,6 +424,7 @@ const HomeownerInfo = ({ submitForm, city, pin, eligibility, uuid, back }) => {
 HomeownerInfo.propTypes = {
   submitForm: PropTypes.func,
   city: PropTypes.string,
+  user: PropTypes.object,
   pin: PropTypes.string,
   eligibility: PropTypes.string,
   uuid: PropTypes.string,

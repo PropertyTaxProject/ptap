@@ -147,7 +147,7 @@ ReviewAppeal.propTypes = {
   comparables: PropTypes.array,
   files: PropTypes.array,
   onChangeFiles: PropTypes.func,
-  confirmInfo: PropTypes.object,
+  confirmInfo: PropTypes.func,
   back: PropTypes.func,
 }
 

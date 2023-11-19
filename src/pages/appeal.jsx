@@ -54,14 +54,15 @@ const Appeal = (props) => {
           target: state.propertyOptions.find((o) => pin === o.pin),
         })
       }
-      setEligibility={(eligible) => setState({ ...state, eligible })}
+      setEligibility={(eligible) => setState({ ...state, eligible, step: 2 })}
     />
   )
 
-  if (state.eligible === true) {
+  if (state.step === 2) {
     view = (
       <HomeownerInfo
         city={city}
+        user={state.user}
         pin={state.pin}
         uuid={state.uuid}
         eligibility={state.eligible}
@@ -75,47 +76,39 @@ const Appeal = (props) => {
               headers: response.labeled_headers,
               target: response.target_pin[0],
               propertyInfo: response.prop_info,
+              step: 3,
             })
           }
         }}
         back={() => {
           setState({
             ...state,
-            user: null,
-            pin: null,
-            comparables: [],
-            headers: [],
-            target: null,
-            propertyInfo: [],
-            eligibility: null,
+            step: 1,
           })
         }}
       />
     )
   }
 
-  if (state.user !== null) {
+  if (state.step === 3) {
     view = (
       <ReviewProperty
         city={city}
         target={state.target}
         submitPropReview={async (userProperty) => {
-          setState({ ...state, userProperty })
+          setState({ ...state, userProperty, step: 4 })
         }}
         back={() => {
           setState({
             ...state,
-            user: null,
-            comparables: [],
-            headers: [],
-            target: null,
+            step: 2
           })
         }}
       />
     )
   }
 
-  if (state.userProperty !== null) {
+  if (state.step === 4) {
     view = (
       <ReviewComparables
         city={city}
@@ -138,23 +131,20 @@ const Appeal = (props) => {
             selectedComparables: state.comparables.filter(({ pin }) =>
               pins.includes(pin)
             ),
-            step: 6,
+            step: 5,
           })
         }}
         back={() =>
           setState({
             ...state,
-            user: null,
-            comparables: [],
-            selectedComparables: [],
-            headers: [],
+            step: 3
           })
         }
       />
     )
   }
 
-  if (state.selectedComparables.length === 5 && state.step === 6) {
+  if (state.step === 5) {
     view = (
       <ReviewAppeal
         city={city}
@@ -174,17 +164,11 @@ const Appeal = (props) => {
           )
         }}
         back={() => {
-          // TODO:
-          setState({ ...state, step: 1 })
+          setState({ ...state, step: 4 })
         }}
       />
     )
   }
-
-  // TODO: Still have redirect?
-  // if (reportedEligibility != null && reportedEligibility === false) {
-  //   history.push("/illegalforeclosures")
-  // }
 
   return view
 }

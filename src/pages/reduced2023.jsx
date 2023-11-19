@@ -104,6 +104,7 @@ const Reduced2023 = () => {
               })
             }
           />
+          <br />
           <Button
             type="primary"
             disabled={state.pin === null}
