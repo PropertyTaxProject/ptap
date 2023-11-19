@@ -26,7 +26,7 @@ describe("Appeal flow", () => {
         cy.get(".ant-table-content").contains(pin).should("exist")
 
         cy.get(".ant-table-cell button").first().click()
-        cy.get("button[type=submit]").contains("Next Page").click()
+        cy.get("button").contains("Next Page").click()
 
         cy.get("h1").contains("Homeowner Contact Information").should("exist")
         cy.get("#Housing_Information_name").type(contact.name)
@@ -44,7 +44,7 @@ describe("Appeal flow", () => {
         cy.get(".ant-select-dropdown").contains("Local Organization").click()
         cy.get("button[type=submit]").contains("Next Page").click()
 
-        cy.get(".ant-row")
+        cy.get(".ant-table-row")
           .contains(`${street_number} ${street_name}`)
           .should("be.visible")
 

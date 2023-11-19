@@ -125,7 +125,6 @@ const Appeal = (props) => {
         target={state.target}
         numComparables={5}
         onChange={(pins) => {
-          console.log(pins)
           setState({
             ...state,
             selectedComparables: state.comparables.filter(({ pin }) =>

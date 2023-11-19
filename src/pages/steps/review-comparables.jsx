@@ -16,18 +16,11 @@ const ReviewComparables = ({
   back,
 }) => {
   const advancePage = () => {
-    console.log("ran")
     // add up to exactly five on advance, update on submit
     const selectedPins = selectedComparables.map(({ pin }) => pin)
     const availablePins = comparables
       .map(({ pin }) => pin)
       .filter((pin) => !selectedPins.includes(pin))
-    console.log(availablePins)
-    console.log(numComparables - selectedPins.length)
-    console.log([
-      ...availablePins.slice(0, numComparables - selectedPins.length),
-    ])
-    // onChange([...selectedPins, ...availablePins.slice(0, (numComparables - selectedPins.length))])
     onNext([
       ...selectedPins,
       ...availablePins.slice(0, numComparables - selectedPins.length),
