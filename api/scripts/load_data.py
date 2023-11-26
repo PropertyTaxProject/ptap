@@ -25,6 +25,9 @@ if __name__ == "__main__":
         cook_parcels = []
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
+            # Skip vacant land
+            if row["Property Class"].strip() in ["100", "200"]:
+                continue
             sale_price = (
                 float(row["Sale Price"])
                 if row["Sale Price"] not in ["", "NA"]

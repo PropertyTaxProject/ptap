@@ -63,10 +63,19 @@ def calculate_comps(targ, region, sales_comps, multiplier):
             ]
         )
     elif region == "cook":
+        prop_class = targ["property_class"].values[0]
+        one_story_classes = ["202", "203", "204"]
+        two_story_classes = ["207", "208", "209"]
+        prop_class_query = model.property_class == prop_class
+        if prop_class in one_story_classes:
+            prop_class_query = model.property_class.in_(one_story_classes)
+        if prop_class in two_story_classes:
+            prop_class_query = model.property_class.in_(two_story_classes)
+
         query_filters.extend(
             [
                 # TODO: Neighborhood, but not loaded
-                model.property_class == targ["property_class"].values[0],
+                prop_class_query,
                 *min_max_query(
                     model,
                     "building_sq_ft",

@@ -7,7 +7,7 @@ from docxtpl import DocxTemplate
 from rapidfuzz import process
 
 from .computils import find_comps
-from .dataqueries import address_candidates_query, ecdf, get_pin
+from .dataqueries import address_candidates_query, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
 from .utils import render_doc_to_bytes
 
@@ -63,7 +63,6 @@ def comparables(input_data, sales_comps=False):
 
     # set constants
     if input_data["appeal_type"] == "detroit_single_family":
-        max_comps = 7
         sales_comps = True
         region = "detroit"
         targ = get_pin(region, target_pin)
@@ -71,7 +70,6 @@ def comparables(input_data, sales_comps=False):
             raise Exception("Invalid PIN")
         targ["Distance"] = 0
     elif input_data["appeal_type"] == "cook_county_single_family":
-        max_comps = 9
         sales_comps = False
         region = "cook"
         targ = get_pin(region, target_pin)
@@ -86,34 +84,8 @@ def comparables(input_data, sales_comps=False):
     # TODO: Enum to represent regions
     # process comps
 
-    # add weights based on Cook PINS AA-SS-BBB-PPP-UUUU
-    # pos 7 high
-    # 6 medium
-    # 5 low
-
-    dist_weight = 1
-    valuation_weight = 3
-
-    cur_comps["dist_dist"] = ecdf(cur_comps.distance)(cur_comps.distance, True)
-    cur_comps["val_dist"] = ecdf(cur_comps.assessed_value)(
-        cur_comps.assessed_value, True
-    )
-    cur_comps["score"] = (
-        dist_weight * cur_comps["dist_dist"] + valuation_weight * cur_comps["val_dist"]
-    )
-
-    if input_data["appeal_type"] == "detroit_single_family":  # neighborhood bonus
-        cur_comps["neigborhoodmatch"] = (
-            cur_comps["neighborhood"] == targ["neighborhood"].values[0]
-        )
-        cur_comps["neigborhoodmatch"] = cur_comps["neigborhoodmatch"].astype(int)
-        cur_comps["score"] = cur_comps["score"] + 1 * cur_comps["neigborhoodmatch"]
-        cur_comps = cur_comps.drop(["neigborhoodmatch"], axis=1)
-
-    cur_comps = cur_comps.sort_values(by=["score"], ascending=False)
-    cur_comps = cur_comps.head(max_comps)
     new_targ = new_targ.round(2)
-    cur_comps = cur_comps.round(2).drop(["dist_dist", "val_dist"], axis=1)
+    cur_comps = cur_comps.round(2)
 
     output = {}
     new_targ = new_targ.fillna("").replace({np.nan: None})

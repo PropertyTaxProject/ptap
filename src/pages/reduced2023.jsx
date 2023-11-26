@@ -72,6 +72,7 @@ const Reduced2023 = () => {
       )}
       {state.propertyOptions && state.propertyOptions.length > 0 && (
         <>
+          <Divider />
           <h2>Step 2</h2>
           <p>
             Select your property from the table and then click “Get Sales Data.”
