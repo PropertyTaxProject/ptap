@@ -152,7 +152,7 @@ const Appeal = (props) => {
         userInfo={state.user}
         comparables={state.selectedComparables}
         files={state.files}
-        onChangeFiles={state.setFiles}
+        onChangeFiles={(files) => setState({ ...state, files })}
         confirmInfo={() => {
           submitAppeal(
             state.target,
