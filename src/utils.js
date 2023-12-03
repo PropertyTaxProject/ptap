@@ -40,7 +40,7 @@ export const DISPLAY_FIELDS = [
   },
   {
     title: "Assessor Market Value",
-    field: "assessed_value_display",
+    field: "market_value_display",
   },
   {
     title: "Sale Price",
@@ -98,6 +98,10 @@ export const DISPLAY_FIELDS_COOK = [
     field: "stories",
   },
   {
+    title: "Assessed Value",
+    field: "assessed_value_display",
+  },
+  {
     title: "Distance",
     field: "distance_display",
   },
@@ -140,7 +144,8 @@ export function cleanParcel(parcel) {
     }[parcel.baths]
   }
   if (parcel.hasOwnProperty("assessed_value")) {
-    parcel.assessed_value_display = usd.format(parcel.assessed_value * 2)
+    parcel.assessed_value_display = parcel.assessed_value.toLocaleString()
+    parcel.market_value_display = usd.format(parcel.assessed_value * 2)
   }
   if (parcel.sale_price) {
     parcel.sale_price_display = usd.format(parcel.sale_price)
