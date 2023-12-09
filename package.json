@@ -11,34 +11,34 @@
     "prettier:fix": "prettier --write \"./src/**/*.{js,jsx,css}\""
   },
   "dependencies": {
-    "antd": "^4.11.2",
-    "axios": "^1.6.0",
+    "antd": "^4.24.15",
+    "axios": "^1.6.2",
     "file-saver": "^2.0.5",
     "prop-types": "^15.8.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-ga": "^3.3.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/eslint-parser": "^7.22.15",
+    "@babel/core": "^7.23.5",
+    "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.22.20",
-    "@babel/preset-react": "^7.22.15",
-    "@vitejs/plugin-react": "^4.1.1",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-react": "^7.23.3",
+    "@vitejs/plugin-react": "^4.2.1",
     "axe-core": "^4.8.2",
-    "cypress": "^13.3.2",
+    "cypress": "^13.6.1",
     "cypress-axe": "^1.5.0",
-    "eslint": "^8.50.0",
-    "eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-cypress": "^2.15.1",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.2",
-    "prettier": "^3.0.3",
-    "prettier-eslint": "^15.0.1",
-    "vite": "^4.5.0"
+    "prettier": "^3.1.0",
+    "prettier-eslint": "^16.1.2",
+    "vite": "^5.0.7"
   },
   "eslintConfig": {
     "extends": [

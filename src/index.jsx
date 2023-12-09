@@ -1,10 +1,9 @@
 import "antd/dist/antd.min.css"
 import "./index.css"
 import React, { useEffect } from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { Layout } from "antd"
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import { createBrowserHistory } from "history"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import ReactGA from "react-ga"
 
 import Header from "./components/header"
@@ -15,13 +14,14 @@ import Reduced2023 from "./pages/reduced2023"
 
 const { Content, Footer } = Layout
 
+// TODO: Set up google analytics again, events
 /* google analytics */
-ReactGA.initialize("UA-178459008-2")
-const history = createBrowserHistory()
-history.listen((location) => {
-  ReactGA.set({ page: location.pathname })
-  ReactGA.pageview(location.pathname)
-})
+// ReactGA.initialize("UA-178459008-2")
+// const history = createBrowserHistory()
+// history.listen((location) => {
+//   ReactGA.set({ page: location.pathname })
+//   ReactGA.pageview(location.pathname)
+// })
 
 const Page = () => {
   useEffect(() => {
@@ -33,15 +33,16 @@ const Page = () => {
         <Header />
         <Content style={{ padding: "0 3vw" }}>
           <div className="site-layout-content">
-            <Switch>
-              <Route path="/detroit" render={() => <Reduced2023 />} />
-              <Route path="/detroit2023" render={() => <Reduced2023 />} />
+            <Routes>
+              <Route path="/" element={<SelectRegion />} />
+              <Route path="/detroit" element={<Reduced2023 />} />
+              <Route path="/detroit2023" element={<Reduced2023 />} />
               <Route
                 path="/internaldetroitappeal"
-                render={() => <Appeal city="detroit" />}
+                element={<Appeal city="detroit" />}
               />
-              <Route path="/cook" render={() => <Appeal city="chicago" />} />
-              <Route path="/completedappeal" render={() => <FinalPage />} />
+              <Route path="/cook" element={<Appeal city="chicago" />} />
+              <Route path="/completedappeal" element={<FinalPage />} />
               <Route
                 path="/illegalforeclosures"
                 component={() => {
@@ -49,8 +50,7 @@ const Page = () => {
                   return null
                 }}
               />
-              <Route path="/" render={() => <SelectRegion />} />
-            </Switch>
+            </Routes>
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
@@ -62,9 +62,9 @@ const Page = () => {
   )
 }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"))
+root.render(
   <React.StrictMode>
     <Page />
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 )
