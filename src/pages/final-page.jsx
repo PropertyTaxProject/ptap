@@ -1,6 +1,5 @@
 import React from "react"
 import { Button, Space } from "antd"
-import { Link } from "react-router-dom"
 
 const PTAPHeader4 = () => (
   <>
@@ -15,9 +14,13 @@ const PTAPHeader4 = () => (
 
     <Space>
       <Button type="primary">
-        <Link to="/illegalforeclosures">
+        <a
+          href="https://illegalforeclosures.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           See more information on our website
-        </Link>
+        </a>
       </Button>
     </Space>
   </>

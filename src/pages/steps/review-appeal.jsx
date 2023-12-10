@@ -87,7 +87,7 @@ const ReviewAppeal = () => {
       appeal.uuid,
       appeal.files
     )
-    window.sessionStorage.removeItem("appeal")
+    window.sessionStorage.removeItem(`appeal-${appeal.city}`)
     dispatch({ type: "complete" })
     navigate("../complete")
   }

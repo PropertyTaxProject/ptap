@@ -122,7 +122,7 @@ const AppealLookup = () => {
         disabled={!appeal.target}
         onClick={() => {
           // TODO: Turn into actual link
-          navigate("../homeowner-info")
+          navigate("./homeowner-info")
         }}
       >
         Next Page

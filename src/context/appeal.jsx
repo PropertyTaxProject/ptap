@@ -5,7 +5,7 @@ export const AppealContext = createContext(null)
 export const AppealDispatchContext = createContext(null)
 
 const getInitialAppeal = (city) => {
-  const sessionAppeal = window.sessionStorage.getItem("appeal")
+  const sessionAppeal = window.sessionStorage.getItem(`appeal-${city}`)
   let appeal = initialAppeal
   try {
     appeal = sessionAppeal ? JSON.parse(sessionAppeal) : initialAppeal
@@ -19,7 +19,7 @@ export function AppealProvider({ city, children }) {
   const [appeal, dispatch] = useReducer(appealReducer, getInitialAppeal(city))
 
   useEffect(() => {
-    window.sessionStorage.setItem("appeal", JSON.stringify(appeal))
+    window.sessionStorage.setItem(`appeal-${city}`, JSON.stringify(appeal))
   }, [appeal])
 
   return (
