@@ -7,7 +7,6 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom"
 import AppealLookup from "./pages/steps/appeal-lookup"
 import SelectRegion from "./pages/select-region"
 import FinalPage from "./pages/final-page"
-import Reduced2023 from "./pages/reduced2023"
 import { AppealProvider } from "./context/appeal"
 import HomeownerInfo from "./pages/steps/homeowner-info"
 import ReviewProperty from "./pages/steps/review-property"
@@ -53,15 +52,7 @@ const router = createBrowserRouter([
         element: <SelectRegion />,
       },
       {
-        path: "/detroit",
-        element: <Reduced2023 />,
-      },
-      {
-        path: "/detroit2023",
-        element: <Reduced2023 />,
-      },
-      {
-        path: "/internaldetroitappeal/*",
+        path: "/detroit/*",
         element: (
           <AppealProvider city="detroit">
             <Outlet />

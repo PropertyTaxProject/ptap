@@ -40,7 +40,8 @@ const tailFormItemLayout = {
 
 const getInitialFormData = ({ user, target, city: appealCity }) => {
   const state = appealCity === "detroit" ? "MI" : "IL"
-  const { address, city, zip } = target || {}
+  let { address, city, zip } = target || {}
+  city = appealCity === "detroit" ? "Detroit" : city
   const targetProps = { address, city, zip, state }
   return { ...targetProps, ...user }
 }
