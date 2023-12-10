@@ -1,7 +1,8 @@
-import React, { useState } from "react"
-import PropTypes from "prop-types"
+import React, { useContext, useState } from "react"
 import { Form, Button, Row, Col, Space, Divider, Input, Radio } from "antd"
 import PropertyInfo from "../../components/property-info"
+import { AppealContext, AppealDispatchContext } from "../../context/appeal"
+import { useNavigate } from "react-router-dom"
 
 const { TextArea } = Input
 
@@ -25,20 +26,24 @@ const formItemLayout = {
   },
 }
 
-const ReviewProperty = ({ city, target, submitPropReview, back }) => {
+const ReviewProperty = () => {
+  const appeal = useContext(AppealContext)
+  const dispatch = useContext(AppealDispatchContext)
+  const navigate = useNavigate()
   const [form] = Form.useForm()
   const [showCharInput, updateCharInput] = useState(false)
 
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
-    submitPropReview(info)
+    dispatch({ type: "set-user-property", userProperty: info })
+    navigate("../comparables")
   }
 
   return (
     <>
       <h1>Your Property Information</h1>
       <p>Below is the data that the Assessor has on file for your property.</p>
-      <PropertyInfo city={city} target={target} cols={5} />
+      <PropertyInfo city={appeal.city} target={appeal.target} cols={5} />
       <Divider />
       <Form
         form={form}
@@ -86,7 +91,7 @@ const ReviewProperty = ({ city, target, submitPropReview, back }) => {
 
         <Form.Item>
           <Space>
-            <Button type="danger" onClick={back}>
+            <Button type="danger" onClick={() => navigate("../homeowner-info")}>
               Back
             </Button>
             <Button type="primary" htmlType="submit">
@@ -98,13 +103,6 @@ const ReviewProperty = ({ city, target, submitPropReview, back }) => {
       <p>Page 3 of 5</p>
     </>
   )
-}
-
-ReviewProperty.propTypes = {
-  city: PropTypes.string,
-  target: PropTypes.string,
-  submitPropReview: PropTypes.func,
-  back: PropTypes.func,
 }
 
 export default ReviewProperty

@@ -1,8 +1,10 @@
-import React, { useState } from "react"
-import PropTypes from "prop-types"
+import React, { useState, useContext } from "react"
 import { Form, Input, Button, Radio, Row, Col, Space, Select } from "antd"
 import { getAppealType } from "../../utils"
 const { Option } = Select
+import { AppealContext, AppealDispatchContext } from "../../context/appeal"
+import { useNavigate } from "react-router-dom"
+import { submitForm } from "../../requests"
 
 const formItemLayout = {
   labelCol: {
@@ -36,30 +38,36 @@ const tailFormItemLayout = {
   },
 }
 
-const HomeownerInfo = ({
-  submitForm,
-  city,
-  user,
-  pin,
-  eligibility,
-  uuid,
-  back,
-}) => {
+const HomeownerInfo = () => {
+  const appeal = useContext(AppealContext)
+  const dispatch = useContext(AppealDispatchContext)
+  const navigate = useNavigate()
   const [form] = Form.useForm()
   const [showMailingAddr, updateMailingAddr] = useState(false)
   const [showAltContact, updateAltContact] = useState(false)
   const [showReferral, updateReferral] = useState(false)
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
+    console.log(appeal)
     const info = {
       ...values,
-      pin,
-      appeal_type: getAppealType(city),
-      eligibility,
-      uuid,
+      pin: appeal.pin,
+      appeal_type: getAppealType(appeal.city),
+      eligibility: appeal.eligible,
+      uuid: appeal.uuid,
     }
     console.log("Received values of form: ", info)
-    submitForm(info)
+    const res = await submitForm(info)
+    // TODO: Don't increment step, but make next clickable
+    dispatch({
+      type: "set-homeowner-info",
+      user: info,
+      comparables: res.comparables,
+      headers: res.labeled_headers,
+      target: res.target_pin[0],
+      propertyInfo: res.prop_info,
+    })
+    navigate("../review-property")
   }
 
   return (
@@ -80,7 +88,7 @@ const HomeownerInfo = ({
       </Row>
       <Form
         form={form}
-        initialValues={user || {}}
+        initialValues={appeal.user || {}}
         name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"
@@ -415,7 +423,7 @@ const HomeownerInfo = ({
 
         <Form.Item {...tailFormItemLayout}>
           <Space>
-            <Button type="danger" onClick={back}>
+            <Button type="danger" onClick={() => navigate("../")}>
               Back
             </Button>
             <Button type="primary" htmlType="submit">
@@ -427,16 +435,6 @@ const HomeownerInfo = ({
       <p>Page 2 of 5</p>
     </>
   )
-}
-
-HomeownerInfo.propTypes = {
-  submitForm: PropTypes.func,
-  city: PropTypes.string,
-  user: PropTypes.object,
-  pin: PropTypes.string,
-  eligibility: PropTypes.string,
-  uuid: PropTypes.string,
-  back: PropTypes.func,
 }
 
 export default HomeownerInfo

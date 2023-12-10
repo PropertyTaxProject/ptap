@@ -1,6 +1,12 @@
 // TODO: Should move to not need this, only pass back PINs instead of full props
 const METERS_IN_MILE = 1609.344
 
+// TODO: Constant for now, may change
+// eslint-disable-next-line
+export function getNumberComparables(city) {
+  return 5
+}
+
 export const DISPLAY_FIELDS = [
   {
     title: "Address",
@@ -168,8 +174,8 @@ export function cleanParcel(parcel) {
         ? "Full"
         : "Partial/None"
       : parcel.basement
-      ? "Yes"
-      : "None"
+        ? "Yes"
+        : "None"
   }
   if (parcel.hasOwnProperty("garage")) {
     parcel.garage_display = parcel.garage ? "Yes" : "None"

@@ -1,10 +1,11 @@
-import React from "react"
-import PropTypes from "prop-types"
+import React, { useContext } from "react"
 import { Button, Divider, Table } from "antd"
-import { Link } from "react-router-dom"
 import PropertyInfo from "../../components/property-info"
 import { cleanParcel } from "../../utils"
 import { FileUpload } from "../../components/file-upload"
+import { AppealContext, AppealDispatchContext } from "../../context/appeal"
+import { useNavigate } from "react-router-dom"
+import { submitAppeal } from "../../requests"
 
 const userCols = [
   {
@@ -72,83 +73,83 @@ const compCols = [
   },
 ]
 
-const ReviewAppeal = ({
-  city,
-  target,
-  userInfo,
-  comparables,
-  confirmInfo,
-  back,
-  files,
-  onChangeFiles,
-}) => (
-  <>
-    <h1>Your Appeal</h1>
-    <p>
-      Below is the information you submitted as part of your Application. If the
-      information is correct, please click the blue button to finalize your
-      Application.
-    </p>
-    <p>
-      If you need to make changes to any of this information please use the
-      “back button” to make those changes.
-    </p>
-    <h2>Your Property Information</h2>
-    <p>Below is the data that the Assessor has on file for your property.</p>
-    <PropertyInfo city={city} target={target} />
-    <Divider />
-    <h2>Your Information</h2>
-    <Table
-      dataSource={[userInfo]}
-      columns={userCols}
-      pagination={false}
-      scroll={{ x: true }}
-    />
-    <Divider />
-    <h2>Your Comparables</h2>
-    <p>
-      We automatically include comparables until five are selected here. This
-      can be changed later.
-    </p>
-    <Table
-      dataSource={comparables.map(cleanParcel)}
-      columns={compCols}
-      pagination={false}
-      scroll={{ x: true }}
-    />
-    <Divider />
-    <h2>Upload images</h2>
-    <p>
-      Upload any images of damage to your property that would impact your
-      assessed value.
-    </p>
-    <FileUpload
-      accept="image/*,.heic,.heif"
-      files={files}
-      onChange={onChangeFiles}
-    />
-    <Divider />
-    <Button type="danger" onClick={back}>
-      Back
-    </Button>
-    <Button type="primary" onClick={confirmInfo}>
-      <Link to="/completedappeal">Finalize Application</Link>
-    </Button>
-    <br></br>
-    <br></br>
-    <p>Page 5 of 5</p>
-  </>
-)
+const ReviewAppeal = () => {
+  const appeal = useContext(AppealContext)
+  const dispatch = useContext(AppealDispatchContext)
+  const navigate = useNavigate()
 
-ReviewAppeal.propTypes = {
-  city: PropTypes.string,
-  target: PropTypes.object,
-  userInfo: PropTypes.object,
-  comparables: PropTypes.array,
-  files: PropTypes.array,
-  onChangeFiles: PropTypes.func,
-  confirmInfo: PropTypes.func,
-  back: PropTypes.func,
+  const confirmInfo = async () => {
+    await submitAppeal(
+      appeal.target,
+      appeal.selectedComparables,
+      appeal.user,
+      appeal.userProperty,
+      appeal.uuid,
+      appeal.files
+    )
+    window.sessionStorage.removeItem("appeal")
+    dispatch({ type: "complete" })
+    navigate("../complete")
+  }
+
+  return (
+    <>
+      <h1>Your Appeal</h1>
+      <p>
+        Below is the information you submitted as part of your Application. If
+        the information is correct, please click the blue button to finalize
+        your Application.
+      </p>
+      <p>
+        If you need to make changes to any of this information please use the
+        “back button” to make those changes.
+      </p>
+      <h2>Your Property Information</h2>
+      <p>Below is the data that the Assessor has on file for your property.</p>
+      <PropertyInfo city={appeal.city} target={appeal.target} />
+      <Divider />
+      <h2>Your Information</h2>
+      <Table
+        dataSource={[appeal.user]}
+        columns={userCols}
+        pagination={false}
+        scroll={{ x: true }}
+      />
+      <Divider />
+      <h2>Your Comparables</h2>
+      <p>
+        We automatically include comparables until five are selected here. This
+        can be changed later.
+      </p>
+      <Table
+        dataSource={appeal.comparables.map(cleanParcel)}
+        columns={compCols}
+        pagination={false}
+        scroll={{ x: true }}
+      />
+      <Divider />
+      <h2>Upload images</h2>
+      <p>
+        Upload any images of damage to your property that would impact your
+        assessed value.
+      </p>
+      <FileUpload
+        accept="image/*,.heic,.heif"
+        files={appeal.files}
+        onChange={(files) => dispatch({ type: "set-files", files })}
+      />
+      <Divider />
+      <Button type="danger" onClick={() => navigate("../comparables")}>
+        Back
+      </Button>
+      <Button type="primary" onClick={confirmInfo}>
+        Finalize Application
+      </Button>
+      <br></br>
+      <br></br>
+      <p>Page 5 of 5</p>
+    </>
+  )
 }
 
 export default ReviewAppeal

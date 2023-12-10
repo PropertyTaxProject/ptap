@@ -1,33 +1,35 @@
-import React from "react"
-import PropTypes from "prop-types"
+import React, { useContext } from "react"
 import { Button, Row, Col, Space, Divider } from "antd"
 import PropertyInfo from "../../components/property-info"
 import { cleanParcel, DISPLAY_FIELDS, DISPLAY_FIELDS_COOK } from "../../utils"
 import PinChooser from "../../components/pin-chooser"
+import { AppealContext, AppealDispatchContext } from "../../context/appeal"
+import { useNavigate } from "react-router-dom"
+import { getNumberComparables } from "../../utils"
 
-const ReviewComparables = ({
-  city,
-  comparables,
-  selectedComparables,
-  target,
-  numComparables,
-  onChange,
-  onNext,
-  back,
-}) => {
+const ReviewComparables = () => {
+  const appeal = useContext(AppealContext)
+  const dispatch = useContext(AppealDispatchContext)
+  const navigate = useNavigate()
+  const numComparables = getNumberComparables(appeal.city)
+
   const advancePage = () => {
     // add up to exactly five on advance, update on submit
-    const selectedPins = selectedComparables.map(({ pin }) => pin)
-    const availablePins = comparables
+    const selectedPins = appeal.selectedComparables.map(({ pin }) => pin)
+    const availablePins = appeal.comparables
       .map(({ pin }) => pin)
       .filter((pin) => !selectedPins.includes(pin))
-    onNext([
-      ...selectedPins,
-      ...availablePins.slice(0, numComparables - selectedPins.length),
-    ]) // TODO: Hacky
+    dispatch({
+      type: "select-comparables",
+      pins: [
+        ...selectedPins,
+        ...availablePins.slice(0, numComparables - selectedPins.length),
+      ],
+    })
+    navigate("../review-appeal")
   }
 
-  const displayFields = ["cook", "chicago"].includes(city)
+  const displayFields = ["cook", "chicago"].includes(appeal.city)
     ? DISPLAY_FIELDS_COOK
     : DISPLAY_FIELDS
 
@@ -35,7 +37,7 @@ const ReviewComparables = ({
     <>
       <h1>Your Property Information</h1>
       <p>Below is the data that the Assessor has on file for your property.</p>
-      <PropertyInfo city={city} target={target} cols={5} />
+      <PropertyInfo city={appeal.city} target={appeal.target} cols={5} />
       <Divider />
       <Row>
         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
@@ -62,17 +64,20 @@ const ReviewComparables = ({
         </p>
         <PinChooser
           headers={displayFields}
-          propertyOptions={comparables.map(cleanParcel)}
+          propertyOptions={appeal.comparables.map(cleanParcel)}
           max={5}
-          onChange={onChange}
+          onChange={(pins) =>
+            dispatch({ type: "select-comparables", pins: pins })
+          }
         />
         <Space>
-          <Button type="danger" onClick={back}>
+          <Button type="danger" onClick={() => navigate("../review-property")}>
             Back
           </Button>
+          {/* TODO: consolidate? doing the same thing */}
           <Button
             type="primary"
-            disabled={selectedComparables.length === 0}
+            disabled={appeal.selectedComparables.length === 0}
             onClick={advancePage}
           >
             Next Page
@@ -86,18 +91,6 @@ const ReviewComparables = ({
       <p>Page 4 of 5</p>
     </>
   )
-}
-
-ReviewComparables.propTypes = {
-  city: PropTypes.string,
-  comparables: PropTypes.array,
-  selectedComparables: PropTypes.array,
-  headers: PropTypes.array,
-  target: PropTypes.object,
-  numComparables: PropTypes.number,
-  onChange: PropTypes.func,
-  onNext: PropTypes.func,
-  back: PropTypes.func,
 }
 
 export default ReviewComparables
