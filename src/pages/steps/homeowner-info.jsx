@@ -114,7 +114,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="name" />
         </Form.Item>
         <Form.Item
           name="email"
@@ -127,7 +127,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="email" />
         </Form.Item>
 
         <Form.Item
@@ -140,7 +140,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="phone" />
         </Form.Item>
 
         <Form.Item
@@ -153,7 +153,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Radio.Group>
+          <Radio.Group name="phonetype">
             <Radio value="Cell">Yes</Radio>
             <Radio value="Home">No</Radio>
           </Radio.Group>
@@ -169,7 +169,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="address" />
         </Form.Item>
 
         <Form.Item
@@ -182,7 +182,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="city" />
         </Form.Item>
 
         <Form.Item
@@ -195,20 +195,11 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Input />
+          <Input name="state" />
         </Form.Item>
 
-        <Form.Item
-          name="zip"
-          label="Zip Code"
-          rules={[
-            {
-              required: true,
-              message: "Please input your zip code",
-            },
-          ]}
-        >
-          <Input />
+        <Form.Item name="zip" label="Zip Code">
+          <Input name="zip" />
         </Form.Item>
 
         <Form.Item
@@ -221,7 +212,10 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Radio.Group onChange={(e) => updateMailingAddr(e.target.value)}>
+          <Radio.Group
+            name="mailingsame"
+            onChange={(e) => updateMailingAddr(e.target.value)}
+          >
             <Radio value={"Yes"}>Yes</Radio>
             <Radio value={"No"}>No</Radio>
           </Radio.Group>
@@ -235,7 +229,10 @@ const HomeownerInfo = () => {
           }
         >
           {showMailingAddr === "No" && (
-            <Input placeholder="Please enter your mailing address" />
+            <Input
+              name="mailingaddress"
+              placeholder="Please enter your mailing address"
+            />
           )}
         </Form.Item>
 
@@ -249,7 +246,10 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Radio.Group onChange={(e) => updateAltContact(e.target.value)}>
+          <Radio.Group
+            name="altcontact"
+            onChange={(e) => updateAltContact(e.target.value)}
+          >
             <Radio value={"Yes"}>Yes</Radio>
             <Radio value={"No"}>No</Radio>
           </Radio.Group>
@@ -271,7 +271,10 @@ const HomeownerInfo = () => {
           }
         >
           {showAltContact === "Yes" && (
-            <Input placeholder="Please enter their name" />
+            <Input
+              name="altcontactname"
+              placeholder="Please enter their name"
+            />
           )}
         </Form.Item>
 
@@ -291,7 +294,10 @@ const HomeownerInfo = () => {
           }
         >
           {showAltContact === "Yes" && (
-            <Input placeholder="Please enter your relationship" />
+            <Input
+              name="altcontactrelationship"
+              placeholder="Please enter your relationship"
+            />
           )}
         </Form.Item>
 
@@ -311,7 +317,10 @@ const HomeownerInfo = () => {
           }
         >
           {showAltContact === "Yes" && (
-            <Input placeholder="Please enter their email" />
+            <Input
+              name="altcontactemail"
+              placeholder="Please enter their email"
+            />
           )}
         </Form.Item>
 
@@ -331,7 +340,10 @@ const HomeownerInfo = () => {
           }
         >
           {showAltContact === "Yes" && (
-            <Input placeholder="Please enter their phone number" />
+            <Input
+              name="altcontactphone"
+              placeholder="Please enter their phone number"
+            />
           )}
         </Form.Item>
 
@@ -351,7 +363,7 @@ const HomeownerInfo = () => {
           }
         >
           {showAltContact === "Yes" && (
-            <Radio.Group>
+            <Radio.Group name="altcontactpreferred">
               <Radio value="Phone">Phone</Radio>
               <Radio value="Email">Email</Radio>
               <Radio value="Both">Both/No Preference</Radio>
@@ -370,7 +382,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Radio.Group>
+          <Radio.Group name="phonetime">
             <Radio value="morning">Morning (before 11 a.m.)</Radio>
             <Radio value="midday">Midday (between 11 a.m. and 2 p.m.)</Radio>
             <Radio value="afternoon">
@@ -390,7 +402,7 @@ const HomeownerInfo = () => {
             },
           ]}
         >
-          <Select onChange={(e) => updateReferral(e)}>
+          <Select name="heardabout" onChange={(e) => updateReferral(e)}>
             <Option value="local">Local Organization</Option>
             <Option value="social media">
               Social Media (Facebook, Instagram, or Twitter)
@@ -410,7 +422,10 @@ const HomeownerInfo = () => {
           }
         >
           {showReferral === "referral" && (
-            <Input placeholder="Please enter who referred you" />
+            <Input
+              name="referralinput"
+              placeholder="Please enter who referred you"
+            />
           )}
         </Form.Item>
 
@@ -422,7 +437,10 @@ const HomeownerInfo = () => {
           }
         >
           {showReferral === "other" && (
-            <Input placeholder="Please how you heard about us" />
+            <Input
+              name="otherheardaboutinput"
+              placeholder="Please how you heard about us"
+            />
           )}
         </Form.Item>
 

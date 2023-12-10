@@ -63,7 +63,10 @@ const ReviewProperty = () => {
           rules={[{ required: true, message: "Your response is required." }]}
           label="Is this information about your property correct?"
         >
-          <Radio.Group onChange={(e) => updateCharInput(e.target.value)}>
+          <Radio.Group
+            name="validcharacteristics"
+            onChange={(e) => updateCharInput(e.target.value)}
+          >
             <Radio value="Yes">Yes</Radio>
             <Radio value="No">No</Radio>
           </Radio.Group>
@@ -76,6 +79,7 @@ const ReviewProperty = () => {
         >
           {showCharInput === "No" && (
             <TextArea
+              name="characteristicsinput"
               placeholder="Please provide as much information as you can."
               rows={4}
             />
@@ -86,7 +90,7 @@ const ReviewProperty = () => {
           name="valueestimate"
           label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide an estimate)"
         >
-          <Input placeholder="Your best estimate." />
+          <Input name="valueestimate" placeholder="Your best estimate." />
         </Form.Item>
 
         <Form.Item>

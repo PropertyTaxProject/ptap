@@ -10,7 +10,7 @@ const PinLookup = ({ city, onSearch }) => {
   return (
     <Form
       form={form}
-      name="PIN Lookup"
+      name="PIN_Lookup"
       layout="vertical"
       onFinish={async (data) => {
         const { candidates } = await lookupPin({
@@ -34,14 +34,18 @@ const PinLookup = ({ city, onSearch }) => {
           name="street_number"
           rules={[{ required: true, message: "Street number is required." }]}
         >
-          <Input inputMode="numeric" placeholder="number" />
+          <Input
+            name="street_number"
+            inputMode="numeric"
+            placeholder="number"
+          />
         </Form.Item>
         <Form.Item
           style={{ width: "300px" }}
           name="street_name"
           rules={[{ required: true, message: "Street name is required." }]}
         >
-          <Input placeholder="street" />
+          <Input name="street_name" placeholder="street" />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Search
