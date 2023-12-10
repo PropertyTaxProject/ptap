@@ -38,6 +38,13 @@ const tailFormItemLayout = {
   },
 }
 
+const getInitialFormData = ({ user, target, city: appealCity }) => {
+  const state = appealCity === "detroit" ? "MI" : "IL"
+  const { address, city, zip } = target || {}
+  const targetProps = { address, city, zip, state }
+  return { ...targetProps, ...user }
+}
+
 const HomeownerInfo = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
@@ -48,7 +55,6 @@ const HomeownerInfo = () => {
   const [showReferral, updateReferral] = useState(false)
 
   const onFinish = async (values) => {
-    console.log(appeal)
     const info = {
       ...values,
       pin: appeal.pin,
@@ -58,7 +64,8 @@ const HomeownerInfo = () => {
     }
     console.log("Received values of form: ", info)
     const res = await submitForm(info)
-    // TODO: Don't increment step, but make next clickable
+
+    // TODO: Add an action to set on change as well?
     dispatch({
       type: "set-homeowner-info",
       user: info,
@@ -88,7 +95,7 @@ const HomeownerInfo = () => {
       </Row>
       <Form
         form={form}
-        initialValues={appeal.user || {}}
+        initialValues={getInitialFormData(appeal)}
         name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"
@@ -103,7 +110,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your full name!",
+              message: "Please input your full name",
             },
           ]}
         >
@@ -115,7 +122,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your Email!",
+              message: "Please input your email",
               type: "email",
             },
           ]}
@@ -129,7 +136,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your phone number!",
+              message: "Please input your phone number",
             },
           ]}
         >
@@ -141,8 +148,7 @@ const HomeownerInfo = () => {
           label="Can we text you at this number?"
           rules={[
             {
-              required: true,
-              message: "Please mark your phone type!",
+              message: "Please mark your phone type",
               whitespace: true,
             },
           ]}
@@ -159,7 +165,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your street address!",
+              message: "Please input your street address",
             },
           ]}
         >
@@ -172,7 +178,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your city!",
+              message: "Please input your city",
             },
           ]}
         >
@@ -185,7 +191,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your State!",
+              message: "Please input your State",
             },
           ]}
         >
@@ -198,7 +204,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please input your zip code!",
+              message: "Please input your zip code",
             },
           ]}
         >
@@ -211,7 +217,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please respond!",
+              message: "Please respond",
             },
           ]}
         >
@@ -239,7 +245,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please respond!",
+              message: "Please respond",
             },
           ]}
         >
@@ -359,7 +365,7 @@ const HomeownerInfo = () => {
           rules={[
             {
               required: true,
-              message: "Please mark your time!",
+              message: "Please mark your time",
               whitespace: true,
             },
           ]}
@@ -380,8 +386,7 @@ const HomeownerInfo = () => {
           label="How did you hear about us?"
           rules={[
             {
-              required: true,
-              message: "Please select from the dropdown options!",
+              message: "Please select from the dropdown options",
             },
           ]}
         >
