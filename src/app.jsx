@@ -1,13 +1,13 @@
 import React, { useEffect } from "react"
 import { ScrollRestoration, Outlet } from "react-router-dom"
-import ReactGA from "react-ga"
+import ReactGA from "react-ga4"
 import PageLayout from "./layouts/page-layout"
 
-ReactGA.initialize("UA-178459008-2")
+ReactGA.initialize("G-3TNFXQP57P")
 
 export default function App() {
   useEffect(() => {
-    ReactGA.pageview(window.location.pathname)
+    ReactGA.send({ hitType: "pageview", page: window.location.pathname })
   }, [])
 
   return (
