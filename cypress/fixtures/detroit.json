@@ -1,7 +1,6 @@
 {
   "region": "detroit",
-  "compareUrl": "/detroit",
-  "appealUrl": "/internaldetroitappeal",
+  "appealUrl": "/detroit",
   "pin": "13010833.",
   "street_number": "3914",
   "street_name": "MCDOUGALL",

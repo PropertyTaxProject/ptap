@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { Button, Divider, Table } from "antd"
 import PropertyInfo from "../../components/property-info"
 import { cleanParcel } from "../../utils"
@@ -75,14 +75,17 @@ const compCols = [
 ]
 
 const ReviewAppeal = () => {
+  const [loading, setLoading] = useState(false)
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
   const confirmInfo = async () => {
+    setLoading(true)
     await submitAppeal(appeal)
     window.sessionStorage.removeItem(`appeal-${appeal.city}`)
+    setLoading(false)
     dispatch({ type: "complete" })
     navigate("../complete")
   }
@@ -151,10 +154,14 @@ const ReviewAppeal = () => {
         />
       </Form>
       <Divider />
-      <Button type="danger" onClick={() => navigate("../comparables")}>
+      <Button
+        disabled={loading}
+        type="danger"
+        onClick={() => navigate("../comparables")}
+      >
         Back
       </Button>
-      <Button type="primary" onClick={confirmInfo}>
+      <Button disabled={loading} type="primary" onClick={confirmInfo}>
         Finalize Application
       </Button>
       <br></br>
