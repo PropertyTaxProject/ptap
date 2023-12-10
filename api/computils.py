@@ -15,14 +15,12 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         floor_dif = 100 * multiplier
         age_dif = 15 * multiplier
         distance = MILE_IN_METERS * multiplier
-        debug = False
     elif region == "cook":
         model = CookParcel
         age_dif = 15
         build_dif = (0.1 * multiplier) * targ["building_sq_ft"].values[0]
         land_dif = (0.1 * multiplier) * targ["land_sq_ft"].values[0]
         distance = MILE_IN_METERS * multiplier
-        debug = True
 
     # construct query
     pin_val = targ["pin"].values[0]
@@ -45,9 +43,6 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 model.sale_price > 500,
             ]
         )
-    if debug:
-        print("~~~" + region + "~~~")
-        print(targ["pin"].values[0] + " |||| multiplier " + str(multiplier))
 
     if region == "detroit":
         query_filters.extend(
@@ -91,9 +86,6 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         )
     else:
         raise Exception("Invalid Region for Comps")
-
-    if debug:
-        print(query_filters)
 
     distance_subquery = (
         db.session.query(

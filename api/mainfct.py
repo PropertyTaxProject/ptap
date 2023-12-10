@@ -1,15 +1,10 @@
-import os
-from datetime import datetime
-
 import numpy as np
 import pandas as pd
-from docxtpl import DocxTemplate
 from rapidfuzz import process
 
 from .computils import find_comps
 from .dataqueries import address_candidates_query, get_pin
 from .submitappeal import submit_cook_sf, submit_detroit_sf
-from .utils import render_doc_to_bytes
 
 
 # TODO: Pydantic to enforce types on input? https://pypi.org/project/Flask-Pydantic/
@@ -18,8 +13,8 @@ def address_candidates(input_data, cutoff_info):
     Returns address candidates
     """
     output = {}
-    st_num = input_data["st_num"]
-    st_name = input_data["st_name"]
+    st_num = input_data["street_number"]
+    st_name = input_data["street_name"]
 
     if input_data["appeal_type"] == "detroit_single_family":
         cutoff = cutoff_info["detroit"]
@@ -99,153 +94,6 @@ def comparables(input_data, sales_comps=False):
     output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(orient="records")
     output["labeled_headers"] = cur_comps.columns.tolist()
     output["pinav"] = new_targ.assessed_value.mean()
-
-    return output
-
-
-def process_estimate(form_data, download):
-    # TODO: Should break this into two requests, one to do the logic, one to format
-
-    # rename_dict = {
-    #     "pin": "Parcel ID",
-    #     "assessed_value": "Assessed Value",
-    #     "total_acre": "Acres",
-    #     "total_floorarea": "Floor Area",
-    #     "total_sqft": "Square Footage (Abv. Ground)",
-    #     "Age": "Year Built",
-    #     "Exterior": "Exterior Material",
-    #     "Distance": "Dist.",
-    #     "Stories (not including basement)": "Number of Stories",
-    # }
-
-    t_df = pd.DataFrame([form_data["target_pin"]])
-    # TODO: Load comparables from DB, PINs instead
-    c_df = pd.DataFrame(form_data["selectedComparables"])
-    comps_df = pd.DataFrame(form_data["comparablesPool"])
-
-    pin_av = t_df["assessed_value"][0]
-    pin = t_df.pin[0]
-
-    comps_avg = c_df["sale_price"].mean()
-
-    # rename cols
-    # t_df = t_df.rename(columns=rename_dict)
-    # c_df = c_df.rename(columns=rename_dict)
-    # comps_df = comps_df.rename(columns=rename_dict)
-
-    output = {}
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # generate docx
-    if download:
-        doc = DocxTemplate(
-            os.path.join(
-                base_dir,
-                "templates",
-                "docs",
-                "detroit_template_2024.docx",
-            )
-        )
-        # tbl cols
-        target_cols = [
-            "Baths",
-            "Square Footage (Abv. Ground)",
-            "Year Built",
-            "Exterior Material",
-            "Number of Stories",
-            "Neighborhood",
-        ]
-        comp_labels = [
-            "Address",
-            "Distance",
-            "Sale Price",
-            "Sale Date",
-        ] + target_cols
-        comp_records = comps_df.to_dict(orient="records")
-        comp_contents = []
-        for comp_rec in comp_records:
-            comp_contents.append(
-                [
-                    comp_rec["street_number"] + " " + comp_rec["street_name"],
-                    format_distance(comp_rec["distance"]),
-                    "${:,.0f}".format(comp_rec["sale_price"]),
-                    comp_rec["sale_date"],
-                    format_baths(comp_rec["baths"]),
-                    comp_rec["total_sq_ft"],
-                    comp_rec["year_built"],
-                    format_exterior(comp_rec["exterior"]),
-                    format_stories(comp_rec["stories"]),
-                    comp_rec["neighborhood"],
-                ]
-            )
-
-        target_rec_base = t_df.to_dict(orient="records")[0]
-        target_rec = [
-            format_baths(target_rec_base["baths"]),
-            target_rec_base["total_sq_ft"],
-            target_rec_base["year_built"],
-            format_exterior(target_rec_base["exterior"]),
-            format_stories(target_rec_base["stories"]),
-            target_rec_base["neighborhood"],
-        ]
-
-        context = {
-            "pin": pin,
-            "address": target_rec_base["street_number"]
-            + " "
-            + target_rec_base["street_name"],
-            "comp_address": comp_contents[0][0],
-            "comp_sale": "${:,.0f}".format(comp_records[0]["sale_price"]),
-            "comp_date": comp_records[0]["sale_date"],
-            "current_sev": "${:,.0f}".format(pin_av),
-            "current_faircash": "${:,.0f}".format(pin_av * 2),
-            "contention_sev": "${:,.0f}".format(comps_avg / 2),
-            "contention_faircash": "${:,.0f}".format(comps_avg),
-            "target_labels": target_cols,
-            "target_contents": [target_rec],
-            "target_contents2": [comp_contents[0][4:]],
-            "comp_labels": comp_labels,
-            "comp_contents": comp_contents,
-        }
-
-        output["file_stream"] = render_doc_to_bytes(doc, context, form_data["files"])
-        output["output_name"] = f"{pin}{datetime.today().strftime('%m_%d_%y')}.docx"
-    else:
-        # serve information for website display
-        delta = (comps_avg / 2) - pin_av
-        tax_bill = 0.06 * delta
-        tax_str = "{:,.0f}".format(abs(tax_bill))
-
-        if delta < 0:
-            d_str2 = " less"  # overassessed
-        else:
-            d_str2 = " more"  # underassessed
-
-        l1 = (
-            "In 2023, the City assigned your property an assessed value of "
-            + "{:,.0f}".format(pin_av)
-            + ", "
-        )
-        l2 = (
-            "meaning it believes your home is worth "
-            + "{:,.0f}".format(2 * pin_av)
-            + ". "
-        )
-        l3 = "Since your home is actually worth " + "{:,.0f}".format(comps_avg) + ","
-        l4 = (
-            " a more accurate assessed value is "
-            + "{:,.0f}".format(comps_avg / 2)
-            + ". "
-        )
-        l5 = (
-            "Based on estimated current tax rates, if the City correctly assessed your property’s value, your tax bill would be $"  # noqa
-            + tax_str
-            + d_str2
-            + ". "
-        )
-
-        output["estimate"] = l1 + l2 + l3 + l4 + l5
 
     return output
 

@@ -39,7 +39,11 @@ AppealProvider.propTypes = {
 function appealReducer(appeal, action) {
   switch (action.type) {
     case "property-options": {
-      return { ...appeal, propertyOptions: action.propertyOptions }
+      return {
+        ...appeal,
+        propertyOptions: action.propertyOptions,
+        uuid: action.uuid,
+      }
     }
     case "set-target": {
       return {

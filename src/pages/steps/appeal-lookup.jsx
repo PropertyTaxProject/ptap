@@ -89,8 +89,8 @@ const AppealLookup = () => {
       </p>
       <PinLookup
         city={appeal.city}
-        onSearch={(propertyOptions) =>
-          dispatch({ type: "property-options", propertyOptions })
+        onSearch={({ candidates: propertyOptions, uuid }) =>
+          dispatch({ type: "property-options", propertyOptions, uuid })
         }
       />
       {appeal.propertyOptions && appeal.propertyOptions.length > 0 && (

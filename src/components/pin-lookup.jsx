@@ -13,11 +13,11 @@ const PinLookup = ({ city, onSearch }) => {
       name="PIN_Lookup"
       layout="vertical"
       onFinish={async (data) => {
-        const { candidates } = await lookupPin({
+        const res = await lookupPin({
           ...data,
           appeal_type: getAppealType(city),
         })
-        onSearch(candidates)
+        onSearch(res)
       }}
       labelAlign="left"
       scrollToFirstError
