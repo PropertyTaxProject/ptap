@@ -14,8 +14,8 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.exceptions import HTTPException
 
 from .db import db
-from .logging import logger
 from .mainfct import address_candidates, comparables, process_comps_input
+from .utils import get_region
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
@@ -80,9 +80,8 @@ def handle_form0():
         request.json, {"detroit": 150000, "cook": 225000}
     )
     uid = uuid.uuid4().urn[9:]
-    app.logger.info(
-        f"LOG_STEP: {json.dumps({**request.json, 'uuid': uid, 'step': 'pin-lookup'})}"
-    )
+    log_params = {"uuid": uid, "region": get_region(request.json), "step": "pin-lookup"}
+    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, **log_params})}")
     response_dict["uuid"] = uid
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
@@ -92,9 +91,9 @@ def handle_form0():
 @app.route("/api_v1/submit", methods=["POST"])
 def handle_form():
     owner_data = request.json
-    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, 'step': 'comparables'})}")
+    log_params = {"region": get_region(request.json), "step": "comparables"}
+    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, **log_params})}")
     response_dict = comparables(owner_data)
-    logger(owner_data, "get_comps")
     resp = jsonify({"request_status": time.time(), "response": response_dict})
     return resp
 
@@ -104,9 +103,9 @@ def handle_form2():
     # submit selected comps / finalize appeal / send to summary or complete page
     comps_data = request.json
     download = False
-    app.logger.info(f"LOG_STEP: {json.dumps({**comps_data, 'step': 'submit'})}")
+    log_params = {"region": get_region(request.json), "step": "submit"}
+    app.logger.info(f"LOG_STEP: {json.dumps({**comps_data, **log_params})}")
     response_dict = process_comps_input(comps_data, mail)
-    logger(comps_data, "submit")
     if download:
         return send_file(
             response_dict["file_stream"],

@@ -204,22 +204,24 @@ module "lambda" {
   }
 
   environment_variables = {
-    ENVIRONMENT             = local.env
-    SECRET_KEY              = data.aws_ssm_parameter.secret_key.value,
-    MAIL_SERVER             = "email-smtp.us-east-1.amazonaws.com"
-    MAIL_PORT               = 587
-    MAIL_USERNAME           = data.aws_ssm_parameter.mail_username.value
-    MAIL_PASSWORD           = data.aws_ssm_parameter.mail_password.value
-    SENTRY_DSN              = data.aws_ssm_parameter.sentry_dsn.value
-    GOOGLE_SERVICE_ACCCOUNT = data.aws_ssm_parameter.google_service_account.value
-    GOOGLE_SHEET_SID        = data.aws_ssm_parameter.google_sheet_sid.value
-    S3_UPLOADS_BUCKET       = module.s3_uploads.s3_bucket_id
-    DATABASE_URL            = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${data.aws_db_instance.app.endpoint}/${data.aws_db_instance.app.db_name}"
-    MAIL_DEFAULT_SENDER     = "mail@${local.domain}"
-    PTAP_MAIL               = data.aws_ssm_parameter.ptap_mail.value
-    UOFM_MAIL               = data.aws_ssm_parameter.uofm_mail.value
-    CHICAGO_MAIL            = data.aws_ssm_parameter.chicago_mail.value
-    # GOOGLE_LOGGING_ENABLED  = "true"
+    ENVIRONMENT            = local.env
+    SECRET_KEY             = data.aws_ssm_parameter.secret_key.value,
+    MAIL_SERVER            = "email-smtp.us-east-1.amazonaws.com"
+    MAIL_PORT              = 587
+    MAIL_USERNAME          = data.aws_ssm_parameter.mail_username.value
+    MAIL_PASSWORD          = data.aws_ssm_parameter.mail_password.value
+    SENTRY_DSN             = data.aws_ssm_parameter.sentry_dsn.value
+    GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
+    GOOGLE_SHEET_SID       = data.aws_ssm_parameter.google_sheet_sid.value
+    S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
+    DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${data.aws_db_instance.app.endpoint}/${data.aws_db_instance.app.db_name}"
+    MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
+    PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
+    UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
+    CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
+    GOOGLE_SHEET_LOGS_NAME = "Dev ptap-log"
+
+    GOOGLE_SHEET_SUBMISSION_NAME = "Dev PTAP_Submissions"
   }
 
   tags = local.tags
@@ -313,15 +315,15 @@ module "logs_lambda" {
 
   environment_variables = {
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
-    GOOGLE_SHEET_NAME       = "Copy of ptap-log"
+    GOOGLE_SHEET_NAME      = "Dev ptap-log"
   }
 
   tags = local.tags
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "logs_lambda" {
-  name           = "${local.name}-logs-${local.env}"
-  log_group_name = module.lambda.lambda_cloudwatch_log_group_name
+  name            = "${local.name}-logs-${local.env}"
+  log_group_name  = module.lambda.lambda_cloudwatch_log_group_name
   filter_pattern  = "%LOG_STEP%"
   destination_arn = module.logs_lambda.lambda_function_arn
 }
