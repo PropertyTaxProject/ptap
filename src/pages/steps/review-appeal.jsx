@@ -146,12 +146,14 @@ const ReviewAppeal = () => {
             }}
           />
         </Form.Item>
-        <FileUpload
-          label="Click to upload images of the damage"
-          accept="image/*,.heic,.heif"
-          files={appeal.files}
-          onChange={(files) => dispatch({ type: "set-files", files })}
-        />
+        {appeal.city !== "chicago" && (
+          <FileUpload
+            label="Click to upload images of the damage"
+            accept="image/*,.heic,.heif"
+            files={appeal.files}
+            onChange={(files) => dispatch({ type: "set-files", files })}
+          />
+        )}
       </Form>
       <Divider />
       <Button
