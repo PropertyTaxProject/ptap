@@ -64,7 +64,7 @@ const AppealLookup = () => {
           rules={[{ required: true, message: "Your response is required." }]}
           label="Is this home your primary residence, meaning the place you live most of the year?"
         >
-          <Radio.Group>
+          <Radio.Group name="eligible">
             <Radio value="Yes">Yes</Radio>
             <Radio value="No">No</Radio>
           </Radio.Group>
@@ -75,7 +75,7 @@ const AppealLookup = () => {
           rules={[{ required: true, message: "Your response is required." }]}
           label="Do you own this home?"
         >
-          <Radio.Group>
+          <Radio.Group name="owner">
             <Radio value="Yes">Yes</Radio>
             <Radio value="No">No</Radio>
           </Radio.Group>

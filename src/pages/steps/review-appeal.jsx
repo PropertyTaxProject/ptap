@@ -131,7 +131,10 @@ const ReviewAppeal = () => {
         autoComplete="off"
         size="large"
       >
-        <Form.Item label="Describe any damage to your property that would impact its value">
+        <Form.Item
+          name="damage"
+          label="Describe any damage to your property that would impact its value"
+        >
           <Input.TextArea
             name="damage"
             value={appeal.damage}
