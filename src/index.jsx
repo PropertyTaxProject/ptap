@@ -1,4 +1,4 @@
-import "antd/dist/antd.min.css"
+import "antd/dist/antd.less"
 import "./index.css"
 import React from "react"
 import { createRoot } from "react-dom/client"
