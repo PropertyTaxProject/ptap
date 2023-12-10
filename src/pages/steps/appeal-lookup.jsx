@@ -30,6 +30,7 @@ const AppealLookup = () => {
     }
     const eligible = ineligibleReason === null
     if (!eligible) {
+      // TODO: Could also set alert message instead of opening window
       window.alert(
         `You may not be eligible to receive our services. ${ineligibleReason} Please contact us for more information`
       )

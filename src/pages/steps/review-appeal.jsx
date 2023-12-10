@@ -6,6 +6,7 @@ import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
+import { Form, Input } from "antd"
 
 const userCols = [
   {
@@ -77,16 +78,10 @@ const ReviewAppeal = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
+  const [form] = Form.useForm()
 
   const confirmInfo = async () => {
-    await submitAppeal(
-      appeal.target,
-      appeal.selectedComparables,
-      appeal.user,
-      appeal.userProperty,
-      appeal.uuid,
-      appeal.files
-    )
+    await submitAppeal(appeal)
     window.sessionStorage.removeItem(`appeal-${appeal.city}`)
     dispatch({ type: "complete" })
     navigate("../complete")
@@ -128,16 +123,30 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      <h2>Upload images</h2>
-      <p>
-        Upload any images of damage to your property that would impact your
-        assessed value.
-      </p>
-      <FileUpload
-        accept="image/*,.heic,.heif"
-        files={appeal.files}
-        onChange={(files) => dispatch({ type: "set-files", files })}
-      />
+      <h2>Damage</h2>
+      <Form
+        form={form}
+        name="damage"
+        layout="vertical"
+        autoComplete="off"
+        size="large"
+      >
+        <Form.Item label="Describe any damage to your property that would impact its value">
+          <Input.TextArea
+            name="damage"
+            value={appeal.damage}
+            onChange={(e) => {
+              dispatch({ type: "set-damage", damage: e.target.value })
+            }}
+          />
+        </Form.Item>
+        <FileUpload
+          label="Click to upload images of the damage"
+          accept="image/*,.heic,.heif"
+          files={appeal.files}
+          onChange={(files) => dispatch({ type: "set-files", files })}
+        />
+      </Form>
       <Divider />
       <Button type="danger" onClick={() => navigate("../comparables")}>
         Back

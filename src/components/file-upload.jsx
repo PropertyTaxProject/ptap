@@ -10,7 +10,7 @@ const mapImageObject = ({ name, response, url }) => ({
   url: url || response?.url,
 })
 
-export const FileUpload = ({ accept, files, onChange }) => {
+export const FileUpload = ({ accept, files, label, onChange }) => {
   return (
     <Upload
       listType="picture"
@@ -49,7 +49,7 @@ export const FileUpload = ({ accept, files, onChange }) => {
           .catch(onError)
       }}
     >
-      <Button>Click to upload</Button>
+      <Button>{label || "Click to upload"}</Button>
     </Upload>
   )
 }
@@ -57,5 +57,6 @@ export const FileUpload = ({ accept, files, onChange }) => {
 FileUpload.propTypes = {
   accept: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.string,
   onChange: PropTypes.func,
 }

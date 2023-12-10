@@ -13,22 +13,24 @@ export const submitForm = async (info) => {
   }
 }
 
-export const submitAppeal = async (
-  targetProperty,
-  comparables,
-  userInfo,
-  userPropInfo,
+export const submitAppeal = async ({
+  target,
+  selectedComparables: comparables,
+  user,
+  userProperty,
   uuid,
-  files = []
-) => {
+  damage = ``,
+  files = [],
+}) => {
   try {
     const body = {
-      target_pin: targetProperty,
+      target_pin: target,
       comparables,
       uuid,
+      damage,
       files,
-      ...userInfo,
-      ...userPropInfo,
+      ...user,
+      ...userProperty,
     }
     //const detroit = userInfo.appeal_type === 'detroit_single_family';
     const download = false
@@ -38,7 +40,7 @@ export const submitAppeal = async (
     if (download === true) {
       saveAs(
         resp.data,
-        `${userInfo.name.split(" ").join("-").toLowerCase()}-appeal.docx`
+        `${user.name.split(" ").join("-").toLowerCase()}-appeal.docx`
       )
     } else {
       console.log(resp)

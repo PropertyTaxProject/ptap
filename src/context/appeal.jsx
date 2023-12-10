@@ -70,6 +70,9 @@ function appealReducer(appeal, action) {
         ),
       }
     }
+    case "set-damage": {
+      return { ...appeal, damage: action.damage }
+    }
     case "set-files": {
       return { ...appeal, files: action.files }
     }
