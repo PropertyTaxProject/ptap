@@ -85,7 +85,6 @@ def submit_cook_sf(comp_submit, mail):
         "propinfo": propinfo,
     }
 
-    print(context)
     # TODO: What is this used for?
     output = {}
 

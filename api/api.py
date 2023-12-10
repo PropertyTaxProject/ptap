@@ -1,6 +1,8 @@
+import json
 import os
 import time
 import uuid
+from logging.config import dictConfig
 
 import boto3
 import sentry_sdk
@@ -13,12 +15,7 @@ from werkzeug.exceptions import HTTPException
 
 from .db import db
 from .logging import logger
-from .mainfct import (
-    address_candidates,
-    comparables,
-    process_comps_input,
-    process_estimate,
-)
+from .mainfct import address_candidates, comparables, process_comps_input
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
@@ -29,6 +26,25 @@ sentry_sdk.init(
     integrations=[AwsLambdaIntegration(), FlaskIntegration()],
     traces_sample_rate=0.1,
     profiles_sample_rate=0.1,
+)
+
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["wsgi"]},
+    }
 )
 
 app = Flask(
@@ -60,19 +76,14 @@ def index():
 
 @app.route("/api_v1/pin-lookup", methods=["POST"])
 def handle_form0():
-    # get pin from address / send to owner input page
-    print("pin finder submit")
-    pf_data = request.json
-    print("PAGE DATA", request.json)
-    print("REQUEST OBJECT", request)
-    # pf_data["st_num"] = pf_data["street_num"]
-    if "street_number" in pf_data:
-        pf_data["st_num"] = pf_data.pop("street_number")
-        pf_data["st_name"] = pf_data.pop("street_name")
-    response_dict = address_candidates(pf_data, {"detroit": 150000, "cook": 225000})
-    print("got address candidates")
-    response_dict["uuid"] = logger(pf_data, "address_finder")
-    print("ran logger")
+    response_dict = address_candidates(
+        request.json, {"detroit": 150000, "cook": 225000}
+    )
+    uid = uuid.uuid4().urn[9:]
+    app.logger.info(
+        f"LOG_STEP: {json.dumps({**request.json, 'uuid': uid, 'step': 'pin-lookup'})}"
+    )
+    response_dict["uuid"] = uid
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
@@ -80,24 +91,20 @@ def handle_form0():
 
 @app.route("/api_v1/submit", methods=["POST"])
 def handle_form():
-    # owner information submit / get comps / send to comps select page
-    print("owner info submit")
     owner_data = request.json
-    print("PAGE DATA", request.json)
-    print("REQUEST OBJECT", request)
+    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, 'step': 'comparables'})}")
     response_dict = comparables(owner_data)
     logger(owner_data, "get_comps")
     resp = jsonify({"request_status": time.time(), "response": response_dict})
-
     return resp
 
 
 @app.route("/api_v1/submit2", methods=["POST"])
 def handle_form2():
     # submit selected comps / finalize appeal / send to summary or complete page
-    print("page 2 submit")
     comps_data = request.json
     download = False
+    app.logger.info(f"LOG_STEP: {json.dumps({**comps_data, 'step': 'submit'})}")
     response_dict = process_comps_input(comps_data, mail)
     logger(comps_data, "submit")
     if download:
@@ -107,33 +114,6 @@ def handle_form2():
             attachment_filename="%s-appeal.docx"
             % comps_data["name"].lower().replace(" ", "-"),
         )
-    resp = jsonify({"request_status": time.time(), "response": response_dict})
-
-    return resp
-
-
-@app.route("/api_v1/estimates", methods=["POST"])
-def handle_form3():
-    # given pin and select comp, generate estimate/appendix file
-    print("estimate submit")
-    est_data = request.json
-    response_dict = process_estimate(est_data, True)
-    logger(est_data, "est_submit")
-    return send_file(
-        response_dict["file_stream"],
-        mimetype="application/octet-stream",
-        as_attachment=True,
-        download_name="test.docx",
-    )
-
-
-@app.route("/api_v1/estimates2", methods=["POST"])
-def handle_form4():
-    # given pin and select comp, generate estimate/appendix file
-    print("estimate submit")
-    est_data = request.json
-    response_dict = process_estimate(est_data, False)
-    logger(est_data, "est_submit")
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp

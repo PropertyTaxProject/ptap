@@ -18,6 +18,7 @@ __pycache__
 .terraform/
 *.tfstate*
 *.tfvars
+tf/**/builds/*
 *.ipynb
 .vscode*
 .ruff_cache
