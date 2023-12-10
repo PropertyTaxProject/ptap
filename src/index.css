@@ -22,3 +22,7 @@ code {
 .ant-menu {
   background-color: #ffde52;
 }
+
+.ant-form-large .ant-form-item-label>label {
+  height: auto;
+}
