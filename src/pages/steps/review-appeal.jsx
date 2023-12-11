@@ -1,12 +1,11 @@
 import React, { useContext, useState } from "react"
-import { Button, Divider, Table } from "antd"
+import { Button, Divider, Table, Form, Input, Radio } from "antd"
 import PropertyInfo from "../../components/property-info"
 import { cleanParcel } from "../../utils"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
-import { Form, Input } from "antd"
 
 const userCols = [
   {
@@ -145,6 +144,16 @@ const ReviewAppeal = () => {
               dispatch({ type: "set-damage", damage: e.target.value })
             }}
           />
+        </Form.Item>
+        <Form.Item
+          name="damage_level"
+          label="If you've written about damage, how would you describe it on a scale of low to high?"
+        >
+          <Radio.Group name="damage_level">
+            <Radio value="low">Low</Radio>
+            <Radio value="medium">Medium</Radio>
+            <Radio value="high">High</Radio>
+          </Radio.Group>
         </Form.Item>
         {appeal.city !== "chicago" && (
           <FileUpload
