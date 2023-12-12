@@ -27,6 +27,8 @@ def address_candidates(input_data, cutoff_info):
     candidates = address_candidates_query(region, st_num)
     parcel_dict = {p.street_name.upper(): p.as_dict() for p in candidates}
     results = process.extract(st_name.upper(), parcel_dict.keys(), score_cutoff=50)
+    if len(results) == 0:  # if none found raise
+        return {"candidates": []}
 
     selected = pd.DataFrame([parcel_dict[r[0]] for r in results])
 
@@ -43,9 +45,6 @@ def address_candidates(input_data, cutoff_info):
     selected.drop("geom", axis=1, inplace=True)
     selected.replace({np.nan: None}, inplace=True)
     output["candidates"] = selected.to_dict(orient="records")
-
-    if len(output["candidates"]) == 0:  # if none found raise
-        raise Exception("No Matches Found")
     return output
 
 
