@@ -130,11 +130,7 @@ def submit_cook_sf(comp_submit, mail):
 
 
 def submit_detroit_sf(comp_submit, mail):
-    """
-    Output:
-    Word Document
-    """
-
+    # TODO: Main doc to update
     rename_dict = {
         "pin": "Parcel ID",
         "address": "Address",
@@ -183,7 +179,7 @@ def submit_detroit_sf(comp_submit, mail):
         "output_name"
     ] = f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
     doc = DocxTemplate(
-        os.path.join(base_dir, "templates", "docs", "detroit_template_2022.docx")
+        os.path.join(base_dir, "templates", "docs", "detroit_template_2024.docx")
     )
 
     allinfo = []

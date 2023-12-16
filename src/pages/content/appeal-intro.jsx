@@ -10,46 +10,31 @@ const AppealIntro = ({ city }) => (
       Application, the Project will try to contact you three times. If we don’t
       hear from you after three attempts, we will remove you from our list.
     </p>
-    <h2>The Appeals Process</h2>
+    <h1>The Appeals Process</h1>
     <p>Here is a general overview of the appeals process:</p>
 
     {city === "detroit" && (
       <ul>
         <li>
           <b>Step 1</b>: Complete this online application by{" "}
-          <b>February 15, 2022</b>. If you are unable to complete the
-          Application or have questions, call or text our hotline (313-438-8698)
-          or email us &nbsp;
-          <a href="mailto:law-propertytax@umich.edu?subject=Request for Assistance">
-            (law-propertytax@umich.edu)
-          </a>
-          .
+          <b>February 15, 2024</b>. If you are unable to complete the
+          Application or have questions, plase fill out this form to set up an
+          appointment to answer any questions or troubleshoot any issues you
+          might have: <a href="#">Appeal questions form</a>
         </li>
         <li>
-          <b>Step 2</b>: An advocate will call you to review your Application
-          and will let you know whether we can help you.
+          <b>Step 2</b>: We will review your application, determine if you are
+          eligible, and reach out with any questions or further information you
+          may need.
         </li>
         <li>
-          <b>Step 3</b>: If your Application is accepted, you will need to sign
-          a Letter of Authorization form. The Project will provide you with this
-          form.
+          <b>Step 3</b>: An advocate from our team will submit your documents to
+          the March Board of Review by March 8, 2024.
         </li>
         <li>
-          <b>Step 4</b>: If your Application is accepted, an advocate will work
-          with you to complete your appeal documents.
-        </li>
-        <li>
-          <b>Step 5</b>: Your advocate will submit your documents to the
-          Assessor’s Review by <b>February 22, 2022.</b>
-        </li>
-        <li>
-          <b>Step 6</b>: Your advocate will submit your documents to the March
-          Board of Review by <b>March 8, 2022.</b>
-        </li>
-        <li>
-          <b>Step 7</b>: Before <b>June of 2022</b>, the Board of Review will
-          send you a letter notifying you whether your home&apos;s assessed
-          value is reduced because of your appeal.
+          <b>Step 4</b>: Before June of 2024, the Board of Review will send you
+          a letter notifying you whether your home&apos;s assessed value is
+          reduced because of your appeal.
         </li>
       </ul>
     )}

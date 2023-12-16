@@ -10,10 +10,10 @@ const PTAPHeader3 = () => (
     </h2>
     <p>Click one of the buttons to get started with your appeal.</p>
     <Space>
-      <Button>
+      <Button size="large">
         <Link to="/detroit">Detroit</Link>
       </Button>
-      <Button>
+      <Button size="large">
         <Link to="/cook">Cook County</Link>
       </Button>
     </Space>

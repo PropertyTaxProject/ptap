@@ -56,7 +56,11 @@ function appealReducer(appeal, action) {
     case "set-eligibility": {
       return {
         ...appeal,
-        eligibility: { residence: action.residence, owner: action.owner },
+        eligibility: {
+          landlord: action.landlord,
+          residence: action.residence,
+          owner: action.owner,
+        },
       }
     }
     case "set-homeowner-info": {
@@ -73,6 +77,9 @@ function appealReducer(appeal, action) {
           action.pins.includes(pin)
         ),
       }
+    }
+    case "set-damage-level": {
+      return { ...appeal, damage_level: action.damage_level }
     }
     case "set-damage": {
       return { ...appeal, damage: action.damage }
@@ -105,5 +112,7 @@ const initialAppeal = {
   propertyOptions: null,
   user: null,
   userProperty: null,
+  damage: null,
+  damage_level: null,
   files: [],
 }

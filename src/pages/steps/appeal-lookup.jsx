@@ -2,7 +2,7 @@ import React, { useContext } from "react"
 import PinLookup from "../../components/pin-lookup"
 import PinChooser from "../../components/pin-chooser"
 import AppealIntro from "../content/appeal-intro"
-import { Button, Divider, Form, Radio } from "antd"
+import { Button, Divider, Form, Radio, Row, Col } from "antd"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 
@@ -20,6 +20,7 @@ const AppealLookup = () => {
 
     let ineligibleReason = null
     if (
+      appeal.eligibility.landlord !== "No" ||
       appeal.eligibility.residence !== "Yes" ||
       appeal.eligibility.owner !== "Yes"
     ) {
@@ -40,7 +41,11 @@ const AppealLookup = () => {
 
   return (
     <>
-      <AppealIntro city={appeal.city} />
+      <Row>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+          <AppealIntro city={appeal.city} />
+        </Col>
+      </Row>
       <Form
         form={form}
         initialValues={appeal.eligibility}
@@ -49,6 +54,7 @@ const AppealLookup = () => {
         onChange={() =>
           dispatch({
             type: "set-eligibility",
+            landlord: form.getFieldValue("landlord"),
             residence: form.getFieldValue("residence"),
             owner: form.getFieldValue("owner"),
           })
@@ -60,6 +66,16 @@ const AppealLookup = () => {
         size="large"
       >
         <Form.Item
+          name="landlord"
+          rules={[{ required: true, message: "Your response is required." }]}
+          label="Are you a landlord?"
+        >
+          <Radio.Group name="landlord">
+            <Radio value="Yes">Yes</Radio>
+            <Radio value="No">No</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
           name="residence"
           rules={[{ required: true, message: "Your response is required." }]}
           label="Is this home your primary residence, meaning the place you live most of the year?"
@@ -69,7 +85,6 @@ const AppealLookup = () => {
             <Radio value="No">No</Radio>
           </Radio.Group>
         </Form.Item>
-
         <Form.Item
           name="owner"
           rules={[{ required: true, message: "Your response is required." }]}
@@ -120,6 +135,7 @@ const AppealLookup = () => {
       <Divider />
       <Button
         type="primary"
+        size="large"
         disabled={!appeal.target}
         onClick={() => {
           // TODO: Turn into actual link
@@ -128,7 +144,7 @@ const AppealLookup = () => {
       >
         Next Page
       </Button>
-      <br />
+      <Divider />
       <p>Page 1 of 5</p>
     </>
   )

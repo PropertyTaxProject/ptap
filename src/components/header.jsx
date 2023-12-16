@@ -1,6 +1,7 @@
 import React from "react"
 import { Layout, Menu } from "antd"
 import coalition from "../assets/coalition_logo.png"
+import { CONTACT_EMAIL } from "../utils"
 
 const { Header } = Layout
 
@@ -23,9 +24,7 @@ const PTAPHeader = () => (
         <span style={{ color: "black" }}>Call or text us at: 313-329-7610</span>
       </Menu.Item>
       <Menu.Item key="email" disabled={true}>
-        <span style={{ color: "black" }}>
-          Email us at: propertytax@streetdemocracy.org
-        </span>
+        <span style={{ color: "black" }}>Email us at: {CONTACT_EMAIL}</span>
       </Menu.Item>
     </Menu>
   </Header>

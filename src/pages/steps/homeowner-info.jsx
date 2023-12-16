@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react"
-import { Form, Input, Button, Radio, Row, Col, Space, Select } from "antd"
+import { Form, Input, Button, Radio, Space, Select, Divider } from "antd"
 import { getAppealType } from "../../utils"
 const { Option } = Select
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
@@ -80,20 +80,7 @@ const HomeownerInfo = () => {
 
   return (
     <>
-      <Row>
-        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 24, offset: 0 }}>
-          <h1>Homeowner Contact Information</h1>
-          <p>
-            We will try to contact you three times on three separate days after
-            you fill out this form. If we do not hear from you within 72 hours
-            of our last attempt, we will remove you from our list. Please note:
-            when deadlines are approaching, we may only try to contact you once
-            or twice. The appeals season is very short which means you must
-            communicate promptly.
-          </p>
-          <p>How should we contact you?</p>
-        </Col>
-      </Row>
+      <h1>Homeowner Contact Information</h1>
       <Form
         form={form}
         initialValues={getInitialFormData(appeal)}
@@ -384,13 +371,15 @@ const HomeownerInfo = () => {
           ]}
         >
           <Radio.Group name="phonetime">
-            <Radio value="morning">Morning (before 11 a.m.)</Radio>
-            <Radio value="midday">Midday (between 11 a.m. and 2 p.m.)</Radio>
-            <Radio value="afternoon">
-              Afternoon (between 2 p.m. and 6 p.m.)
-            </Radio>
-            <Radio value="evening">Evening (between 6 p.m. and 8 p.m.)</Radio>
-            <Radio value="anytime">Anytime</Radio>
+            <Space direction="vertical">
+              <Radio value="morning">Morning (before 11 a.m.)</Radio>
+              <Radio value="midday">Midday (between 11 a.m. and 2 p.m.)</Radio>
+              <Radio value="afternoon">
+                Afternoon (between 2 p.m. and 6 p.m.)
+              </Radio>
+              <Radio value="evening">Evening (between 6 p.m. and 8 p.m.)</Radio>
+              <Radio value="anytime">Anytime</Radio>
+            </Space>
           </Radio.Group>
         </Form.Item>
 
@@ -456,6 +445,7 @@ const HomeownerInfo = () => {
           </Space>
         </Form.Item>
       </Form>
+      <Divider />
       <p>Page 2 of 5</p>
     </>
   )

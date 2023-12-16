@@ -1,12 +1,35 @@
 import React, { useContext, useState } from "react"
-import { Button, Divider, Table, Form, Input, Radio } from "antd"
+import {
+  Button,
+  Divider,
+  Table,
+  Form,
+  Input,
+  Radio,
+  Space,
+  Row,
+  Col,
+} from "antd"
 import PropertyInfo from "../../components/property-info"
-import { cleanParcel } from "../../utils"
+import { cleanParcel, CONTACT_EMAIL } from "../../utils"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
 
+const formItemLayout = {
+  labelCol: {
+    span: 12,
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    md: {
+      span: 12,
+    },
+  },
+}
 const userCols = [
   {
     title: "Name",
@@ -91,18 +114,25 @@ const ReviewAppeal = () => {
 
   return (
     <>
-      <h1>Your Appeal</h1>
-      <p>
-        Below is the information you submitted as part of your Application. If
-        the information is correct, please click the blue button to finalize
-        your Application.
-      </p>
-      <p>
-        If you need to make changes to any of this information please use the
-        “back button” to make those changes.
-      </p>
-      <h2>Your Property Information</h2>
-      <p>Below is the data that the Assessor has on file for your property.</p>
+      <Row>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+          <h1>Your Appeal</h1>
+          <p>
+            Below is the information you submitted as part of your Application.
+            If the information is correct, please click the blue button to
+            finalize your Application.
+          </p>
+          <p>
+            If you need to make changes to any of this information please use
+            the “back button” to make those changes.
+          </p>
+          <h2>Your Property Information</h2>
+          <p>
+            Below is the data that the Assessor has on file for your property.
+          </p>
+        </Col>
+      </Row>
+
       <PropertyInfo city={appeal.city} target={appeal.target} />
       <Divider />
       <h2>Your Information</h2>
@@ -119,7 +149,7 @@ const ReviewAppeal = () => {
         can be changed later.
       </p>
       <Table
-        dataSource={appeal.comparables.map(cleanParcel)}
+        dataSource={appeal.selectedComparables.map(cleanParcel)}
         columns={compCols}
         pagination={false}
         scroll={{ x: true }}
@@ -132,10 +162,65 @@ const ReviewAppeal = () => {
         layout="vertical"
         autoComplete="off"
         size="large"
+        {...formItemLayout}
       >
         <Form.Item
+          name="damage_level"
+          rules={[
+            { required: true, message: "You must select one of the options" },
+          ]}
+          label="To the best of your abilities, please pick a category that best describes the condition of your home. The Assessor uses these categories and criteria to rate the condition."
+          help={` If you have any questions about how to categorize your home, please send us an email at ${CONTACT_EMAIL}.`}
+        >
+          <Radio.Group
+            name="damage_level"
+            onChange={(e) => {
+              dispatch({
+                type: "set-damage-level",
+                damage_level: e.target.value,
+              })
+            }}
+          >
+            <Space direction="vertical">
+              <Radio value="excellent">
+                <strong>Excellent</strong>: Building is in perfect condition,
+                very attractive and highly desirable
+              </Radio>
+              <Radio value="very_good">
+                <strong>Very good</strong>: Slight evidence of deterioration,
+                still attractive and quite desirable
+              </Radio>
+              <Radio value="good">
+                <strong>Good</strong>: Minor deterioration visible, slightly
+                less attractive and desirable, but useful
+              </Radio>
+              <Radio value="average">
+                <strong>Average</strong>: Normal wear and tear is apparent,
+                average attractiveness and desirability
+              </Radio>
+              <Radio value="fair">
+                <strong>Fair</strong>: Marked deterioration, rather unattractive
+                and undesirable but still quite useful
+              </Radio>
+              <Radio value="poor">
+                <strong>Poor</strong>: Definite deterioration is obvious,
+                definitely undesirable and barely usable
+              </Radio>
+              <Radio value="very_poor">
+                <strong>Very poor</strong>: Condition approaches unsoundness,
+                extremely undesirable and barely usable
+              </Radio>
+              <Radio value="unsound">
+                <strong>Unsound</strong>: Building is definitely unsound and
+                practically unfit for use
+              </Radio>
+            </Space>
+          </Radio.Group>
+        </Form.Item>
+        <br />
+        <Form.Item
           name="damage"
-          label="Describe any damage to your property that would impact its value"
+          label="In support of the rating you selected for your home above, please describe the condition of your home below, including any damage to your property, both inside and out."
         >
           <Input.TextArea
             name="damage"
@@ -145,16 +230,7 @@ const ReviewAppeal = () => {
             }}
           />
         </Form.Item>
-        <Form.Item
-          name="damage_level"
-          label="If you've written about damage, how would you describe it on a scale of low to high?"
-        >
-          <Radio.Group name="damage_level">
-            <Radio value="low">Low</Radio>
-            <Radio value="medium">Medium</Radio>
-            <Radio value="high">High</Radio>
-          </Radio.Group>
-        </Form.Item>
+
         {appeal.city !== "chicago" && (
           <FileUpload
             label="Click to upload images of the damage"
@@ -165,18 +241,25 @@ const ReviewAppeal = () => {
         )}
       </Form>
       <Divider />
-      <Button
-        disabled={loading}
-        type="danger"
-        onClick={() => navigate("../comparables")}
-      >
-        Back
-      </Button>
-      <Button disabled={loading} type="primary" onClick={confirmInfo}>
-        Finalize Application
-      </Button>
-      <br></br>
-      <br></br>
+      <Space>
+        <Button
+          size="large"
+          disabled={loading}
+          type="danger"
+          onClick={() => navigate("../comparables")}
+        >
+          Back
+        </Button>
+        <Button
+          size="large"
+          disabled={loading}
+          type="primary"
+          onClick={confirmInfo}
+        >
+          Finalize Application
+        </Button>
+      </Space>
+      <Divider />
       <p>Page 5 of 5</p>
     </>
   )

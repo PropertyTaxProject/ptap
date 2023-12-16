@@ -19,6 +19,7 @@ export const submitAppeal = async ({
   user,
   userProperty,
   uuid,
+  damage_level = ``,
   damage = ``,
   files = [],
 }) => {
@@ -27,6 +28,7 @@ export const submitAppeal = async ({
       target_pin: target,
       comparables,
       uuid,
+      damage_level,
       damage,
       files,
       ...user,
