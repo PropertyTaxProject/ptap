@@ -13,7 +13,7 @@ const PTAPHeader4 = () => (
     </p>
 
     <Space>
-      <Button type="primary">
+      <Button size="large" type="primary">
         <a
           href="https://illegalforeclosures.org/"
           target="_blank"

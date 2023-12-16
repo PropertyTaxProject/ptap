@@ -3,9 +3,16 @@ const METERS_IN_MILE = 1609.344
 
 // TODO: Constant for now, may change
 // eslint-disable-next-line
-export function getNumberComparables(city) {
+export function getMinComparables(city) {
+  return 3
+}
+// TODO: Constant for now, may change
+// eslint-disable-next-line
+export function getMaxComparables(city) {
   return 5
 }
+
+export const CONTACT_EMAIL = "illegalforeclosures@gmail.com"
 
 export const DISPLAY_FIELDS = [
   {
@@ -24,6 +31,10 @@ export const DISPLAY_FIELDS = [
     title: "Exterior",
     field: "exterior_display",
   },
+  // {
+  //   title: "Beds",
+  //   field: "bedrooms",
+  // },
   {
     title: "Baths",
     field: "baths_display",
@@ -191,6 +202,3 @@ export const getAppealType = (city) => {
   }
   return city
 }
-
-export const detroitPropertyInfo = ({ taxpayer, homestead_exemption }) =>
-  `Taxpayer of Record: ${taxpayer}. Current Principal Residence Exemption (PRE) Exemption Status: ${homestead_exemption}%.`

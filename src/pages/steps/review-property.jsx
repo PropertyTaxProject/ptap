@@ -88,7 +88,7 @@ const ReviewProperty = () => {
 
         <Form.Item
           name="valueestimate"
-          label="How much do you think your house would sell for right now, as is? (If you are not sure, go ahead and provide an estimate)"
+          label="How much do you think your house would sell for right now, as is? (If you are not sure, that's okay! Go ahead and provide a best guess)"
         >
           <Input name="valueestimate" placeholder="Your best estimate." />
         </Form.Item>
@@ -104,6 +104,7 @@ const ReviewProperty = () => {
           </Space>
         </Form.Item>
       </Form>
+      <Divider />
       <p>Page 3 of 5</p>
     </>
   )

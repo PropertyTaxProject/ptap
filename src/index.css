@@ -26,3 +26,19 @@ code {
 .ant-form-large .ant-form-item-label > label {
   height: auto;
 }
+
+.ant-form-item-explain,
+.ant-form-item-explain-connected {
+  font-style: italic;
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+p a,
+ul a {
+  text-decoration: underline;
+}
+
+.ant-layout-header ul a {
+  text-decoration: none;
+}
