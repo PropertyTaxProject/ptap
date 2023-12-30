@@ -1,9 +1,14 @@
 import io
+import json
+import os
+from datetime import datetime
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
+import boto3
+import pytz
 import requests
 from docx.shared import Inches
-from docxtpl import InlineImage
+from docxtpl import DocxTemplate, InlineImage
 from PIL import Image
 from pillow_heif import register_heif_opener
 
@@ -11,6 +16,31 @@ from pillow_heif import register_heif_opener
 # TODO: Just use that as the request
 def get_region(request_data):
     return "detroit" if "detroit" in request_data.get("appeal_type") else "cook"
+
+
+def render_agreement(name, parcel):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    doc = DocxTemplate(
+        os.path.join(base_dir, "templates", "docs", "representation_agreement.docx")
+    )
+
+    timestamp = datetime.now(pytz.timezone("America/Detroit"))
+    # TODO: Only currently supports Detroit
+    city_state = {"city": "Detroit", "state": "MI"}
+    doc.render(
+        {
+            "agreement_date": timestamp.strftime("%Y-%m-%d"),
+            "client_name": name,
+            "parcel_num": parcel.pin,
+            "street_address": f"{parcel.street_number} {parcel.street_name}",
+            **city_state,
+        }
+    )
+
+    file_stream = io.BytesIO()
+    doc.save(file_stream)
+    file_stream.seek(0)
+    return file_stream.getvalue()
 
 
 def process_doc_images(doc, files, temp_dir):
@@ -45,3 +75,25 @@ def render_doc_to_bytes(doc, context, files):
         doc.save(file_stream)  # save to stream
         file_stream.seek(0)  # reset pointer to head
     return file_stream
+
+
+def log_step(logger, data):
+    logger.info(f"LOG_STEP: {json.dumps(data)}")
+    # Only running for specific steps to reduce latency
+    if data.get("step") in ["agreement", "submit"]:
+        update_s3_submission(data)
+
+
+def update_s3_submission(data):
+    if not data.get("uuid") or not os.getenv("S3_SUBMISSIONS_BUCKET"):
+        return
+    timestamp = datetime.now(pytz.timezone("America/Detroit"))
+    data["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp_path = timestamp.strftime("%Y/%m/%d")
+
+    s3 = boto3.client("s3")
+    s3.put_object(
+        Body=json.dumps(data),
+        Bucket=os.getenv("S3_SUBMISSIONS_BUCKET"),
+        Key=f"submissions/{timestamp_path}/{data.get('uuid')}.json",
+    )

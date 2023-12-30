@@ -1,4 +1,3 @@
-import json
 import os
 import time
 import uuid
@@ -14,8 +13,9 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.exceptions import HTTPException
 
 from .db import db
+from .email import agreement_email
 from .mainfct import address_candidates, comparables, process_comps_input
-from .utils import get_region
+from .utils import get_region, log_step
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
@@ -80,8 +80,15 @@ def handle_form0():
         request.json, {"detroit": 150000, "cook": 225000}
     )
     uid = uuid.uuid4().urn[9:]
-    log_params = {"uuid": uid, "region": get_region(request.json), "step": "pin-lookup"}
-    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, **log_params})}")
+    log_step(
+        app.logger,
+        {
+            **request.json,
+            "uuid": uid,
+            "region": get_region(request.json),
+            "step": "pin-lookup",
+        },
+    )
     response_dict["uuid"] = uid
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
@@ -91,8 +98,14 @@ def handle_form0():
 @app.route("/api_v1/submit", methods=["POST"])
 def handle_form():
     owner_data = request.json
-    log_params = {"region": get_region(request.json), "step": "comparables"}
-    app.logger.info(f"LOG_STEP: {json.dumps({**request.json, **log_params})}")
+    log_step(
+        app.logger,
+        {
+            **request.json,
+            "region": get_region(request.json),
+            "step": "comparables",
+        },
+    )
     response_dict = comparables(owner_data)
     resp = jsonify({"request_status": time.time(), "response": response_dict})
     return resp
@@ -103,8 +116,10 @@ def handle_form2():
     # submit selected comps / finalize appeal / send to summary or complete page
     comps_data = request.json
     download = False
-    log_params = {"region": get_region(request.json), "step": "submit"}
-    app.logger.info(f"LOG_STEP: {json.dumps({**comps_data, **log_params})}")
+    log_step(
+        app.logger, {**comps_data, "region": get_region(request.json), "step": "submit"}
+    )
+
     response_dict = process_comps_input(comps_data, mail)
     if download:
         return send_file(
@@ -116,6 +131,14 @@ def handle_form2():
     resp = jsonify({"request_status": time.time(), "response": response_dict})
 
     return resp
+
+
+@app.route("/api/agreement", methods=["POST"])
+def handle_agreement():
+    log_step(app.logger, {**request.json, "step": "agreement"})
+    if "detroit" in request.json.get("city", ""):
+        mail.send(agreement_email(request.json))
+    return ("", 204)
 
 
 @app.route("/api/upload", methods=["POST"])

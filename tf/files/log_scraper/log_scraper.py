@@ -61,12 +61,13 @@ def update_google_spreadsheet(worksheet, log_data):
 
 
 def row_from_data(data):
+    name = data.get("name", f'{data.get("first_name", "")} {data.get("last_name", "")}')
     return [
         data.get("timestamp"),
         data.get("uuid"),
         data.get("step"),
         data.get("region"),
-        data.get("name"),
+        name,
         data.get("address"),
         data.get("email"),
         data.get("phone"),

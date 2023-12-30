@@ -145,7 +145,7 @@ const AppealLookup = () => {
         Next Page
       </Button>
       <Divider />
-      <p>Page 1 of 5</p>
+      <p>Page 1 of 7</p>
     </>
   )
 }

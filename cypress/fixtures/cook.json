@@ -14,6 +14,18 @@
     {
       "street_number": "6605",
       "street_name": "S LAFLIN"
+    },
+    {
+      "street_number": "6827",
+      "street_name": "S CARPENTER ST"
+    },
+    {
+      "street_number": "5838",
+      "street_name": "S UNION AVE"
+    },
+    {
+      "street_number": "5711",
+      "street_name": "S ELIZABETH ST"
     }
   ]
 }

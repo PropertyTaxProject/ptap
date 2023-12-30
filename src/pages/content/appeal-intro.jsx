@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { HELP_LINK } from "../../utils"
 
 const AppealIntro = ({ city }) => (
   <>
@@ -20,7 +21,7 @@ const AppealIntro = ({ city }) => (
           <b>February 15, 2024</b>. If you are unable to complete the
           Application or have questions, plase fill out this form to set up an
           appointment to answer any questions or troubleshoot any issues you
-          might have: <a href="#">Appeal questions form</a>
+          might have: <a href={HELP_LINK}>Schedule an appointment</a>
         </li>
         <li>
           <b>Step 2</b>: We will review your application, determine if you are

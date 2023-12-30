@@ -12,7 +12,10 @@ export function getMaxComparables(city) {
   return 5
 }
 
-export const CONTACT_EMAIL = "illegalforeclosures@gmail.com"
+export const HELP_LINK =
+  "https://calendly.com/illegalforeclosures-detroit/30min"
+
+export const CONTACT_EMAIL = "help@illegalforeclosures.org"
 
 export const DISPLAY_FIELDS = [
   {

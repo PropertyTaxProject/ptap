@@ -1,35 +1,11 @@
 import React, { useContext, useState } from "react"
-import {
-  Button,
-  Divider,
-  Table,
-  Form,
-  Input,
-  Radio,
-  Space,
-  Row,
-  Col,
-} from "antd"
+import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
 import PropertyInfo from "../../components/property-info"
-import { cleanParcel, CONTACT_EMAIL } from "../../utils"
-import { FileUpload } from "../../components/file-upload"
+import { cleanParcel } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
 
-const formItemLayout = {
-  labelCol: {
-    span: 12,
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    md: {
-      span: 12,
-    },
-  },
-}
 const userCols = [
   {
     title: "Name",
@@ -101,7 +77,6 @@ const ReviewAppeal = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
-  const [form] = Form.useForm()
 
   const confirmInfo = async () => {
     setLoading(true)
@@ -155,98 +130,34 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      <h2>Damage</h2>
-      <Form
-        form={form}
-        name="damage"
-        layout="vertical"
-        autoComplete="off"
-        size="large"
-        {...formItemLayout}
-      >
-        <Form.Item
-          name="damage_level"
-          rules={[
-            { required: true, message: "You must select one of the options" },
-          ]}
-          label="To the best of your abilities, please pick a category that best describes the condition of your home. The Assessor uses these categories and criteria to rate the condition."
-          help={` If you have any questions about how to categorize your home, please send us an email at ${CONTACT_EMAIL}.`}
-        >
-          <Radio.Group
-            name="damage_level"
-            onChange={(e) => {
-              dispatch({
-                type: "set-damage-level",
-                damage_level: e.target.value,
-              })
-            }}
-          >
-            <Space direction="vertical">
-              <Radio value="excellent">
-                <strong>Excellent</strong>: Building is in perfect condition,
-                very attractive and highly desirable
-              </Radio>
-              <Radio value="very_good">
-                <strong>Very good</strong>: Slight evidence of deterioration,
-                still attractive and quite desirable
-              </Radio>
-              <Radio value="good">
-                <strong>Good</strong>: Minor deterioration visible, slightly
-                less attractive and desirable, but useful
-              </Radio>
-              <Radio value="average">
-                <strong>Average</strong>: Normal wear and tear is apparent,
-                average attractiveness and desirability
-              </Radio>
-              <Radio value="fair">
-                <strong>Fair</strong>: Marked deterioration, rather unattractive
-                and undesirable but still quite useful
-              </Radio>
-              <Radio value="poor">
-                <strong>Poor</strong>: Definite deterioration is obvious,
-                definitely undesirable and barely usable
-              </Radio>
-              <Radio value="very_poor">
-                <strong>Very poor</strong>: Condition approaches unsoundness,
-                extremely undesirable and barely usable
-              </Radio>
-              <Radio value="unsound">
-                <strong>Unsound</strong>: Building is definitely unsound and
-                practically unfit for use
-              </Radio>
-            </Space>
-          </Radio.Group>
-        </Form.Item>
+      <h2>Your Property Condition</h2>
+      <p>
+        <strong>Damage level</strong>
+        <span style={{ "text-transform": "capitalize" }}>
+          {" "}
+          {appeal.damage_level.replace(/_/g, " ")}
+        </span>
+      </p>
+      <p>
+        <strong>Damage description</strong>
         <br />
-        <Form.Item
-          name="damage"
-          label="In support of the rating you selected for your home above, please describe the condition of your home below, including any damage to your property, both inside and out."
-        >
-          <Input.TextArea
-            name="damage"
-            value={appeal.damage}
-            onChange={(e) => {
-              dispatch({ type: "set-damage", damage: e.target.value })
-            }}
-          />
-        </Form.Item>
-
-        {appeal.city !== "chicago" && (
-          <FileUpload
-            label="Click to upload images of the damage"
-            accept="image/*,.heic,.heif"
-            files={appeal.files}
-            onChange={(files) => dispatch({ type: "set-files", files })}
-          />
-        )}
-      </Form>
+        {appeal.damage}
+      </p>
+      <p>
+        <strong>Damage images</strong>
+      </p>
+      <Image.PreviewGroup>
+        {appeal.files.map(({ url }) => (
+          <Image width={200} src={url} key={url} />
+        ))}
+      </Image.PreviewGroup>
       <Divider />
       <Space>
         <Button
           size="large"
           disabled={loading}
           type="danger"
-          onClick={() => navigate("../comparables")}
+          onClick={() => navigate("../damage")}
         >
           Back
         </Button>
@@ -260,7 +171,7 @@ const ReviewAppeal = () => {
         </Button>
       </Space>
       <Divider />
-      <p>Page 5 of 5</p>
+      <p>Page 7 of 7</p>
     </>
   )
 }
