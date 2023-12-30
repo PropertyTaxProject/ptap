@@ -1,13 +1,46 @@
+import json
 import os
 from datetime import datetime
 
+import gspread
 import pandas as pd
 from docxtpl import DocxTemplate
+from google.oauth2 import service_account
 
+from .constants import DAMAGE_TO_CONDITION
 from .dataqueries import avg_ecf, get_pin
 from .email import cook_submission_email, detroit_submission_email
-from .logging import record_final_submission
 from .utils import render_doc_to_bytes
+
+gsheet_submission = None
+
+
+def record_final_submission(sub_dict):
+    if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
+        return
+
+    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT"))
+    credentials = service_account.Credentials.from_service_account_info(
+        credentials_json,
+        scopes=[
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/drive",
+        ],
+    )
+
+    client = gspread.authorize(credentials)
+    worksheet = client.open(os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")).sheet1
+
+    worksheet.append_rows([list(sub_dict.values())])
+    val_list = worksheet.col_values(1)
+    base_url = "https://docs.google.com/spreadsheets/d/"
+
+    # TODO: Pull SID dynamically
+    return (
+        f"{base_url}{os.getenv('GOOGLE_SHEET_SID')}/edit#gid=0&range=A{len(val_list)}"
+    )
 
 
 def submit_cook_sf(comp_submit, mail):
@@ -15,7 +48,9 @@ def submit_cook_sf(comp_submit, mail):
     Output:
     Word Document
     """
-
+    owner_name = comp_submit.get(
+        "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
+    )
     rename_dict = {
         "address": "Address",
         "bedrooms": "Beds",
@@ -71,7 +106,7 @@ def submit_cook_sf(comp_submit, mail):
     context = {
         "pin": pin,
         "address": comp_submit["address"],
-        "homeowner_name": comp_submit["name"],
+        "homeowner_name": owner_name,
         "assessor_av": "{:,.0f}".format(pin_av),
         "assessor_mv": "${:,.0f}".format(pin_av * 10),
         "contention_av": "{:,.0f}".format(comps_avg / 10),
@@ -130,7 +165,9 @@ def submit_cook_sf(comp_submit, mail):
 
 
 def submit_detroit_sf(comp_submit, mail):
-    # TODO: Main doc to update
+    owner_name = comp_submit.get(
+        "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
+    )
     rename_dict = {
         "pin": "Parcel ID",
         "address": "Address",
@@ -196,9 +233,9 @@ def submit_detroit_sf(comp_submit, mail):
 
     context = {
         "pin": pin,
-        "owner": comp_submit["name"],
+        "owner": owner_name,
         "address": comp_submit["address"],
-        "formal_owner": comp_submit["name"],
+        "formal_owner": owner_name,
         "current_sev": "{:,.0f}".format(pin_av),
         "current_faircash": "${:,.0f}".format(pin_av * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
@@ -209,6 +246,8 @@ def submit_detroit_sf(comp_submit, mail):
         "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
         "allinfo": allinfo,
         "propinfo": propinfo,
+        "year": 2024,
+        # **detroit_depreciation(None, None, None, None),
     }
 
     # TODO:
@@ -227,7 +266,7 @@ def submit_detroit_sf(comp_submit, mail):
         c_flag = "No"
 
     sub_dict = {
-        "Client Name": comp_submit["name"],
+        "Client Name": owner_name,
         "Address": comp_submit["address"],
         "Taxpayer of Record": targ["taxpayer"].to_string(index=False),
         "pin": pin,
@@ -249,3 +288,28 @@ def submit_detroit_sf(comp_submit, mail):
     detroit_submission_email(mail, comp_submit)
 
     return output
+
+
+def detroit_depreciation(actual_age, effective_age, damage, damage_level):
+    condition = DAMAGE_TO_CONDITION.get(damage_level, [0, 0, 0])
+    percent_good = 100 - effective_age
+    schedule_incorrect = effective_age < actual_age and not (
+        actual_age >= 55 and effective_age >= 55
+    )
+    damage_incorrect = condition[2] < percent_good
+    damage_correct = condition[0] > percent_good
+
+    return {
+        "age": actual_age,
+        "actual_age": min(actual_age, 55),
+        "effective_age": effective_age,
+        "new_effective_age": 100 - actual_age,
+        "percent_good": percent_good,
+        "schedule_incorrect": schedule_incorrect,
+        "damage": damage,
+        "damage_level": damage_level.title().replace("_", " "),
+        "damage_midpoint": condition[1],
+        "damage_incorrect": damage_incorrect,
+        "damage_correct": damage_correct,
+        "show_depreciation": not schedule_incorrect and damage_correct,
+    }

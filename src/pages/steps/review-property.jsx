@@ -95,7 +95,7 @@ const ReviewProperty = () => {
 
         <Form.Item>
           <Space>
-            <Button type="danger" onClick={() => navigate("../homeowner-info")}>
+            <Button type="danger" onClick={() => navigate("../agreement")}>
               Back
             </Button>
             <Button type="primary" htmlType="submit">
@@ -105,7 +105,7 @@ const ReviewProperty = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>Page 3 of 5</p>
+      <p>Page 4 of 7</p>
     </>
   )
 }

@@ -38,6 +38,29 @@ const tailFormItemLayout = {
   },
 }
 
+const nameFieldsLayout = {
+  labelCol: {
+    span: 24,
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 24,
+      offset: 0,
+    },
+    md: {
+      span: 24,
+      offset: 0,
+    },
+    lg: {
+      span: 24,
+    },
+  },
+}
+
 const getInitialFormData = ({ user, target, city: appealCity }) => {
   const state = appealCity === "detroit" ? "MI" : "IL"
   let { address, city, zip } = target || {}
@@ -53,7 +76,7 @@ const HomeownerInfo = () => {
   const [form] = Form.useForm()
   const [showMailingAddr, updateMailingAddr] = useState(false)
   const [showAltContact, updateAltContact] = useState(false)
-  const [showReferral, updateReferral] = useState(false)
+  const [heardAbout, updateHeardAbout] = useState(null)
 
   const onFinish = async (values) => {
     const info = {
@@ -75,7 +98,7 @@ const HomeownerInfo = () => {
       target: res.target_pin[0],
       propertyInfo: res.prop_info,
     })
-    navigate("../review-property")
+    navigate("../agreement")
   }
 
   return (
@@ -92,18 +115,34 @@ const HomeownerInfo = () => {
         size="large"
         {...formItemLayout}
       >
-        <Form.Item
-          name="name"
-          label="Full Name (First, Middle, Last)"
-          rules={[
-            {
-              required: true,
-              message: "Please input your full name",
-            },
-          ]}
-        >
-          <Input name="name" />
-        </Form.Item>
+        <Input.Group compact labelCol={{ sm: 24, xs: 24, md: 24 }}>
+          <Form.Item
+            name="first_name"
+            label="First name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your first name",
+              },
+            ]}
+            {...nameFieldsLayout}
+          >
+            <Input name="first_name" />
+          </Form.Item>
+          <Form.Item
+            name="last_name"
+            label="Last name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your last name",
+              },
+            ]}
+            {...nameFieldsLayout}
+          >
+            <Input name="last_name" />
+          </Form.Item>
+        </Input.Group>
         <Form.Item
           name="email"
           label="Email Address"
@@ -388,51 +427,51 @@ const HomeownerInfo = () => {
           label="How did you hear about us?"
           rules={[
             {
+              required: true,
               message: "Please select from the dropdown options",
             },
           ]}
         >
-          <Select name="heardabout" onChange={(e) => updateReferral(e)}>
+          <Select name="heardabout" onChange={(v) => updateHeardAbout(v)}>
             <Option value="local">Local Organization</Option>
             <Option value="social media">
               Social Media (Facebook, Instagram, or Twitter)
             </Option>
             <Option value="text">Text Message</Option>
-            <Option value="newspaper">Newspaper Article</Option>
-            <Option value="referral">Referral</Option>
+            <Option value="newspaper">From the news</Option>
+            <Option value="referral">
+              From a friend, neighbor, or family member
+            </Option>
+            <Option value="phone">Phone call</Option>
             <Option value="other">Other</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
-          name="referralinput"
-          label="Who referred you?"
-          style={
-            showReferral === "referral" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showReferral === "referral" && (
+        {heardAbout === "referral" && (
+          <Form.Item
+            name="referralinput"
+            label="Who referred you?"
+            rules={[{ required: true }]}
+          >
             <Input
               name="referralinput"
               placeholder="Please enter who referred you"
             />
-          )}
-        </Form.Item>
+          </Form.Item>
+        )}
 
-        <Form.Item
-          name="otherheardaboutinput"
-          label="Please enter how you heard about us"
-          style={
-            showReferral === "other" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showReferral === "other" && (
+        {heardAbout === "other" && (
+          <Form.Item
+            name="otherheardaboutinput"
+            label="Please enter how you heard about us"
+            rules={[{ required: true }]}
+          >
             <Input
               name="otherheardaboutinput"
               placeholder="Please how you heard about us"
             />
-          )}
-        </Form.Item>
+          </Form.Item>
+        )}
 
         <Form.Item {...tailFormItemLayout}>
           <Space>
@@ -446,7 +485,7 @@ const HomeownerInfo = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>Page 2 of 5</p>
+      <p>Page 2 of 7</p>
     </>
   )
 }

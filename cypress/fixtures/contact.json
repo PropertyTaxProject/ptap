@@ -1,5 +1,7 @@
 {
   "name": "Test Person",
+  "first_name": "Test",
+  "last_name": "Person",
   "email": "test@example.com",
   "phone": "555-555-5555",
   "address": "1234 Fake St",

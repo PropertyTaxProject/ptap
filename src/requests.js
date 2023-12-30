@@ -1,5 +1,4 @@
 import axios from "axios"
-import { saveAs } from "file-saver"
 
 const BASE_URL = document.querySelector("meta[name=baseurl]").content || ""
 
@@ -13,43 +12,41 @@ export const submitForm = async (info) => {
   }
 }
 
-export const submitAppeal = async ({
-  target,
-  selectedComparables: comparables,
-  user,
-  userProperty,
-  uuid,
-  damage_level = ``,
-  damage = ``,
-  files = [],
-}) => {
+export const submitAppeal = async (appeal) => {
   try {
+    // TODO: Clean this up
+    const { target, user, userProperty, ...data } = appeal
     const body = {
       target_pin: target,
-      comparables,
-      uuid,
-      damage_level,
-      damage,
-      files,
+      user,
+      userProperty,
+      ...data,
       ...user,
       ...userProperty,
     }
-    //const detroit = userInfo.appeal_type === 'detroit_single_family';
-    const download = false
-    const resp = await axios.post(`${BASE_URL}/api_v1/submit2`, body, {
-      responseType: download ? "blob" : "json",
+    await axios.post(`${BASE_URL}/api_v1/submit2`, body, {
+      responseType: "json",
     })
-    if (download === true) {
-      saveAs(
-        resp.data,
-        `${user.name.split(" ").join("-").toLowerCase()}-appeal.docx`
-      )
-    } else {
-      console.log(resp)
-    }
   } catch (e) {
     console.error(e)
   }
+}
+
+export const submitAgreement = async ({
+  uuid,
+  agreement,
+  agreement_name,
+  user,
+  pin,
+  city,
+  ...data
+}) => {
+  const res = await axios.post(
+    `${BASE_URL}/api/agreement`,
+    { uuid, agreement, agreement_name, user, pin, city, ...data },
+    { responseType: "json" }
+  )
+  return res.data
 }
 
 export const lookupPin = async (data) => {

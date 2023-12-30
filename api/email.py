@@ -3,38 +3,83 @@ import os
 from flask import render_template
 from flask_mail import Message
 
+from .constants import WORD_MIMETYPE
+from .dataqueries import _get_pin
+from .utils import render_agreement
+
+
+def agreement_email(data):
+    parcel = _get_pin("detroit", data.get("pin"))
+    street_address = f"{parcel.street_number} {parcel.street_name}"
+
+    if data.get("agreement"):
+        name = data.get("agreement_name")
+        subject = f"Property Tax Appeal Agreement: {name} ({street_address})"
+    else:
+        user = data.get("user", {})
+        name = user.get("name", f'{user["first_name"]} {user["last_name"]}')
+        subject = f"Property Tax Appeal Start: {name} ({street_address})"
+
+    body = render_template(
+        "emails/agreement_log.html",
+        uuid=data.get("uuid"),
+        agreement=data.get("agreement"),
+        name=name,
+        street_address=street_address,
+    )
+    msg = Message(subject, recipients=[os.getenv("PTAP_MAIL")])
+    msg.html = body
+
+    if data.get("agreement"):
+        agreement_bytes = render_agreement(name, parcel)
+        msg.attach(
+            f"Property Tax Appeal Project Representation Agreement {name}.docx",
+            WORD_MIMETYPE,
+            agreement_bytes,
+        )
+
+    return msg
+
 
 def detroit_submission_email(mail, data):
     # email to ptap account with info
-    name = data["name"]
+    name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
     addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
-    ptap = [os.getenv("PTAP_MAIL")]
-    uofm = [os.getenv("UOFM_MAIL")]
+    doc_filename = data["output_name"][13:]
+    doc_bytes = data["file_stream"].getvalue()
 
-    subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
+    subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
     body = render_template(
         "emails/submission_log.html", name=name, address=addr, log_url=data["log_url"]
     )
-    msg = Message(subj, recipients=uofm, cc=ptap)
+    msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
     msg.html = body
-    msg.attach(
-        data["output_name"][13:],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        data["file_stream"].getvalue(),
-    )
+    if os.getenv("ATTACH_LETTERS"):
+        msg.attach(doc_filename, WORD_MIMETYPE, doc_bytes)
     mail.send(msg)
 
     body = render_template("emails/submission_detroit.html", name=name, address=addr)
-    msg2 = Message(subj, recipients=submit_email, reply_to=uofm[0])
+    msg2 = Message(subj, recipients=submit_email, reply_to=os.getenv("PTAP_MAIL"))
     msg2.html = body
+    if os.getenv("ATTACH_LETTERS"):
+        msg2.attach(doc_filename, WORD_MIMETYPE, doc_bytes)
+
+    if data.get("agreement"):
+        parcel = _get_pin("detroit", data.get("pin"))
+        agreement_bytes = render_agreement(name, parcel)
+        msg2.attach(
+            f"Property Tax Appeal Project Representation Agreement {name}.docx",
+            WORD_MIMETYPE,
+            agreement_bytes,
+        )
+
     mail.send(msg2)
-    print("emailed")
 
 
 def cook_submission_email(mail, data):
     # email to ptap account with info
-    name = data["name"]
+    name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
     addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
     ptap = [os.getenv("PTAP_MAIL", "")]
@@ -50,11 +95,12 @@ def cook_submission_email(mail, data):
 
     msg = Message(subj, recipients=ptap_chi, cc=ptap)
     msg.html = body
-    msg.attach(
-        data["output_name"][13:],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        data["file_stream"].getvalue(),
-    )
+    if os.getenv("ATTACH_LETTERS"):
+        msg.attach(
+            data["output_name"][13:],
+            WORD_MIMETYPE,
+            data["file_stream"].getvalue(),
+        )
     mail.send(msg)
 
     # receipt to user

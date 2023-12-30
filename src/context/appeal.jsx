@@ -63,8 +63,18 @@ function appealReducer(appeal, action) {
         },
       }
     }
+    case "set-agreement": {
+      return { ...appeal, agreement: action.agreement }
+    }
+    case "set-agreement-name": {
+      return {
+        ...appeal,
+        agreement_name: action.agreement_name,
+      }
+    }
     case "set-homeowner-info": {
       const { user, comparables, headers, target, propertyInfo } = action
+      user.name = `${user.first_name || ``} ${user.last_name || ``}`
       return { ...appeal, user, comparables, headers, target, propertyInfo }
     }
     case "set-user-property": {
@@ -103,6 +113,8 @@ const initialAppeal = {
   eligible: null,
   target: null,
   propertyInfo: null,
+  agreement: null,
+  agreement_name: null,
   estimate: {},
   step: 1,
   selected: false,

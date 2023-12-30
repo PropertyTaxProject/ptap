@@ -24,10 +24,6 @@ const PinLookup = ({ city, onSearch }) => {
       autoComplete="off"
       size="large"
     >
-      <p style={{ width: "350px" }}>
-        Enter your street number and street name.
-      </p>
-
       <Input.Group compact>
         <Form.Item
           style={{ width: "100px" }}

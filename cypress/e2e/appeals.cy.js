@@ -29,7 +29,8 @@ describe("Appeal flow", () => {
         cy.get("button").contains("Next Page").click()
 
         cy.get("h1").contains("Homeowner Contact Information").should("exist")
-        cy.get("#Housing_Information_name").type(contact.name)
+        cy.get("#Housing_Information_first_name").type(contact.first_name)
+        cy.get("#Housing_Information_last_name").type(contact.last_name)
         cy.get("#Housing_Information_email").type(contact.email)
         cy.get("#Housing_Information_phone").type(contact.phone)
         cy.get("#Housing_Information_phonetype [type=radio]").check("Home")
@@ -43,6 +44,12 @@ describe("Appeal flow", () => {
         cy.get("#Housing_Information_heardabout").click()
         cy.get(".ant-select-dropdown").contains("Local Organization").click()
         cy.get("button[type=submit]").contains("Next Page").click()
+
+        cy.get("#Agreement_agreement label")
+          .contains("I want FREE ASSISTANCE")
+          .click()
+        cy.get("#Agreement_agreement_name").type(contact.name)
+        cy.get("button").contains("Next Page").click()
 
         cy.get(".ant-table-row")
           .contains(`${street_number} ${street_name}`)
@@ -64,6 +71,10 @@ describe("Appeal flow", () => {
         })
 
         cy.get("button").contains("Next Page").click()
+
+        cy.get("#damage_damage_level label").contains("Average").click()
+        cy.get("button").contains("Next Page").click()
+
         cy.get("button").contains("Finalize Application").click()
 
         cy.get("h2")

@@ -286,6 +286,20 @@ module "s3_uploads" {
   ]
 }
 
+module "s3_submissions" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.15.1"
+
+  bucket = "${local.name}-${local.env}-submissions"
+
+  block_public_acls   = true
+  block_public_policy = true
+  ignore_public_acls  = true
+
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+}
+
 # Use for both environments
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
@@ -365,7 +379,7 @@ module "lambda" {
       {
         "Action"   = ["s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectAcl"],
         "Effect"   = "Allow",
-        "Resource" = [module.s3_uploads.s3_bucket_arn, "${module.s3_uploads.s3_bucket_arn}/*"]
+        "Resource" = [module.s3_uploads.s3_bucket_arn, "${module.s3_uploads.s3_bucket_arn}/*", module.s3_submissions.s3_bucket_arn, "${module.s3_submissions.s3_bucket_arn}/*"]
       }
     ]
   })
@@ -392,12 +406,14 @@ module "lambda" {
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
     GOOGLE_SHEET_SID       = data.aws_ssm_parameter.google_sheet_sid.value
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
+    S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
     DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
     CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
-    GOOGLE_SHEET_LOGS_NAME = "Copy of ptap-log"
+    GOOGLE_SHEET_LOGS_NAME = "ptap-log"
+    # ATTACH_LETTERS         = "true"
 
     GOOGLE_SHEET_SUBMISSION_NAME = "PTAP_Submissions"
   }
