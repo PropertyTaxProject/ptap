@@ -172,6 +172,12 @@ jobs:
           restore-keys: |
             npm-
 
+      - uses: actions/setup-python@v4
+        id: py
+        with:
+          python-version: 3.11
+          cache: poetry
+
       - name: Build assets for ${{ env.DEPLOY_ENV }}
         env:
           S3_BUCKET: ptap-${{ env.DEPLOY_ENV }}-assets
