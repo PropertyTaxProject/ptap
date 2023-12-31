@@ -28,6 +28,7 @@ locals {
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
+  sheet_name      = "Dev PTAP_Submissions"
 
   tags = {
     project     = local.name
@@ -233,10 +234,9 @@ module "lambda" {
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
-    GOOGLE_SHEET_LOGS_NAME = "Dev ptap-log"
     # ATTACH_LETTERS         = "true"
 
-    GOOGLE_SHEET_SUBMISSION_NAME = "Dev PTAP_Submissions"
+    GOOGLE_SHEET_SUBMISSION_NAME = local.sheet_name
   }
 
   tags = local.tags
@@ -330,7 +330,7 @@ module "logs_lambda" {
 
   environment_variables = {
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
-    GOOGLE_SHEET_NAME      = "Dev ptap-log"
+    GOOGLE_SHEET_NAME      = local.sheet_name
   }
 
   tags = local.tags
