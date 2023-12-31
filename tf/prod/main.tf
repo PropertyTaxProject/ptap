@@ -28,6 +28,7 @@ locals {
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
+  sheet_name      = "PTAP_Submissions"
 
   tags = {
     project     = local.name
@@ -412,10 +413,9 @@ module "lambda" {
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
     CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
-    GOOGLE_SHEET_LOGS_NAME = "ptap-log"
     # ATTACH_LETTERS         = "true"
 
-    GOOGLE_SHEET_SUBMISSION_NAME = "PTAP_Submissions"
+    GOOGLE_SHEET_SUBMISSION_NAME = local.sheet_name
   }
 
   tags = local.tags
@@ -656,4 +656,39 @@ data "aws_iam_policy_document" "send_mail" {
     actions   = ["ses:SendRawEmail"]
     resources = ["*"]
   }
+}
+
+module "logs_lambda" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "6.0.1"
+
+  function_name = "${local.name}-logs-${local.env}"
+  handler       = "log_scraper.lambda_handler"
+  runtime       = "python3.11"
+  memory_size   = 128
+  timeout       = 10
+  publish       = true
+
+  source_path = "${path.module}/../files/log_scraper"
+
+  allowed_triggers = {
+    cloudwatch = {
+      principal  = "logs.amazonaws.com"
+      source_arn = "${module.lambda.lambda_cloudwatch_log_group_arn}:*"
+    }
+  }
+
+  environment_variables = {
+    GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
+    GOOGLE_SHEET_NAME      = local.sheet_name
+  }
+
+  tags = local.tags
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "logs_lambda" {
+  name            = "${local.name}-logs-${local.env}"
+  log_group_name  = module.lambda.lambda_cloudwatch_log_group_name
+  filter_pattern  = "%LOG_STEP%"
+  destination_arn = module.logs_lambda.lambda_function_arn
 }
