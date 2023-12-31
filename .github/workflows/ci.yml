@@ -172,6 +172,8 @@ jobs:
           restore-keys: |
             npm-
 
+      - run: pipx install poetry
+
       - uses: actions/setup-python@v4
         id: py
         with:
