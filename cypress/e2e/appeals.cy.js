@@ -41,11 +41,9 @@ describe("Appeal flow", () => {
       cy.get("#Housing_Information_altcontact [type=radio]").check("No")
       cy.get("#Housing_Information_heardabout").click()
       cy.get(".ant-select-dropdown").contains("Local Organization").click()
+      cy.get("#Housing_Information_localinput").type("Organization")
       cy.get("button[type=submit]").contains("Next Page").click()
 
-      cy.get("#Agreement_agreement label")
-        .contains("I want FREE ASSISTANCE")
-        .click()
       cy.get("#Agreement_agreement_name").type(contact.name)
       cy.get("button").contains("Next Page").click()
 
