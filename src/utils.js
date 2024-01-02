@@ -12,6 +12,19 @@ export function getMaxComparables(city) {
   return 5
 }
 
+export function getPageLabel(pageName) {
+  const pages = [
+    "appeal-lookup",
+    "homeowner-info",
+    "agreement",
+    "review-property",
+    // "review-comparables",
+    "damage",
+    "review-appeal",
+  ]
+  return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
+}
+
 export const HELP_LINK =
   "https://calendly.com/illegalforeclosures-detroit/30min"
 
@@ -23,8 +36,8 @@ export const DISPLAY_FIELDS = [
     field: "address",
   },
   {
-    title: "Age",
-    field: "age",
+    title: "Year built",
+    field: "year_built",
   },
   {
     title: "Stories (Not Including Basement)",
@@ -54,22 +67,22 @@ export const DISPLAY_FIELDS = [
     title: "Distance",
     field: "distance_display",
   },
-  {
-    title: "Neighborhood",
-    field: "neighborhood",
-  },
-  {
-    title: "Assessor Market Value",
-    field: "market_value_display",
-  },
-  {
-    title: "Sale Price",
-    field: "sale_price_display",
-  },
-  {
-    title: "Sale Date",
-    field: "sale_date",
-  },
+  // {
+  //   title: "Neighborhood",
+  //   field: "neighborhood",
+  // },
+  // {
+  //   title: "Assessor Market Value",
+  //   field: "market_value_display",
+  // },
+  // {
+  //   title: "Sale Price",
+  //   field: "sale_price_display",
+  // },
+  // {
+  //   title: "Sale Date",
+  //   field: "sale_date",
+  // },
 ]
 
 export const DISPLAY_FIELDS_COOK = [

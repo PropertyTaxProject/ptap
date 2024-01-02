@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
-import PropertyInfo from "../../components/property-info"
-import { cleanParcel } from "../../utils"
+import { getPageLabel } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
@@ -44,33 +43,33 @@ const userCols = [
   },
 ]
 
-const compCols = [
-  {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
-  },
-  {
-    title: "Pin",
-    dataIndex: "pin",
-    key: "pin",
-  },
-  {
-    title: "Assessed Value",
-    dataIndex: "assessed_value_display",
-    key: "assessed_value_display",
-  },
-  {
-    title: "Sale Price (if available)",
-    dataIndex: "sale_price_display",
-    key: "sale_price_display",
-  },
-  {
-    title: "Sale Date",
-    dataIndex: "sale_date",
-    key: "sale_date",
-  },
-]
+// const compCols = [
+//   {
+//     title: "Address",
+//     dataIndex: "address",
+//     key: "address",
+//   },
+//   {
+//     title: "Pin",
+//     dataIndex: "pin",
+//     key: "pin",
+//   },
+//   {
+//     title: "Assessed Value",
+//     dataIndex: "assessed_value_display",
+//     key: "assessed_value_display",
+//   },
+//   {
+//     title: "Sale Price (if available)",
+//     dataIndex: "sale_price_display",
+//     key: "sale_price_display",
+//   },
+//   {
+//     title: "Sale Date",
+//     dataIndex: "sale_date",
+//     key: "sale_date",
+//   },
+// ]
 
 const ReviewAppeal = () => {
   const [loading, setLoading] = useState(false)
@@ -90,25 +89,20 @@ const ReviewAppeal = () => {
   return (
     <>
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>Your Appeal</h1>
           <p>
-            Below is the information you submitted as part of your Application.
-            If the information is correct, please click the blue button to
-            finalize your Application.
+            Below is the information you submitted as part of your application.
+            If the information is correct, please click the blue button at the
+            bottom of this page to finalize your application.
           </p>
           <p>
             If you need to make changes to any of this information please use
             the “back button” to make those changes.
           </p>
-          <h2>Your Property Information</h2>
-          <p>
-            Below is the data that the Assessor has on file for your property.
-          </p>
         </Col>
       </Row>
 
-      <PropertyInfo city={appeal.city} target={appeal.target} />
       <Divider />
       <h2>Your Information</h2>
       <Table
@@ -118,18 +112,14 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      <h2>Your Comparables</h2>
-      <p>
-        We automatically include comparables until five are selected here. This
-        can be changed later.
-      </p>
+      {/* <h2>Your Comparables</h2>
       <Table
         dataSource={appeal.selectedComparables.map(cleanParcel)}
         columns={compCols}
         pagination={false}
         scroll={{ x: true }}
-      />
-      <Divider />
+      /> */}
+      {/* <Divider /> */}
       <h2>Your Property Condition</h2>
       <p>
         <strong>Damage level</strong>
@@ -171,7 +161,7 @@ const ReviewAppeal = () => {
         </Button>
       </Space>
       <Divider />
-      <p>Page 7 of 7</p>
+      <p>{getPageLabel("review-appeal")}</p>
     </>
   )
 }

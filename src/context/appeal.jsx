@@ -63,9 +63,6 @@ function appealReducer(appeal, action) {
         },
       }
     }
-    case "set-agreement": {
-      return { ...appeal, agreement: action.agreement }
-    }
     case "set-agreement-name": {
       return {
         ...appeal,
@@ -113,7 +110,7 @@ const initialAppeal = {
   eligible: null,
   target: null,
   propertyInfo: null,
-  agreement: null,
+  agreement: true, // TODO: Remove from multiple places
   agreement_name: null,
   estimate: {},
   step: 1,

@@ -1,22 +1,24 @@
 import React, { useContext } from "react"
-import { CONTACT_EMAIL } from "../../utils"
+import { getPageLabel, HELP_LINK } from "../../utils"
 import { Button, Divider, Form, Radio, Space, Input } from "antd"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
+
 const formItemLayout = {
   labelCol: {
-    span: 12,
+    span: 16,
   },
   wrapperCol: {
     xs: {
       span: 24,
     },
     md: {
-      span: 12,
+      span: 16,
     },
   },
 }
+
 const Damage = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
@@ -41,7 +43,15 @@ const Damage = () => {
             { required: true, message: "You must select one of the options" },
           ]}
           label="To the best of your abilities, please pick a category that best describes the condition of your home. The Assessor uses these categories and criteria to rate the condition."
-          help={`If you have any questions about how to categorize your home, please send us an email at ${CONTACT_EMAIL}.`}
+          help={
+            <span>
+              If you have any questions about how to categorize your home,
+              please{" "}
+              <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
+                make an appointment
+              </a>
+            </span>
+          }
         >
           <Radio.Group
             name="damage_level"
@@ -91,7 +101,8 @@ const Damage = () => {
         <br />
         <Form.Item
           name="damage"
-          label="In support of the rating you selected for your home above, please describe the condition of your home below, including any damage to your property, both inside and out."
+          rules={[{ required: true, message: "You must add a response" }]}
+          label="Please describe the condition of your home below, including any damage to your property, both inside and out."
         >
           <Input.TextArea
             name="damage"
@@ -104,7 +115,7 @@ const Damage = () => {
 
         {appeal.city !== "chicago" && (
           <FileUpload
-            label="Click to upload images of the damage"
+            label="Click to upload images of the damage (optional)"
             accept="image/*,.heic,.heif"
             files={appeal.files}
             onChange={(files) => dispatch({ type: "set-files", files })}
@@ -116,7 +127,7 @@ const Damage = () => {
         <Button
           size="large"
           type="danger"
-          onClick={() => navigate("../comparables")}
+          onClick={() => navigate("../review-property")}
         >
           Back
         </Button>
@@ -130,7 +141,7 @@ const Damage = () => {
         </Button>
       </Space>
       <Divider />
-      <p>Page 6 of 7</p>
+      <p>{getPageLabel("damage")}</p>
     </>
   )
 }
