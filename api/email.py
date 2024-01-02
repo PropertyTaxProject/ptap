@@ -46,9 +46,7 @@ def detroit_submission_email(mail, data):
     name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
     addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
-    doc_filename = data["output_name"][13:]
-    doc_bytes = data["file_stream"].getvalue()
-
+    doc_bytes = None
     subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
     body = render_template(
         "emails/submission_log.html", name=name, address=addr, log_url=data["log_url"]
@@ -56,14 +54,15 @@ def detroit_submission_email(mail, data):
     msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
     msg.html = body
     if os.getenv("ATTACH_LETTERS"):
-        msg.attach(doc_filename, WORD_MIMETYPE, doc_bytes)
+        doc_bytes = data["file_stream"].getvalue()
+        msg.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
     mail.send(msg)
 
     body = render_template("emails/submission_detroit.html", name=name, address=addr)
     msg2 = Message(subj, recipients=submit_email, reply_to=os.getenv("PTAP_MAIL"))
     msg2.html = body
     if os.getenv("ATTACH_LETTERS"):
-        msg2.attach(doc_filename, WORD_MIMETYPE, doc_bytes)
+        msg2.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
 
     if data.get("agreement"):
         parcel = _get_pin("detroit", data.get("pin"))

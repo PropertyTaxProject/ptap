@@ -231,30 +231,6 @@ def submit_detroit_sf(comp_submit, mail):
     for i, j in get_pin("detroit", pin).to_dict(orient="records")[0].items():
         propinfo.append([i, j])
 
-    context = {
-        "pin": pin,
-        "owner": owner_name,
-        "address": comp_submit["address"],
-        "formal_owner": owner_name,
-        "current_sev": "{:,.0f}".format(pin_av),
-        "current_faircash": "${:,.0f}".format(pin_av * 2),
-        "contention_sev": "{:,.0f}".format(comps_avg / 2),
-        "contention_faircash": "${:,.0f}".format(comps_avg),
-        "target_labels": ["Beds"] + target_cols,
-        "target_contents": [["XXX"] + t_df[target_cols].to_numpy().tolist()[0]],
-        "comp_labels": comp_cols,
-        "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
-        "allinfo": allinfo,
-        "propinfo": propinfo,
-        "year": 2024,
-        # **detroit_depreciation(None, None, None, None),
-    }
-
-    # TODO:
-    output = {}
-
-    comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
-
     # update submission log
     targ = get_pin("detroit", pin)
 
@@ -280,6 +256,38 @@ def submit_detroit_sf(comp_submit, mail):
         "TV": targ["taxable_value"].to_string(index=False),
         "CV": str(comps_avg),
     }
+
+    if not os.getenv("ATTACH_LETTERS"):
+        log_url = record_final_submission(sub_dict)
+        comp_submit["log_url"] = log_url
+
+        # send email
+        detroit_submission_email(mail, comp_submit)
+        return
+
+    context = {
+        "pin": pin,
+        "owner": owner_name,
+        "address": comp_submit["address"],
+        "formal_owner": owner_name,
+        "current_sev": "{:,.0f}".format(pin_av),
+        "current_faircash": "${:,.0f}".format(pin_av * 2),
+        "contention_sev": "{:,.0f}".format(comps_avg / 2),
+        "contention_faircash": "${:,.0f}".format(comps_avg),
+        "target_labels": ["Beds"] + target_cols,
+        "target_contents": [["XXX"] + t_df[target_cols].to_numpy().tolist()[0]],
+        "comp_labels": comp_cols,
+        "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
+        "allinfo": allinfo,
+        "propinfo": propinfo,
+        "year": 2024,
+        # **detroit_depreciation(None, None, None, None),
+    }
+
+    # TODO:
+    output = {}
+
+    comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
 
     log_url = record_final_submission(sub_dict)
     comp_submit["log_url"] = log_url
