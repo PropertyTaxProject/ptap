@@ -258,7 +258,7 @@ def submit_detroit_sf(comp_submit, mail):
     # update submission log
     targ = get_pin("detroit", pin)
 
-    if comp_submit["validcharacteristics"] == "No":
+    if comp_submit.get("validcharacteristics") == "No":
         c_flag = "Yes. Homeowner Input: " + (
             comp_submit["characteristicsinput"] or "No"
         )
@@ -272,7 +272,7 @@ def submit_detroit_sf(comp_submit, mail):
         "pin": pin,
         "Phone Number": comp_submit["phone"],
         "Email Address": comp_submit["email"],
-        "Phone Contact Time": comp_submit["phonetime"],
+        "Phone Contact Time": comp_submit.get("phonetime", ""),
         "PRE": targ["homestead_exemption"].to_string(index=False),
         "Eligibility Flag": comp_submit["eligibility"],
         "Characteristics Flag": c_flag,

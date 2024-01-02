@@ -148,7 +148,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         return targ, result
 
 
-def find_comps(targ, region, sales_comps, multiplier=2.5):
+def find_comps(targ, region, sales_comps, multiplier=4):
     new_targ, cur_comps = calculate_comps(targ, region, sales_comps, multiplier)
     # TODO: Fix this check
     if multiplier > 4:  # no comps found within maximum search area---hault

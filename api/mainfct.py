@@ -90,7 +90,12 @@ def comparables(input_data, sales_comps=False):
             lambda v: v.strftime("%Y-%m-%d")
         )
     output["target_pin"] = new_targ.drop(["geom"], axis=1).to_dict(orient="records")
-    output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(orient="records")
+    if len(cur_comps.index) == 0:
+        output["comparables"] = []
+    else:
+        output["comparables"] = cur_comps.drop(["geom"], axis=1).to_dict(
+            orient="records"
+        )
     output["labeled_headers"] = cur_comps.columns.tolist()
     output["pinav"] = new_targ.assessed_value.mean()
 
