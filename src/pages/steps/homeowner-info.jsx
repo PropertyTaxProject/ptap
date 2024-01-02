@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react"
 import { Form, Input, Button, Radio, Space, Select, Divider } from "antd"
-import { getAppealType } from "../../utils"
+import { getAppealType, getPageLabel } from "../../utils"
 const { Option } = Select
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -399,30 +399,6 @@ const HomeownerInfo = () => {
         </Form.Item>
 
         <Form.Item
-          name="phonetime"
-          label="What time of day are you usually available to talk on the phone?"
-          rules={[
-            {
-              required: true,
-              message: "Please mark your time",
-              whitespace: true,
-            },
-          ]}
-        >
-          <Radio.Group name="phonetime">
-            <Space direction="vertical">
-              <Radio value="morning">Morning (before 11 a.m.)</Radio>
-              <Radio value="midday">Midday (between 11 a.m. and 2 p.m.)</Radio>
-              <Radio value="afternoon">
-                Afternoon (between 2 p.m. and 6 p.m.)
-              </Radio>
-              <Radio value="evening">Evening (between 6 p.m. and 8 p.m.)</Radio>
-              <Radio value="anytime">Anytime</Radio>
-            </Space>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item
           name="heardabout"
           label="How did you hear about us?"
           rules={[
@@ -446,6 +422,37 @@ const HomeownerInfo = () => {
             <Option value="other">Other</Option>
           </Select>
         </Form.Item>
+
+        {heardAbout === "social media" && (
+          <>
+            <Form.Item name="socialmedia" label="Social media platform">
+              <Select name="socialmedia">
+                <Option value="facebook">Facebook</Option>
+                <Option value="instagram">Instagram</Option>
+                <Option value="twitter">Twitter</Option>
+                <Option value="other">Other</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="socialmediainput"
+              label="Whose social media did you learn about us from?"
+              rules={[{ required: true }]}
+            >
+              <Input name="socialmediainput" placeholder="Organization" />
+            </Form.Item>
+          </>
+        )}
+
+        {heardAbout === "local" && (
+          <Form.Item
+            name="localinput"
+            label="What organization told you about us?"
+            rules={[{ required: true }]}
+          >
+            <Input name="localinput" placeholder="Organization" />
+          </Form.Item>
+        )}
 
         {heardAbout === "referral" && (
           <Form.Item
@@ -485,7 +492,7 @@ const HomeownerInfo = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>Page 2 of 7</p>
+      <p>{getPageLabel("homeowner-info")}</p>
     </>
   )
 }

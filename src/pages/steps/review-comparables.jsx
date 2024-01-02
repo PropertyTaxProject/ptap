@@ -1,7 +1,12 @@
 import React, { useContext } from "react"
 import { Button, Row, Col, Space, Divider } from "antd"
 import PropertyInfo from "../../components/property-info"
-import { cleanParcel, DISPLAY_FIELDS, DISPLAY_FIELDS_COOK } from "../../utils"
+import {
+  cleanParcel,
+  DISPLAY_FIELDS,
+  DISPLAY_FIELDS_COOK,
+  getPageLabel,
+} from "../../utils"
 import PinChooser from "../../components/pin-chooser"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -40,7 +45,7 @@ const ReviewComparables = () => {
   return (
     <>
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>
             Pick the 3-5 properties that are the most similar to your property.
           </h1>
@@ -63,7 +68,7 @@ const ReviewComparables = () => {
           </ul>
           <p>
             If you are unsure about how best to select properties please{" "}
-            <a href={HELP_LINK}>
+            <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
               make an appointment with a Community Advocate
             </a>
             .
@@ -74,7 +79,7 @@ const ReviewComparables = () => {
       </Row>
       <PropertyInfo city={appeal.city} target={appeal.target} cols={5} />
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h2>Potential comparable properties near you</h2>
           <p>
             Below is a list of homes in your area that we have identified as
@@ -111,7 +116,7 @@ const ReviewComparables = () => {
         </Button>
       </Space>
       <Divider />
-      <p>Page 5 of 7</p>
+      <p>{getPageLabel("review-comparables")}</p>
     </>
   )
 }

@@ -5,6 +5,7 @@ import AppealIntro from "../content/appeal-intro"
 import { Button, Divider, Form, Radio, Row, Col } from "antd"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
+import { getPageLabel } from "../../utils"
 
 const AppealLookup = () => {
   const appeal = useContext(AppealContext)
@@ -42,7 +43,7 @@ const AppealLookup = () => {
   return (
     <>
       <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 0 }}>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <AppealIntro city={appeal.city} />
         </Col>
       </Row>
@@ -133,6 +134,19 @@ const AppealLookup = () => {
         <p>Your property could not be found. Please try searching again.</p>
       )}
       <Divider />
+      <Row>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
+          <p>
+            <b>Disclaimer:</b> Completing this application does not guarantee
+            that the Project will be able to represent you. The information you
+            provide will help the Project determine if we can assist you. After
+            completing this application, the Project will try to contact you
+            three times. If we don’t hear from you after three attempts, we will
+            remove you from our list.
+          </p>
+        </Col>
+      </Row>
+      <Divider />
       <Button
         type="primary"
         size="large"
@@ -145,7 +159,7 @@ const AppealLookup = () => {
         Next Page
       </Button>
       <Divider />
-      <p>Page 1 of 7</p>
+      <p>{getPageLabel("appeal-lookup")}</p>
     </>
   )
 }

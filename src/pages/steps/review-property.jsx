@@ -3,6 +3,7 @@ import { Form, Button, Row, Col, Space, Divider, Input, Radio } from "antd"
 import PropertyInfo from "../../components/property-info"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
+import { getPageLabel } from "../../utils"
 
 const { TextArea } = Input
 
@@ -36,7 +37,13 @@ const ReviewProperty = () => {
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
     dispatch({ type: "set-user-property", userProperty: info })
-    navigate("../comparables")
+    // TODO: Temporary while not collecting data
+    dispatch({
+      type: "select-comparables",
+      pins: [],
+    })
+    navigate("../damage")
+    // navigate("../comparables")
   }
 
   return (
@@ -105,7 +112,7 @@ const ReviewProperty = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>Page 4 of 7</p>
+      <p>{getPageLabel("review-property")}</p>
     </>
   )
 }

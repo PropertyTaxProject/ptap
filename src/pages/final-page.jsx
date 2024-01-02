@@ -1,7 +1,7 @@
 import React from "react"
 import { Button, Space } from "antd"
 
-const PTAPHeader4 = () => (
+const FinalPage = () => (
   <>
     <h2>Your application has now been submitted.</h2>
     <p>
@@ -13,17 +13,18 @@ const PTAPHeader4 = () => (
     </p>
 
     <Space>
+      <p>Do you want to join our fight for Property Tax Justice</p>
       <Button size="large" type="primary">
         <a
-          href="https://illegalforeclosures.org/"
+          href="https://actionnetwork.org/petitions/impacted-detroiters-compensation?source=ptapapp"
           target="_blank"
           rel="noopener noreferrer"
         >
-          See more information on our website
+          Take Action
         </a>
       </Button>
     </Space>
   </>
 )
 
-export default PTAPHeader4
+export default FinalPage
