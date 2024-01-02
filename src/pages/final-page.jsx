@@ -14,6 +14,7 @@ const FinalPage = () => (
 
     <Space>
       <p>Do you want to join our fight for Property Tax Justice?</p>
+      <br />
       <Button size="large" type="primary">
         <a
           href="https://actionnetwork.org/petitions/impacted-detroiters-compensation?source=ptapapp"
