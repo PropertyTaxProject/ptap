@@ -18,8 +18,8 @@ const Agreement = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>Agreement</h1>
           <p>
-            Law and Organizing (ILO), which is a Detroit based non-profit, will
-            create an appeal letter FREE of charge.
+            The Institute for Law and Organizing (ILO), which is a Detroit-based
+            non-profit, will create an appeal letter FREE of charge.
           </p>
           <Form
             form={form}

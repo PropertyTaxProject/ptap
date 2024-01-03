@@ -425,7 +425,15 @@ const HomeownerInfo = () => {
 
         {heardAbout === "social media" && (
           <>
-            <Form.Item name="socialmedia" label="Social media platform">
+            <Form.Item
+              name="socialmedia"
+              label="Social media platform"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
               <Select name="socialmedia">
                 <Option value="facebook">Facebook</Option>
                 <Option value="instagram">Instagram</Option>
@@ -437,7 +445,6 @@ const HomeownerInfo = () => {
             <Form.Item
               name="socialmediainput"
               label="Whose social media did you learn about us from?"
-              rules={[{ required: true }]}
             >
               <Input name="socialmediainput" placeholder="Organization" />
             </Form.Item>
@@ -448,7 +455,6 @@ const HomeownerInfo = () => {
           <Form.Item
             name="localinput"
             label="What organization told you about us?"
-            rules={[{ required: true }]}
           >
             <Input name="localinput" placeholder="Organization" />
           </Form.Item>
