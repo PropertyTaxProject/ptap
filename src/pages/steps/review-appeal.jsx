@@ -22,11 +22,6 @@ const userCols = [
     key: "city",
   },
   {
-    title: "Zip Code",
-    dataIndex: "zip",
-    key: "zip",
-  },
-  {
     title: "Preferred Contact Method",
     dataIndex: "preferred",
     key: "preferred",

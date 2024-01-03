@@ -1,9 +1,33 @@
 import React from "react"
+import { Space } from "antd"
 import PropTypes from "prop-types"
 import { HELP_LINK } from "../../utils"
+import coalition from "../../assets/coalition_logo.png"
+import ilo from "../../assets/ilo.png"
 
 const AppealIntro = ({ city }) => (
   <>
+    <h1>Who We Are</h1>
+    <p>
+      The Coalition for Property Tax Justice is a current campaign of the
+      Institute for Law and Organizing’s (ILO). In addition to Detroit, ILO is
+      working in Milwaukee, Chicago, and nationally to end racialized property
+      tax administration in America.
+    </p>
+    <Space wrap direction="horizontal">
+      <img
+        src={ilo}
+        style={{ height: "80px" }}
+        alt="Institute for Law and Organizing logo"
+      />
+      <img
+        src={coalition}
+        style={{ height: "80px" }}
+        alt="Coalition for Property Tax Justice logo"
+      />
+    </Space>
+    <br />
+    <br />
     <h1>The Appeals Process</h1>
     <p>Here is a general overview of the appeals process:</p>
 
@@ -11,9 +35,9 @@ const AppealIntro = ({ city }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete this online application by{" "}
-          <b>March 1, 2024</b>. If you are unable to complete the application or
-          have questions, please fill out this form to set up an appointment to
-          answer any questions or troubleshoot any issues you might have:{" "}
+          <b>March 11, 2024</b>. If you are unable to complete the application
+          or have questions, please fill out this form to set up an appointment
+          to answer any questions or troubleshoot any issues you might have:{" "}
           <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
             Schedule an appointment
           </a>
@@ -28,9 +52,9 @@ const AppealIntro = ({ city }) => (
           of Review by March 8, 2024.
         </li>
         <li>
-          <b>Step 4</b>: Before June of 2024, the Board of Review will send you
-          a letter notifying you whether it has reduced your home&apos;s
-          assessed value because of your appeal.
+          <b>Step 4</b>: Before June 2024, the Board of Review will send you a
+          letter notifying you whether it has reduced your home&apos;s assessed
+          value because of your appeal.
         </li>
       </ul>
     )}
@@ -66,7 +90,7 @@ const AppealIntro = ({ city }) => (
       </ul>
     )}
 
-    <h2>Who is Eligible for the Project&apos;s Services?</h2>
+    <h2>Who is Eligible for ILO&apos;s Services?</h2>
     <p>You are eligible for services if you meet all of these criteria:</p>
 
     {city == "detroit" && (

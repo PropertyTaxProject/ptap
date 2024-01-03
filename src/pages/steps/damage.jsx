@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { getPageLabel, HELP_LINK } from "../../utils"
+import { getPageLabel } from "../../utils"
 import { Button, Divider, Form, Radio, Space, Input } from "antd"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
@@ -43,15 +43,6 @@ const Damage = () => {
             { required: true, message: "You must select one of the options" },
           ]}
           label="To the best of your abilities, please pick a category that best describes the condition of your home. The Assessor uses these categories and criteria to rate the condition."
-          help={
-            <span>
-              If you have any questions about how to categorize your home,
-              please{" "}
-              <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-                make an appointment
-              </a>
-            </span>
-          }
         >
           <Radio.Group
             name="damage_level"
@@ -106,6 +97,7 @@ const Damage = () => {
         >
           <Input.TextArea
             name="damage"
+            size="large"
             value={appeal.damage}
             onChange={(e) => {
               dispatch({ type: "set-damage", damage: e.target.value })
@@ -114,12 +106,20 @@ const Damage = () => {
         </Form.Item>
 
         {appeal.city !== "chicago" && (
-          <FileUpload
-            label="Click to upload images of the damage (optional)"
-            accept="image/*,.heic,.heif"
-            files={appeal.files}
-            onChange={(files) => dispatch({ type: "set-files", files })}
-          />
+          <>
+            <h2>Upload images</h2>
+            <p>
+              Although optional, we encourage you to upload photos showing
+              damage to the inside and outside of your home, as appeals that
+              include photos are usually more effective.
+            </p>
+            <FileUpload
+              label="Click to upload images of the damage (optional)"
+              accept="image/*,.heic,.heif"
+              files={appeal.files}
+              onChange={(files) => dispatch({ type: "set-files", files })}
+            />
+          </>
         )}
       </Form>
       <Divider />
