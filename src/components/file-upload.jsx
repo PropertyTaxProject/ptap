@@ -49,7 +49,9 @@ export const FileUpload = ({ accept, files, label, onChange }) => {
           .catch(onError)
       }}
     >
-      <Button>{label || "Click to upload"}</Button>
+      <Button style={{ height: "auto", whiteSpace: "normal" }}>
+        {label || "Click to upload"}
+      </Button>
     </Upload>
   )
 }

@@ -7,9 +7,10 @@ const { Header } = Layout
 
 const PTAPHeader = () => (
   <Header>
+    {/* TODO: Hacking the menu here, should be a cleaner way of doing this */}
     <Menu mode="horizontal">
-      <Menu.Item key="base">
-        <a href="/">Property Tax Appeal Project</a>
+      <Menu.Item key="base" disabled>
+        <span style={{ color: "black" }}>Property Tax Appeal Project</span>
       </Menu.Item>
       <Menu.Item key="coalition">
         <a
@@ -17,13 +18,17 @@ const PTAPHeader = () => (
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img height={50} alt="Coalition Logo" src={coalition} />
+          <img
+            height={50}
+            alt="Coalition for Property Tax Justice Home"
+            src={coalition}
+          />
         </a>
       </Menu.Item>
       <Menu.Item key="appointment">
         <span style={{ color: "black" }}>
           <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-            Make an appointment
+            Click here to make an appointment
           </a>
         </span>
       </Menu.Item>

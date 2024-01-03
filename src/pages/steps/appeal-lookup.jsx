@@ -21,7 +21,6 @@ const AppealLookup = () => {
 
     let ineligibleReason = null
     if (
-      appeal.eligibility.landlord !== "No" ||
       appeal.eligibility.residence !== "Yes" ||
       appeal.eligibility.owner !== "Yes"
     ) {
@@ -55,9 +54,9 @@ const AppealLookup = () => {
         onChange={() =>
           dispatch({
             type: "set-eligibility",
-            landlord: form.getFieldValue("landlord"),
             residence: form.getFieldValue("residence"),
             owner: form.getFieldValue("owner"),
+            hope: form.getFieldValue("hope"),
           })
         }
         onFinish={() => {}}
@@ -66,16 +65,6 @@ const AppealLookup = () => {
         autoComplete="off"
         size="large"
       >
-        <Form.Item
-          name="landlord"
-          rules={[{ required: true, message: "Your response is required." }]}
-          label="Are you a landlord?"
-        >
-          <Radio.Group name="landlord">
-            <Radio value="Yes">Yes</Radio>
-            <Radio value="No">No</Radio>
-          </Radio.Group>
-        </Form.Item>
         <Form.Item
           name="residence"
           rules={[{ required: true, message: "Your response is required." }]}
@@ -92,6 +81,16 @@ const AppealLookup = () => {
           label="Do you own this home?"
         >
           <Radio.Group name="owner">
+            <Radio value="Yes">Yes</Radio>
+            <Radio value="No">No</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          name="hope"
+          rules={[{ required: true, message: "Your response is required." }]}
+          label="Have you received the Homeowners Property Exemption (HOPE), Poverty Tax Exemption (PTE), or any other hardship program anytime in the last three years?"
+        >
+          <Radio.Group name="hope">
             <Radio value="Yes">Yes</Radio>
             <Radio value="No">No</Radio>
           </Radio.Group>
@@ -138,11 +137,11 @@ const AppealLookup = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <p>
             <b>Disclaimer:</b> Completing this application does not guarantee
-            that the Project will be able to represent you. The information you
-            provide will help the Project determine if we can assist you. After
-            completing this application, the Project will try to contact you
-            three times. If we don’t hear from you after three attempts, we will
-            remove you from our list.
+            that ILO will be able to represent you. The information you provide
+            will help ILO determine if we can assist you. After completing this
+            application, ILO will try to contact you three times. If we don’t
+            hear from you after three attempts, we will remove you from our
+            list.
           </p>
         </Col>
       </Row>

@@ -57,9 +57,9 @@ function appealReducer(appeal, action) {
       return {
         ...appeal,
         eligibility: {
-          landlord: action.landlord,
           residence: action.residence,
           owner: action.owner,
+          hope: action.hope,
         },
       }
     }

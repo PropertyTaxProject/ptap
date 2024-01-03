@@ -63,9 +63,9 @@ const nameFieldsLayout = {
 
 const getInitialFormData = ({ user, target, city: appealCity }) => {
   const state = appealCity === "detroit" ? "MI" : "IL"
-  let { address, city, zip } = target || {}
+  let { address, city } = target || {}
   city = appealCity === "detroit" ? "Detroit" : city
-  const targetProps = { address, city, zip, state }
+  const targetProps = { address, city, state }
   return { ...targetProps, ...user }
 }
 
@@ -74,16 +74,19 @@ const HomeownerInfo = () => {
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [showMailingAddr, updateMailingAddr] = useState(false)
-  const [showAltContact, updateAltContact] = useState(false)
-  const [heardAbout, updateHeardAbout] = useState(null)
+  const [showMailingAddr, updateMailingAddr] = useState(
+    appeal.user?.mailingsame
+  )
+  const [showAltContact, updateAltContact] = useState(appeal.user?.altcontact)
+  const [heardAbout, updateHeardAbout] = useState(
+    appeal.user?.heardabout || null
+  )
 
   const onFinish = async (values) => {
     const info = {
       ...values,
       pin: appeal.pin,
       appeal_type: getAppealType(appeal.city),
-      eligibility: appeal.eligible,
       uuid: appeal.uuid,
     }
     console.log("Received values of form: ", info)
@@ -223,10 +226,6 @@ const HomeownerInfo = () => {
           ]}
         >
           <Input name="state" />
-        </Form.Item>
-
-        <Form.Item name="zip" label="Zip Code">
-          <Input name="zip" />
         </Form.Item>
 
         <Form.Item

@@ -26,7 +26,7 @@ export function getPageLabel(pageName) {
 }
 
 export const HELP_LINK =
-  "https://calendly.com/illegalforeclosures-detroit/30min"
+  "https://calendly.com/d/3gr-nwc-zfx/property-tax-appeal-support-call"
 
 export const CONTACT_EMAIL = "help@illegalforeclosures.org"
 

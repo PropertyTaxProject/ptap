@@ -18,6 +18,7 @@ describe("Appeal flow", () => {
       cy.visit(appealUrl)
       cy.get("#Eligibility_residence [type=radio]").check("Yes")
       cy.get("#Eligibility_owner [type=radio]").check("Yes")
+      cy.get("#Eligibility_hope [type=radio]").check("No")
 
       cy.get("input[placeholder=number]").type(street_number)
       cy.get("input[placeholder=street]").type(street_name)
@@ -36,7 +37,6 @@ describe("Appeal flow", () => {
       cy.get("#Housing_Information_address").type(contact.address)
       cy.get("#Housing_Information_city").type(contact.city)
       cy.get("#Housing_Information_state").type(contact.state)
-      cy.get("#Housing_Information_zip").type(contact.zip)
       cy.get("#Housing_Information_mailingsame [type=radio]").check("Yes")
       cy.get("#Housing_Information_altcontact [type=radio]").check("No")
       cy.get("#Housing_Information_heardabout").click()
@@ -73,8 +73,8 @@ describe("Appeal flow", () => {
 
       cy.get("button").contains("Finalize Application").click()
 
-      cy.get("h2")
-        .contains("Your application has now been submitted.")
+      cy.get("h1")
+        .contains("Your application has now been submitted")
         .should("be.visible")
     })
   })
