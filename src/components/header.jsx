@@ -1,4 +1,6 @@
 import React from "react"
+import { Link } from "react-router-dom"
+
 import { Layout, Menu } from "antd"
 import coalition from "../assets/coalition_logo.png"
 import { CONTACT_EMAIL, HELP_LINK } from "../utils"
@@ -9,8 +11,8 @@ const PTAPHeader = () => (
   <Header>
     {/* TODO: Hacking the menu here, should be a cleaner way of doing this */}
     <Menu mode="horizontal">
-      <Menu.Item key="base" disabled>
-        <span style={{ color: "black" }}>Property Tax Appeal Project</span>
+      <Menu.Item key="base">
+        <Link to="/">Home</Link>
       </Menu.Item>
       <Menu.Item key="coalition">
         <a

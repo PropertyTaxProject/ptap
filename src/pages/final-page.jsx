@@ -16,7 +16,7 @@ const FinalPage = () => (
     <p>
       The Problem: Since 2009, the City of Detroit has illegally over assessed
       property values and inflated its property tax bills. From 2010 to 2016,
-      the City of Detroit Overtaxed Homeowners by $600 million. When homeowners
+      the City of Detroit overtaxed Homeowners by $600 million. When homeowners
       cannot afford to pay, Wayne County forecloses on their homes. Since 2009,
       Wayne County foreclosed on 1 in 3 Detroit homes, displacing over 100,000
       Detroiters, for failure to pay the City&apos;s inflated tax bills. Despite

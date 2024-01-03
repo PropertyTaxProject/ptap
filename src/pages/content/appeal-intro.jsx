@@ -35,9 +35,9 @@ const AppealIntro = ({ city }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete this online application by{" "}
-          <b>March 11, 2024</b>. If you are unable to complete the application
-          or have questions, please fill out this form to set up an appointment
-          to answer any questions or troubleshoot any issues you might have:{" "}
+          <b>March 1, 2024</b>. If you are unable to complete the application or
+          have questions, please fill out this form to set up an appointment to
+          answer any questions or troubleshoot any issues you might have:{" "}
           <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
             Schedule an appointment
           </a>
@@ -49,7 +49,7 @@ const AppealIntro = ({ city }) => (
         </li>
         <li>
           <b>Step 3</b>: Our team will submit your documents to the March Board
-          of Review by March 8, 2024.
+          of Review by the deadline on March 11, 2024.
         </li>
         <li>
           <b>Step 4</b>: Before June 2024, the Board of Review will send you a
