@@ -30,8 +30,9 @@ def agreement_email(data):
     msg = Message(subject, recipients=[os.getenv("PTAP_MAIL")])
     msg.html = body
 
-    if data.get("agreement"):
-        agreement_bytes = render_agreement(name, parcel)
+    agreement_name = data.get("agreement_name")
+    if agreement_name:
+        agreement_bytes = render_agreement(agreement_name, parcel)
         msg.attach(
             f"Property Tax Appeal Project Representation Agreement {name}.docx",
             WORD_MIMETYPE,
@@ -64,9 +65,10 @@ def detroit_submission_email(mail, data):
     if os.getenv("ATTACH_LETTERS"):
         msg2.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
 
-    if data.get("agreement"):
+    agreement_name = data.get("agreement_name")
+    if agreement_name:
         parcel = _get_pin("detroit", data.get("pin"))
-        agreement_bytes = render_agreement(name, parcel)
+        agreement_bytes = render_agreement(agreement_name, parcel)
         msg2.attach(
             f"Property Tax Appeal Project Representation Agreement {name}.docx",
             WORD_MIMETYPE,

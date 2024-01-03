@@ -30,7 +30,7 @@ def render_agreement(name, parcel):
     doc.render(
         {
             "agreement_date": timestamp.strftime("%Y-%m-%d"),
-            "client_name": name,
+            "partner_name": name,
             "parcel_num": parcel.pin,
             "street_address": f"{parcel.street_number} {parcel.street_name}",
             **city_state,
