@@ -13,29 +13,37 @@ const AppealLookup = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
+  const checkEligibility = () => {
+    let alertMessage = null
+    if (
+      appeal.eligibility.residence !== "Yes" ||
+      appeal.eligibility.owner !== "Yes"
+    ) {
+      alertMessage =
+        "We do not service landlords. You must be the owner-occupant of the listed property to be eligible for ILO’s services."
+    } else if (appeal.eligibility.hope === "Yes") {
+      alertMessage =
+        "If you qualify for HOPE, instead of filing an appeal, we will send you to our partners at Wayne Metro, who will help you complete a HOPE application."
+    } else if (!appeal.target.eligible) {
+      // alertMessage =
+      //   "You may not be eligible to receive our services. We only serve homes assessed below a certain threshold."
+    }
+    const eligible = alertMessage === null
+    if (!eligible) {
+      // TODO: Could also set alert message instead of opening window
+      window.alert(alertMessage)
+    }
+  }
+
   const setPin = (selectedProperties) => {
     const pin = selectedProperties.length === 0 ? null : selectedProperties[0]
     if (!pin) return
 
     const target = appeal.propertyOptions.find((o) => pin === o.pin)
 
-    let ineligibleReason = null
-    if (
-      appeal.eligibility.residence !== "Yes" ||
+    const eligible =
+      appeal.eligibility.residence !== "Yes" &&
       appeal.eligibility.owner !== "Yes"
-    ) {
-      ineligibleReason = "We only serve owner occupied homes."
-    } else if (!target.eligible) {
-      ineligibleReason =
-        "We only serve homes assessed below a certain threshold."
-    }
-    const eligible = ineligibleReason === null
-    if (!eligible) {
-      // TODO: Could also set alert message instead of opening window
-      window.alert(
-        `You may not be eligible to receive our services. ${ineligibleReason} Please contact us for more information`
-      )
-    }
     dispatch({ type: "set-target", pin, target, eligible })
   }
 
@@ -136,12 +144,11 @@ const AppealLookup = () => {
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <p>
-            <b>Disclaimer:</b> Completing this application does not guarantee
-            that ILO will be able to represent you. The information you provide
-            will help ILO determine if we can assist you. After completing this
-            application, ILO will try to contact you three times. If we don’t
-            hear from you after three attempts, we will remove you from our
-            list.
+            <b>Disclaimer:</b> The information you provide will help ILO
+            determine if we can assist you, so we cannot guarantee that ILO will
+            be able to represent you. After completing this application, ILO
+            will try to contact you three times. If we don&apos;t hear from you
+            after three attempts, we will remove you from our list.
           </p>
         </Col>
       </Row>
@@ -149,9 +156,15 @@ const AppealLookup = () => {
       <Button
         type="primary"
         size="large"
-        disabled={!appeal.target}
+        disabled={
+          !appeal.target ||
+          !appeal.eligibility?.owner ||
+          !appeal.eligibility?.residence ||
+          !appeal.eligibility?.hope
+        }
         onClick={() => {
           // TODO: Turn into actual link
+          checkEligibility()
           navigate("./homeowner-info")
         }}
       >

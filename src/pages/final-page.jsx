@@ -4,9 +4,8 @@ import { Button } from "antd"
 const FinalPage = () => (
   <>
     <h1>Your application has now been submitted.</h1>
-    <p>
-      <b>What to expect next</b>
-    </p>
+
+    <h2>What to expect next</h2>
     <p>
       Our team will contact you. In the meantime, if you have any questions you
       can reach us at our contact information above.
@@ -14,18 +13,18 @@ const FinalPage = () => (
 
     <h2>Join our fight</h2>
     <p>
-      The Problem: Since 2009, the City of Detroit has illegally over assessed
-      property values and inflated its property tax bills. From 2010 to 2016,
-      the City of Detroit overtaxed homeowners by $600 million. When homeowners
-      cannot afford to pay, Wayne County forecloses on their homes. Since 2009,
-      Wayne County foreclosed on 1 in 3 Detroit homes, displacing over 100,000
+      Since 2009, the City of Detroit has illegally over assessed property
+      values and inflated its property tax bills. From 2010 to 2016, the City of
+      Detroit overtaxed homeowners by $600 million. When homeowners cannot
+      afford to pay, Wayne County forecloses on their homes. Since 2009, Wayne
+      County foreclosed on 1 in 3 Detroit homes, displacing over 100,000
       Detroiters, for failure to pay the City&apos;s inflated tax bills. Despite
       efforts to address the problem, the City continues to illegally and
       inequitably tax Detroiters, especially those who own lower-valued homes.
     </p>
     <p>
-      Will you join our current fight to compensate Detroit homeowners who have
-      been illegally overassessed by the City of Detroit?
+      Will you join our fight to compensate Detroit homeowners who have been
+      illegally over assessed by the City of Detroit?
     </p>
     <Button size="large" type="primary">
       <a

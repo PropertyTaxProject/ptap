@@ -93,7 +93,7 @@ const Damage = () => {
         <Form.Item
           name="damage"
           rules={[{ required: true, message: "You must add a response" }]}
-          label="Please describe the condition of your home below, including any damage to your property, both inside and out."
+          label="Please describe the condition of your home and neighborhood below. Be sure to include any damage to your property, both inside and out."
         >
           <Input.TextArea
             name="damage"

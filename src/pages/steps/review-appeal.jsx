@@ -22,11 +22,6 @@ const userCols = [
     key: "city",
   },
   {
-    title: "Preferred Contact Method",
-    dataIndex: "preferred",
-    key: "preferred",
-  },
-  {
     title: "Phone",
     dataIndex: "phone",
     key: "phone",

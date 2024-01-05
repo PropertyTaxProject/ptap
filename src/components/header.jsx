@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 import { Layout, Menu } from "antd"
 import coalition from "../assets/coalition_logo.png"
-import { CONTACT_EMAIL, HELP_LINK } from "../utils"
+import { HELP_LINK } from "../utils"
 
 const { Header } = Layout
 
@@ -30,12 +30,9 @@ const PTAPHeader = () => (
       <Menu.Item key="appointment">
         <span style={{ color: "black" }}>
           <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-            Click here to make an appointment
+            Click here to make an appointment if you need any help
           </a>
         </span>
-      </Menu.Item>
-      <Menu.Item key="email" disabled={true}>
-        <span style={{ color: "black" }}>Email us at: {CONTACT_EMAIL}</span>
       </Menu.Item>
     </Menu>
   </Header>

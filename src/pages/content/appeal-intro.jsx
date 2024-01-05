@@ -9,10 +9,11 @@ const AppealIntro = ({ city }) => (
   <>
     <h1>Who We Are</h1>
     <p>
-      The Coalition for Property Tax Justice is a current campaign of the
-      Institute for Law and Organizing’s (ILO). In addition to Detroit, ILO is
-      working in Milwaukee, Chicago, and nationally to end racialized property
-      tax administration in America.
+      The Coalition for Property Tax Justice is the current campaign of the
+      Institute for Law and Organizing (ILO). We are a non-profit community
+      organization. In addition to Detroit, ILO is working in Milwaukee,
+      Chicago, and nationally to end racialized property tax administration in
+      America.
     </p>
     <Space wrap direction="horizontal">
       <img
@@ -28,35 +29,44 @@ const AppealIntro = ({ city }) => (
     </Space>
     <br />
     <br />
-    <h1>The Appeals Process</h1>
-    <p>Here is a general overview of the appeals process:</p>
+    <h1>The Appeal Process</h1>
+    <p>
+      Here is a general overview of the property tax assessment appeal process
+    </p>
 
     {city === "detroit" && (
-      <ul>
-        <li>
-          <b>Step 1</b>: Complete this online application by{" "}
-          <b>March 1, 2024</b>. If you are unable to complete the application or
-          have questions, please fill out this form to set up an appointment to
-          answer any questions or troubleshoot any issues you might have:{" "}
-          <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-            Schedule an appointment
-          </a>
-        </li>
-        <li>
-          <b>Step 2</b>: We will review your application, determine if you are
-          eligible, and reach out with any questions or further information you
-          may need.
-        </li>
-        <li>
-          <b>Step 3</b>: Our team will submit your documents to the March Board
-          of Review by the deadline on March 11, 2024.
-        </li>
-        <li>
-          <b>Step 4</b>: Before June 2024, the Board of Review will send you a
-          letter notifying you whether it has reduced your home&apos;s assessed
-          value because of your appeal.
-        </li>
-      </ul>
+      <>
+        <ul>
+          <li>
+            <b>Step 1</b>: Complete this online application by{" "}
+            <b>March 1, 2024</b>.
+          </li>
+          <li>
+            <b>Step 2</b>: We will review your application, determine if you are
+            eligible, and reach out with any questions or further information
+            you may need.
+          </li>
+          <li>
+            <b>Step 3</b>: Our team will submit your documents to the March
+            Board of Review by the deadline on March 11, 2024.
+          </li>
+          <li>
+            <b>Step 4</b>: Before June 2024, the Board of Review will send you a
+            letter notifying you whether it has reduced your home&apos;s
+            assessed value because of your appeal.
+          </li>
+        </ul>
+        <p>
+          <em>
+            If you are unable to complete the application or have questions,
+            please set up an appointment to answer any questions or troubleshoot
+            any issues you might have:{" "}
+            <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
+              Schedule an appointment
+            </a>
+          </em>
+        </p>
+      </>
     )}
     {city === "chicago" && (
       <ul>
