@@ -32,13 +32,14 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         *min_max_query(model, "age", int, targ["age"].values[0], age_dif),
     ]
 
+    # TODO: Handle nulls more gracefully, should be fixed when moving away from pandas
     # TODO: sales_comps never used
     if sales_comps:
         query_filters.extend(
             [
                 model.sale_price is not None,
                 model.sale_price
-                <= targ["assessed_value"].values[0] * 3 + 1000 * multiplier,
+                <= (targ["assessed_value"].values[0] or 0) * 3 + 1000 * multiplier,
                 model.sale_year >= 2019,
                 model.sale_price > 500,
             ]
@@ -54,7 +55,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                     targ["total_floor_area"].values[0],
                     floor_dif,
                 ),
-                model.exterior == int(targ["exterior"].values[0]),
+                model.exterior == int(targ["exterior"].values[0] or 0),
             ]
         )
     elif region == "cook":
@@ -81,7 +82,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 *min_max_query(
                     model, "land_sq_ft", float, targ["land_sq_ft"].values[0], land_dif
                 ),
-                model.exterior == int(targ["exterior"].values[0]),
+                model.exterior == int(targ["exterior"].values[0] or 0),
             ]
         )
     else:
@@ -100,14 +101,15 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     # TODO: dist_weight 1, valuation weight 3, neighborhood match detroit
     diff_score = (
         literal_column("distance") / MILE_IN_METERS
-        + func.abs(model_alias.age - int(targ["age"].values[0])) / 15
+        + func.abs(model_alias.age - int(targ["age"].values[0] or 0)) / 15
     )
 
     if region == "detroit":
         diff_score = (
             diff_score
             + func.abs(
-                model_alias.total_floor_area - float(targ["total_floor_area"].values[0])
+                model_alias.total_floor_area
+                - float(targ["total_floor_area"].values[0] or 0)
             )
             / 100
             - (model_alias.neighborhood == targ["neighborhood"].values[0]).cast(Integer)
@@ -117,13 +119,16 @@ def calculate_comps(targ, region, sales_comps, multiplier):
             diff_score
             + (
                 func.abs(
-                    model_alias.building_sq_ft - float(targ["building_sq_ft"].values[0])
+                    model_alias.building_sq_ft
+                    - float(targ["building_sq_ft"].values[0] or 0)
                 )
-                / (float(targ["building_sq_ft"].values[0]) * 0.10)
+                / (float(targ["building_sq_ft"].values[0] or 0) * 0.10)
             )
             + (
-                func.abs(model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0]))
-                / (float(targ["land_sq_ft"].values[0]) * 0.10)
+                func.abs(
+                    model_alias.land_sq_ft - float(targ["land_sq_ft"].values[0] or 0)
+                )
+                / (float(targ["land_sq_ft"].values[0] or 0) * 0.10)
             )
         )
 
@@ -159,6 +164,8 @@ def find_comps(targ, region, sales_comps, multiplier=4):
 
 # Using this rather than func.abs to make sure compound index is used
 def min_max_query(model, attr, type_, value, diff):
+    if value is None:
+        return []
     return [
         getattr(model, attr) >= type_(value) - diff,
         getattr(model, attr) <= type_(value) + diff,
