@@ -260,7 +260,7 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
 resource "aws_cloudwatch_event_rule" "lambda_cron" {
   name = "${local.name}-${local.env}-lambda-cron"
   # 9/10am ET daily
-  schedule_expression = "cron(0 14 * * ?)"
+  schedule_expression = "cron(0 14 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "lambda_cron" {
