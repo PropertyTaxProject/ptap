@@ -1,9 +1,8 @@
 <p>Dear {{ name }},</p>
-<br />
 <p>
   The Property Tax Appeal Project has received a submission for {{ address }}.
-  {% if has_images %} Our records show that you did not upload any photos with
-  your submission. We strongly encourage you to go back and upload photos
+  {% if not has_images %} Our records show that you did not upload any photos
+  with your submission. We strongly encourage you to go back and upload photos
   showing damage to the inside and outside of your home because appeals that
   include photos are more effective. No neighborhood photos are necessary. {%
   endif %}
@@ -11,15 +10,15 @@
 <p>What to expect next</p>
 <p>
   Our team will contact you before our March 1st deadline. In the meantime, if
-  you have any questions {% if has_images %} In the meantime, if you have any
-  questions or if you need help with the photos, you can sign up for an
+  you have any questions {% if not has_images %} In the meantime, if you have
+  any questions or if you need help with the photos, you can sign up for an
   appointment here:
   <a href="https://calendly.com/d/3gr-nwc-zfx/property-tax-appeal-support-call"
     >Schedule an appointment</a
   >. {% else %}, you can send us an email at: help@illegalforeclosures.org. {%
   endif %}
 </p>
-<p>Steps in Appeals Process:</p>
+<p>Steps in Appeal Process:</p>
 <ul>
   <li>
     <b>Step 1</b>: Complete this online application by <b>March 1, 2024</b>.
@@ -39,5 +38,4 @@
 </ul>
 <br />
 <p>Thank you,</p>
-<br />
 <p>The Property Tax Appeal Project Automated System</p>

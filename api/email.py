@@ -49,11 +49,10 @@ def detroit_submission_email(mail, data):
     submit_email = [data["email"]]
     doc_bytes = None
     subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
-    body = render_template(
+    msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
+    msg.html = render_template(
         "emails/submission_log.html", name=name, address=addr, log_url=data["log_url"]
     )
-    msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
-    msg.html = body
     if os.getenv("ATTACH_LETTERS"):
         doc_bytes = data["file_stream"].getvalue()
         msg.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
@@ -84,6 +83,21 @@ def detroit_submission_email(mail, data):
         )
 
     mail.send(msg2)
+
+
+def detroit_reminder_email(data):
+    user = data.get("user", {})
+    name = user.get("name", f'{user.get("first_name")} {user.get("last_name")}')
+    parcel = _get_pin("detroit", data.get("pin"))
+    address = f"{parcel.street_number} {parcel.street_name}"
+
+    subject = f"Property Tax Appeal Project Reminder: {address}"
+
+    msg = Message(subject, recipients=[user.get("email"), os.getenv("PTAP_MAIL")])
+    msg.html = render_template(
+        "emails/reminder_detroit.html", name=name, address=address
+    )
+    return msg
 
 
 def cook_submission_email(mail, data):

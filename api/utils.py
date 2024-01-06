@@ -78,6 +78,7 @@ def render_doc_to_bytes(doc, context, files):
 
 
 def log_step(logger, data):
+    # TODO: Seems like some LOG_STEPs are getting ignored
     logger.info(f"LOG_STEP: {json.dumps(data)}")
     # Only running for specific steps to reduce latency
     if data.get("step") in ["agreement", "submit"]:

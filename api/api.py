@@ -15,6 +15,7 @@ from werkzeug.exceptions import HTTPException
 from .db import db
 from .email import agreement_email
 from .mainfct import address_candidates, comparables, process_comps_input
+from .tasks import send_reminders
 from .utils import get_region, log_step
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -150,6 +151,12 @@ def handle_upload():
             os.getenv("S3_UPLOADS_BUCKET"), s3_key, ExpiresIn=3600
         )
     )
+
+
+@app.route("/cron/reminders", methods=["GET"])
+def handle_reminder():
+    send_reminders(mail)
+    return ("", 200)
 
 
 @app.errorhandler(404)
