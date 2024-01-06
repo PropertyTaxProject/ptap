@@ -230,7 +230,7 @@ const HomeownerInfo = () => {
 
         <Form.Item
           name="mailingsame"
-          label="Is your mailing address is the same as your home address?"
+          label="Is your mailing address the same as your home address?"
           rules={[
             {
               required: true,
@@ -374,30 +374,6 @@ const HomeownerInfo = () => {
         </Form.Item>
 
         <Form.Item
-          name="altcontactpreferred"
-          label={
-            <p>
-              What is{" "}
-              <strong>
-                <i>their</i>
-              </strong>{" "}
-              preferred contact method?
-            </p>
-          }
-          style={
-            showAltContact === "Yes" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showAltContact === "Yes" && (
-            <Radio.Group name="altcontactpreferred">
-              <Radio value="Phone">Phone</Radio>
-              <Radio value="Email">Email</Radio>
-              <Radio value="Both">Both/No Preference</Radio>
-            </Radio.Group>
-          )}
-        </Form.Item>
-
-        <Form.Item
           name="heardabout"
           label="How did you hear about us?"
           rules={[
@@ -443,7 +419,7 @@ const HomeownerInfo = () => {
 
             <Form.Item
               name="socialmediainput"
-              label="Whose social media did you learn about us from?"
+              label="Whose social media account did you learn about us from?"
             >
               <Input name="socialmediainput" placeholder="Organization" />
             </Form.Item>
@@ -454,6 +430,7 @@ const HomeownerInfo = () => {
           <Form.Item
             name="localinput"
             label="What organization told you about us?"
+            rules={[{ required: true }]}
           >
             <Input name="localinput" placeholder="Organization" />
           </Form.Item>
@@ -480,7 +457,7 @@ const HomeownerInfo = () => {
           >
             <Input
               name="otherheardaboutinput"
-              placeholder="Please how you heard about us"
+              placeholder="Please enter how you heard about us"
             />
           </Form.Item>
         )}

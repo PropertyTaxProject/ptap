@@ -106,9 +106,9 @@ const AppealLookup = () => {
       </Form>
       <h2>Find Your Home</h2>
       <p>
-        Enter your street number and street name below and then hit search.
-        After searching from your home, hit the <b>Select button</b> next to
-        your address
+        Below, enter your street number, then your street name, and then hit
+        search. After searching for your home, hit the <strong>“Select”</strong>{" "}
+        button next to your address.
       </p>
       <PinLookup
         city={appeal.city}
@@ -145,10 +145,11 @@ const AppealLookup = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <p>
             <b>Disclaimer:</b> The information you provide will help ILO
-            determine if we can assist you, so we cannot guarantee that ILO will
-            be able to represent you. After completing this application, ILO
-            will try to contact you three times. If we don&apos;t hear from you
-            after three attempts, we will remove you from our list.
+            determine if we can assist you. Therefore, we cannot guarantee that
+            ILO will be able to represent you. After completing this
+            application, ILO will try to contact you three times. If we
+            don&apos;t hear from you after three attempts, we will not be able
+            to submit your appeal.
           </p>
         </Col>
       </Row>

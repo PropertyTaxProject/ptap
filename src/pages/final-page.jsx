@@ -7,8 +7,11 @@ const FinalPage = () => (
 
     <h2>What to expect next</h2>
     <p>
-      Our team will contact you. In the meantime, if you have any questions you
-      can reach us at our contact information above.
+      Our team will contact you before our March 1st deadline. In the meantime,
+      if you have any questions, you can send us an email at:{" "}
+      <a href="mailto:help@illegalforeclosures.org">
+        help@illegalforeclosures.org
+      </a>
     </p>
 
     <h2>Join our fight</h2>

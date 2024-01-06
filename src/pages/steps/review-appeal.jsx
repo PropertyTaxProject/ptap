@@ -87,7 +87,7 @@ const ReviewAppeal = () => {
             bottom of this page to finalize your application.
           </p>
           <p>
-            If you need to make changes to any of this information please use
+            If you need to make changes to any of this information, please use
             the “back button” to make those changes.
           </p>
         </Col>

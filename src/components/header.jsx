@@ -30,7 +30,7 @@ const PTAPHeader = () => (
       <Menu.Item key="appointment">
         <span style={{ color: "black" }}>
           <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-            Click here to make an appointment if you need any help
+            Click here to make an appointment, if you need any help
           </a>
         </span>
       </Menu.Item>

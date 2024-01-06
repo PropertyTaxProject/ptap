@@ -18,24 +18,24 @@ const Agreement = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>Representation Agreement</h1>
           <p>
-            The Institute for Law and Organizing (“ILO”) is a Detroit-based
-            non-profit. By typing your name below, you are signing a document
+            The Institute for Law and Organizing (“ILO”) is a Detroit based
+            nonprofit. By typing your name below, you are signing a document
             that allows ILO to represent you in appealing your property tax
             assessment before the City of Detroit&apos;s March Board of Review,
             if ILO determines you are eligible.
           </p>
           <ul>
+            <li>ILO agrees to represent you for FREE.</li>
             <li>
               By signing this agreement, ILO is not agreeing to represent you on
               any matters other than the appeal of your property tax assessment.
             </li>
             <li>
               ILO&apos;s representatives are not Michigan-licensed attorneys, as
-              allowed by Section 44-4-6(b)-(c) of the Detroit City Code; see
-              generally MCL 205.735a(10) (state law also permits non-attorney
-              representatives to represent you before the MTT).
+              allowed by Section 44-4-6(b)-(c) of the Detroit City Code. State
+              law also permits non-attorney representatives to represent you
+              before the Michigan Tax Tribunal (MCL 205.735a(10)).
             </li>
-            <li>ILO agrees to represent you for FREE.</li>
             <li>
               ILO will draft your appeal letter, with the assistance of this
               application. If you complete this online application and respond

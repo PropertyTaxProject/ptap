@@ -93,7 +93,7 @@ const Damage = () => {
         <Form.Item
           name="damage"
           rules={[{ required: true, message: "You must add a response" }]}
-          label="Please describe the condition of your home and neighborhood below. Be sure to include any damage to your property, both inside and out."
+          label="Please describe the condition of your home and neighborhood below. Be sure to include: (1) any damage to your property, both inside and out; and (2) any neighborhood characteristics that may lower your property’s value (for example, lots of vacant homes, nearby polluting factory, dumping, etc.). "
         >
           <Input.TextArea
             name="damage"
@@ -109,9 +109,9 @@ const Damage = () => {
           <>
             <h2>Upload images</h2>
             <p>
-              Although optional, we encourage you to upload photos showing
-              damage to the inside and outside of your home, as appeals that
-              include photos are usually more effective.
+              We encourage you to upload photos showing damage to the inside and
+              outside of your home because appeals that include photos are more
+              effective. No neighborhood photos are necessary.
             </p>
             <FileUpload
               label="Click to upload images of the damage (optional)"
@@ -134,7 +134,7 @@ const Damage = () => {
         <Button
           size="large"
           type="primary"
-          disabled={!appeal.damage_level}
+          disabled={!appeal.damage_level || !appeal.damage}
           onClick={() => navigate("../review-appeal")}
         >
           Next Page

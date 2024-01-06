@@ -10,7 +10,7 @@ const AppealIntro = ({ city }) => (
     <h1>Who We Are</h1>
     <p>
       The Coalition for Property Tax Justice is the current campaign of the
-      Institute for Law and Organizing (ILO). We are a non-profit community
+      Institute for Law and Organizing (ILO). We are a nonprofit community
       organization. In addition to Detroit, ILO is working in Milwaukee,
       Chicago, and nationally to end racialized property tax administration in
       America.
@@ -31,36 +31,33 @@ const AppealIntro = ({ city }) => (
     <br />
     <h1>The Appeal Process</h1>
     <p>
-      Here is a general overview of the property tax assessment appeal process
+      Here is a general overview of the property tax assessment appeal process:
     </p>
 
     {city === "detroit" && (
       <>
         <ul>
           <li>
-            <b>Step 1</b>: Complete this online application by{" "}
+            <b>Step 1</b>: Complete our online application by{" "}
             <b>March 1, 2024</b>.
           </li>
           <li>
             <b>Step 2</b>: We will review your application, determine if you are
-            eligible, and reach out with any questions or further information
-            you may need.
+            eligible, and reach out for any further information we may need.
           </li>
           <li>
             <b>Step 3</b>: Our team will submit your documents to the March
-            Board of Review by the deadline on March 11, 2024.
+            Board of Review by its deadline, which is March 11, 2024.
           </li>
           <li>
             <b>Step 4</b>: Before June 2024, the Board of Review will send you a
-            letter notifying you whether it has reduced your home&apos;s
-            assessed value because of your appeal.
+            letter notifying you whether or not you won your appeal.
           </li>
         </ul>
         <p>
           <em>
             If you are unable to complete the application or have questions,
-            please set up an appointment to answer any questions or troubleshoot
-            any issues you might have:{" "}
+            please set up an appointment:{" "}
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
               Schedule an appointment
             </a>
@@ -105,12 +102,12 @@ const AppealIntro = ({ city }) => (
 
     {city == "detroit" && (
       <ul>
-        <li>You own a home in the City of Detroit.</li>
+        <li>You own a home in the City of Detroit;</li>
         <li>
           You occupy that home as your permanent residence (we do not service
-          landlords).
+          landlords); and
         </li>
-        <li>Your home is worth $100,000 or less.</li>
+        <li>Your home is worth $200,000 or less.</li>
       </ul>
     )}
     {city == "chicago" && (

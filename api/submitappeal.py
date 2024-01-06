@@ -153,7 +153,7 @@ def submit_cook_sf(comp_submit, mail):
         "target_contents": t_df[target_cols].to_numpy().tolist(),
         "comp_labels": comp_cols,
         "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
-        "damage_descript": comp_submit["characteristicsinput"],
+        "damage_descript": comp_submit.get("characteristicsinput"),
         "allinfo": allinfo,
         "propinfo": propinfo,
     }
@@ -274,7 +274,7 @@ def submit_detroit_sf(comp_submit, mail):
 
     if comp_submit.get("validcharacteristics") == "No":
         c_flag = "Yes. Homeowner Input: " + (
-            comp_submit["characteristicsinput"] or "No"
+            comp_submit.get("characteristicsinput") or "No"
         )
     else:
         c_flag = "No"

@@ -59,7 +59,15 @@ def detroit_submission_email(mail, data):
         msg.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
     mail.send(msg)
 
-    body = render_template("emails/submission_detroit.html", name=name, address=addr)
+    if data.get("eligibility", {}).get("hope", "").lower() == "yes":
+        body = render_template("emails/submission_detroit_hope.html", name=name)
+    else:
+        body = render_template(
+            "emails/submission_detroit.html",
+            name=name,
+            address=addr,
+            has_images=len(data["files"]) > 0,
+        )
     msg2 = Message(subj, recipients=submit_email, reply_to=os.getenv("PTAP_MAIL"))
     msg2.html = body
     if os.getenv("ATTACH_LETTERS"):
