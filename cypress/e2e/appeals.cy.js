@@ -69,6 +69,7 @@ describe("Appeal flow", () => {
       // cy.get("button").contains("Next Page").click()
 
       cy.get("#damage_damage_level label").contains("Average").click()
+      cy.get("#damage_damage").type("Damage description")
       cy.get("button").contains("Next Page").click()
 
       cy.get("button").contains("Finalize Application").click()
