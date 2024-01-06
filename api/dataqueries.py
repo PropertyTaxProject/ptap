@@ -13,7 +13,7 @@ def address_candidates_query(region, st_num):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
-    return model.query.filter(model.street_number == st_num)
+    return model.query.filter(model.street_number == st_num.strip())
 
 
 def _get_pin(region, pin):
