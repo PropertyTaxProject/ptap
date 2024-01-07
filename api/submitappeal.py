@@ -226,6 +226,8 @@ def submit_detroit_sf(comp_submit, mail):
     comps_df = pd.DataFrame(comp_submit["comparables"])
     pin_av = t_df.assessed_value[0]
     pin = t_df.pin[0]
+    if "sale_price" not in comps_df:
+        comps_df["sale_price"] = 0
     comps_avg = comps_df["sale_price"].mean()
 
     # rename cols
@@ -243,6 +245,7 @@ def submit_detroit_sf(comp_submit, mail):
     ]
 
     comp_cols = ["Address", "Dist.", "Sale Price", "Sale Date"] + target_cols
+    comps_df = comps_df.reindex(columns=comp_cols)
 
     # avg ecf price
     avg_ecf_price = avg_ecf(t_df["Neighborhood"].values[0])
