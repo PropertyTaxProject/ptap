@@ -92,6 +92,10 @@ const HomeownerInfo = () => {
     console.log("Received values of form: ", info)
     const res = await submitForm(info)
 
+    if (window.fbq) {
+      window.fbq("track", "CompleteRegistration")
+    }
+
     // TODO: Add an action to set on change as well?
     dispatch({
       type: "set-homeowner-info",

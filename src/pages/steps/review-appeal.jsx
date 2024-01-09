@@ -73,6 +73,9 @@ const ReviewAppeal = () => {
     window.sessionStorage.removeItem(`appeal-${appeal.city}`)
     setLoading(false)
     dispatch({ type: "complete" })
+    if (window.fbq) {
+      window.fbq("track", "SubmitApplication")
+    }
     navigate("../complete")
   }
 
