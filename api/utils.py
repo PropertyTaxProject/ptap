@@ -15,7 +15,7 @@ from pillow_heif import register_heif_opener
 
 # TODO: Just use that as the request
 def get_region(request_data):
-    return "detroit" if "detroit" in request_data.get("appeal_type") else "cook"
+    return "detroit" if "detroit" in request_data.get("appeal_type", "") else "cook"
 
 
 def render_agreement(name, parcel):

@@ -98,11 +98,11 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     )
     model_alias = aliased(model, distance_subquery)
 
+    region_dist_weighting = 2 if region == "cook" else 1
     # TODO: dist_weight 1, valuation weight 3, neighborhood match detroit
     diff_score = (
-        literal_column("distance") / MILE_IN_METERS
-        + func.abs(model_alias.age - int(targ["age"].values[0] or 0)) / 15
-    )
+        (literal_column("distance") / MILE_IN_METERS) * region_dist_weighting
+    ) + func.abs(model_alias.age - int(targ["age"].values[0] or 0)) / 15
 
     if region == "detroit":
         diff_score = (

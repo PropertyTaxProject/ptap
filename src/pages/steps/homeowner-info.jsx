@@ -64,7 +64,9 @@ const nameFieldsLayout = {
 const getInitialFormData = ({ user, target, city: appealCity }) => {
   const state = appealCity === "detroit" ? "MI" : "IL"
   let { address, city } = target || {}
-  city = appealCity === "detroit" ? "Detroit" : city
+  if (["detroit", "chicago"].includes(appealCity)) {
+    city = appealCity === "detroit" ? "Detroit" : "Chicago"
+  }
   const targetProps = { address, city, state }
   return { ...targetProps, ...user }
 }
@@ -105,7 +107,11 @@ const HomeownerInfo = () => {
       target: res.target_pin[0],
       propertyInfo: res.prop_info,
     })
-    navigate("../agreement")
+    if (appeal.city === "detroit") {
+      navigate("../agreement")
+    } else {
+      navigate("../review-property")
+    }
   }
 
   return (
@@ -478,7 +484,7 @@ const HomeownerInfo = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel("homeowner-info")}</p>
+      <p>{getPageLabel(appeal.city, "homeowner-info")}</p>
     </>
   )
 }

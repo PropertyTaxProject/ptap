@@ -42,8 +42,7 @@ const ReviewProperty = () => {
       type: "select-comparables",
       pins: [],
     })
-    navigate("../damage")
-    // navigate("../comparables")
+    navigate(appeal.city === "detroit" ? "../damage" : "../comparables")
   }
 
   return (
@@ -102,7 +101,17 @@ const ReviewProperty = () => {
 
         <Form.Item>
           <Space>
-            <Button type="danger" onClick={() => navigate("../agreement")}>
+            <Button
+              type="danger"
+              onClick={() =>
+                // TODO: Abstract out navigation
+                navigate(
+                  appeal.city === "detroit"
+                    ? "../agreement"
+                    : "../homeowner-info"
+                )
+              }
+            >
               Back
             </Button>
             <Button type="primary" htmlType="submit">
@@ -112,7 +121,7 @@ const ReviewProperty = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel("review-property")}</p>
+      <p>{getPageLabel(appeal.city, "review-property")}</p>
     </>
   )
 }

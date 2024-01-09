@@ -127,7 +127,13 @@ const Damage = () => {
         <Button
           size="large"
           type="danger"
-          onClick={() => navigate("../review-property")}
+          onClick={() =>
+            navigate(
+              appeal.city === "detroit"
+                ? "../review-property"
+                : "../comparables"
+            )
+          }
         >
           Back
         </Button>
@@ -141,7 +147,7 @@ const Damage = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel("damage")}</p>
+      <p>{getPageLabel(appeal.city, "damage")}</p>
     </>
   )
 }

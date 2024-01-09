@@ -93,16 +93,18 @@ const AppealLookup = () => {
             <Radio value="No">No</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item
-          name="hope"
-          rules={[{ required: true, message: "Your response is required." }]}
-          label="Have you received the Homeowners Property Exemption (HOPE), Poverty Tax Exemption (PTE), or any other hardship program anytime in the last three years?"
-        >
-          <Radio.Group name="hope">
-            <Radio value="Yes">Yes</Radio>
-            <Radio value="No">No</Radio>
-          </Radio.Group>
-        </Form.Item>
+        {appeal.city === "detroit" && (
+          <Form.Item
+            name="hope"
+            rules={[{ required: true, message: "Your response is required." }]}
+            label="Have you received the Homeowners Property Exemption (HOPE), Poverty Tax Exemption (PTE), or any other hardship program anytime in the last three years?"
+          >
+            <Radio.Group name="hope">
+              <Radio value="Yes">Yes</Radio>
+              <Radio value="No">No</Radio>
+            </Radio.Group>
+          </Form.Item>
+        )}
       </Form>
       <h2>Find Your Home</h2>
       <p>
@@ -161,7 +163,7 @@ const AppealLookup = () => {
           !appeal.target ||
           !appeal.eligibility?.owner ||
           !appeal.eligibility?.residence ||
-          !appeal.eligibility?.hope
+          (!appeal.eligibility?.hope && appeal.city === "detroit")
         }
         onClick={() => {
           // TODO: Turn into actual link
@@ -172,7 +174,7 @@ const AppealLookup = () => {
         Next Page
       </Button>
       <Divider />
-      <p>{getPageLabel("appeal-lookup")}</p>
+      <p>{getPageLabel(appeal.city, "appeal-lookup")}</p>
     </>
   )
 }

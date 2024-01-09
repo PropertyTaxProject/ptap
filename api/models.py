@@ -35,6 +35,7 @@ class CookParcel(db.Model):
     sale_year = db.Column(db.Integer)
     property_class = db.Column(db.String(10))
     age = db.Column(db.Integer)
+    year_built = db.Column(db.Integer)
     building_sq_ft = db.Column(db.Float)
     land_sq_ft = db.Column(db.Float)
     price_per_sq_ft = db.Column(db.Float)

@@ -12,16 +12,26 @@ export function getMaxComparables(city) {
   return 5
 }
 
-export function getPageLabel(pageName) {
-  const pages = [
-    "appeal-lookup",
-    "homeowner-info",
-    "agreement",
-    "review-property",
-    // "review-comparables",
-    "damage",
-    "review-appeal",
-  ]
+export function getPageLabel(city, pageName) {
+  const pages =
+    city === "detroit"
+      ? [
+          "appeal-lookup",
+          "homeowner-info",
+          "agreement",
+          "review-property",
+          // "review-comparables",
+          "damage",
+          "review-appeal",
+        ]
+      : [
+          "appeal-lookup",
+          "homeowner-info",
+          "review-property",
+          "review-comparables",
+          "damage",
+          "review-appeal",
+        ]
   return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
 }
 
@@ -91,8 +101,8 @@ export const DISPLAY_FIELDS_COOK = [
     field: "address",
   },
   {
-    title: "Age",
-    field: "age",
+    title: "Year built",
+    field: "year_built",
   },
   {
     title: "Basement",

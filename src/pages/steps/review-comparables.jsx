@@ -116,7 +116,7 @@ const ReviewComparables = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel("review-comparables")}</p>
+      <p>{getPageLabel(appeal.city, "review-comparables")}</p>
     </>
   )
 }

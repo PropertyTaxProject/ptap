@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
-import { getPageLabel } from "../../utils"
+import { getPageLabel, cleanParcel } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
@@ -33,33 +33,33 @@ const userCols = [
   },
 ]
 
-// const compCols = [
-//   {
-//     title: "Address",
-//     dataIndex: "address",
-//     key: "address",
-//   },
-//   {
-//     title: "Pin",
-//     dataIndex: "pin",
-//     key: "pin",
-//   },
-//   {
-//     title: "Assessed Value",
-//     dataIndex: "assessed_value_display",
-//     key: "assessed_value_display",
-//   },
-//   {
-//     title: "Sale Price (if available)",
-//     dataIndex: "sale_price_display",
-//     key: "sale_price_display",
-//   },
-//   {
-//     title: "Sale Date",
-//     dataIndex: "sale_date",
-//     key: "sale_date",
-//   },
-// ]
+const compCols = [
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Pin",
+    dataIndex: "pin",
+    key: "pin",
+  },
+  {
+    title: "Assessed Value",
+    dataIndex: "assessed_value_display",
+    key: "assessed_value_display",
+  },
+  {
+    title: "Sale Price (if available)",
+    dataIndex: "sale_price_display",
+    key: "sale_price_display",
+  },
+  {
+    title: "Sale Date",
+    dataIndex: "sale_date",
+    key: "sale_date",
+  },
+]
 
 const ReviewAppeal = () => {
   const [loading, setLoading] = useState(false)
@@ -105,14 +105,18 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      {/* <h2>Your Comparables</h2>
-      <Table
-        dataSource={appeal.selectedComparables.map(cleanParcel)}
-        columns={compCols}
-        pagination={false}
-        scroll={{ x: true }}
-      /> */}
-      {/* <Divider /> */}
+      {appeal.city === "chicago" && (
+        <>
+          <h2>Your Comparables</h2>
+          <Table
+            dataSource={appeal.selectedComparables.map(cleanParcel)}
+            columns={compCols}
+            pagination={false}
+            scroll={{ x: true }}
+          />
+          <Divider />
+        </>
+      )}
       <h2>Your Property Condition</h2>
       <p>
         <strong>Damage level</strong>
@@ -154,7 +158,7 @@ const ReviewAppeal = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel("review-appeal")}</p>
+      <p>{getPageLabel(appeal.city, "review-appeal")}</p>
     </>
   )
 }

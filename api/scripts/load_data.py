@@ -21,47 +21,57 @@ with app.app_context():
 
 if __name__ == "__main__":
     current_year = datetime.now().year
-    with open(os.path.join(DATA_DIR, "cooksf2.csv"), "r") as f:
+    with open(os.path.join(DATA_DIR, "cook.csv"), "r") as f:
         cook_parcels = []
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
             # Skip vacant land
-            if row["Property Class"].strip() in ["100", "200"]:
+            if row["class"].strip() in ["100", "200"]:
                 continue
             sale_price = (
-                float(row["Sale Price"])
-                if row["Sale Price"] not in ["", "NA"]
+                float(row["sale_price"])
+                if row["sale_price"] not in ["", "NA"]
                 else None
             )
-            building_sq_ft = float(row["Building Square Feet"] or 0)
-            land_sq_ft = float(row["Land Square Feet"] or 0)
+            building_sq_ft = float(row["building_sqft"] or 0)
+            land_sq_ft = float(row["land_sqft"] or 0)
             total_sq_ft = building_sq_ft + land_sq_ft
             price_per_sq_ft = None
             if sale_price:
                 price_per_sq_ft = sale_price / total_sq_ft
             point = None
-            if row["Longitude"] and row["Latitude"]:
-                point = f"POINT({row['Longitude']} {row['Latitude']})"
+            if row["longitude"] and row["latitude"]:
+                point = f"POINT({row['longitude']} {row['latitude']})"
+            year_built = None
+            age = None
+            if row["year_built"]:
+                year_built = int(row["year_built"])
+                age = 2024 - year_built
             cook_parcels.append(
                 CookParcel(
                     id=idx,
-                    pin=row["PIN"],
+                    pin=row["pin"],
                     street_number=row["st_num"],
                     street_name=row["st_name"],
                     sale_price=sale_price,
-                    sale_year=row["Sale Year"] or None,
-                    assessed_value=row["CERTIFIED"] if row["CERTIFIED"] else None,
-                    property_class=row["Property Class"],
-                    age=row["Age"] or None,
+                    sale_year=row["year"].replace(".0", "") or None,
+                    assessed_value=row["certified_tot"]
+                    if row["certified_tot"]
+                    else None,
+                    property_class=row["class"],
+                    age=age,
+                    year_built=year_built,
                     building_sq_ft=building_sq_ft,
                     land_sq_ft=land_sq_ft,
                     price_per_sq_ft=price_per_sq_ft,
-                    rooms=row["Rooms"] or None,
-                    bedrooms=row["Bedrooms"] or None,
-                    exterior=row["Wall Material"] if row["Wall Material"] else None,
+                    rooms=row["num_rooms"] or None,
+                    bedrooms=row["num_bedrooms"] or None,
+                    exterior=row["exterior"].replace(".0", "")
+                    if row["exterior"]
+                    else None,
                     stories=row["stories_recode"] or None,
-                    basement=row["basement_recode"] == "1",
-                    garage=row["Garage indicator"] == "1",
+                    basement=row["basement_recode"] == "True",
+                    garage=row["garage_indicator"] not in ["False", ""],
                     geom=point,
                 )
             )
