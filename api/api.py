@@ -155,7 +155,7 @@ def handle_upload():
 
 @app.route("/cron/reminders", methods=["GET"])
 def handle_reminder():
-    send_reminders(mail)
+    send_reminders(mail, app.logger)
     return ("", 200)
 
 

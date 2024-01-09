@@ -10,7 +10,8 @@ import sentry_sdk
 from .email import detroit_reminder_email
 
 
-def handle_individual_reminder(mail, s3, bucket, key):
+def handle_individual_reminder(mail, logger, s3, bucket, key):
+    logger.info(f"CRON: send_reminders: {key}")
     # Load key, check whether it should trigger a reminder, send, then update
     obj = s3.get_object(Bucket=bucket, Key=key)
     data = json.load(obj["Body"])
@@ -24,9 +25,11 @@ def handle_individual_reminder(mail, s3, bucket, key):
 
     data["reminder_sent"] = True
     s3.put_object(Body=json.dumps(data), Bucket=bucket, Key=key)
+    logger.info(f"CRON: send_reminders: sent for {key}")
 
 
-def send_reminders(mail):
+def send_reminders(mail, logger):
+    logger.info("CRON: send reminders")
     s3 = boto3.client("s3")
     bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
     today = datetime.now(pytz.timezone("America/Detroit"))
@@ -38,7 +41,7 @@ def send_reminders(mail):
         )
         for obj in res.get("Contents", []):
             try:
-                handle_individual_reminder(mail, s3, bucket, obj["Key"])
+                handle_individual_reminder(mail, logger, s3, bucket, obj["Key"])
             except Exception as e:
                 sentry_sdk.capture_exception(e)
             time.sleep(3)
