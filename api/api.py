@@ -75,6 +75,11 @@ def index():
     return send_file(os.path.join(STATIC_BUILD_DIR, "index.html"))
 
 
+@app.route("/robots.txt", methods=["GET"])
+def robots():
+    return send_file(os.path.join(STATIC_BUILD_DIR, "robots.txt"))
+
+
 @app.route("/api_v1/pin-lookup", methods=["POST"])
 def handle_form0():
     response_dict = address_candidates(
