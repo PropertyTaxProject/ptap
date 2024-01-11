@@ -105,10 +105,12 @@ def cook_submission_email(mail, data):
     name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
     addr = data["target_pin"]["address"]
     submit_email = [data["email"]]
-    ptap = [os.getenv("PTAP_MAIL", "")]
-    ptap_chi = [os.getenv("CHICAGO_MAIL", "")]
+    ptap_mail = os.getenv("PTAP_MAIL", "")
+    cc_emails = []
+    if os.getenv("CHICAGO_MAIL", ""):
+        cc_emails = [os.getenv("CHICAGO_MAIL")]
 
-    subj = "Property Tax Appeal Project Submission: " + name + " (" + addr + ")"
+    subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
     body = render_template(
         "emails/submission_log.html",
         name=name,
@@ -116,7 +118,7 @@ def cook_submission_email(mail, data):
         log_url=data.get("log_url"),
     )
 
-    msg = Message(subj, recipients=ptap_chi, cc=ptap)
+    msg = Message(subj, recipients=[ptap_mail], cc=cc_emails)
     msg.html = body
     msg.attach(
         data["output_name"][13:],
@@ -127,7 +129,7 @@ def cook_submission_email(mail, data):
 
     # receipt to user
     body = render_template("emails/submission_cook.html", name=name, address=addr)
-    msg2 = Message(subj, recipients=submit_email, reply_to=ptap_chi[0])
+    msg2 = Message(subj, recipients=submit_email, reply_to=ptap_mail)
     msg2.html = body
     mail.send(msg2)
     print("emailed")

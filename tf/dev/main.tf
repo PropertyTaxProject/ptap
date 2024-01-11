@@ -237,7 +237,7 @@ module "lambda" {
     DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${data.aws_db_instance.app.endpoint}/${data.aws_db_instance.app.db_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
-    CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
+    # CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
     # ATTACH_LETTERS         = "true"
 
     GOOGLE_SHEET_SUBMISSION_NAME = local.sheet_name
