@@ -11,7 +11,7 @@ from google.oauth2 import service_account
 from .constants import DAMAGE_TO_CONDITION
 from .dataqueries import avg_ecf, get_pin
 from .email import cook_submission_email, detroit_submission_email
-from .utils import render_doc_to_bytes
+from .utils import clean_cook_parcel, render_doc_to_bytes
 
 gsheet_submission = None
 
@@ -82,43 +82,16 @@ def record_final_submission(submission):
 
 
 def submit_cook_sf(comp_submit, mail):
-    """
-    Output:
-    Word Document
-    """
     owner_name = comp_submit.get(
         "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
     )
-    rename_dict = {
-        "address": "Address",
-        "bedrooms": "Beds",
-        "age": "Age",
-        "stories": "Stories",
-        "assessed_value": "Assessed Value",
-        "building_sq_ft": "Square Footage",
-        "exterior": "Exterior Material",
-        "distance": "Dist.",
-    }
 
     t_df = pd.DataFrame([comp_submit["target_pin"]])
-    comps_df = pd.DataFrame(comp_submit["comparables"])
+    comps_df = pd.DataFrame(comp_submit["selectedComparables"])
 
     pin_av = t_df.assessed_value[0]
     pin = t_df.pin[0]
     comps_avg = comps_df["assessed_value"].mean()
-
-    # rename cols
-    t_df = t_df.rename(columns=rename_dict)
-    comps_df = comps_df.rename(columns=rename_dict)
-
-    # tbl cols
-    target_cols = ["Beds", "Square Footage", "Age", "Exterior Material", "Stories"]
-
-    comp_cols = ["Address", "Dist."] + target_cols  # + ['Sale Price', 'Sale Year']
-
-    # check for char input
-    if "characteristicsinput" not in comp_submit:
-        comp_submit["characteristicsinput"] = "NO STRUCTURAL DAMAGE REPORTED"
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -131,31 +104,19 @@ def submit_cook_sf(comp_submit, mail):
         os.path.join(base_dir, "templates", "docs", "cook_template_2024.docx")
     )
 
-    allinfo = []
-    propinfo = []
-    # skip_ls = ['target_pin', 'comparables', 'output_name']
-    # for key, val in comp_submit.items():
-    #    if key not in skip_ls:
-    #        allinfo.append([key, val])
-
-    # for i, j in get_pin('detroit', pin).to_dict(orient='records')[0].items():
-    #    propinfo.append([i, j])
-
     context = {
+        "date": datetime.now(pytz.timezone("America/Chicago")).strftime("%B %-d, %Y"),
         "pin": pin,
         "address": comp_submit["address"],
         "homeowner_name": owner_name,
         "assessor_av": "{:,.0f}".format(pin_av),
         "assessor_mv": "${:,.0f}".format(pin_av * 10),
-        "contention_av": "{:,.0f}".format(comps_avg / 10),
+        "contention_av": "{:,.0f}".format(comps_avg),
         "contention_mv": "${:,.0f}".format(comps_avg),
-        "target_labels": target_cols,
-        "target_contents": t_df[target_cols].to_numpy().tolist(),
-        "comp_labels": comp_cols,
-        "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
-        "damage_descript": comp_submit.get("characteristicsinput"),
-        "allinfo": allinfo,
-        "propinfo": propinfo,
+        "target": clean_cook_parcel(t_df.to_dict(orient="records")[0]),
+        "comparables": [
+            clean_cook_parcel(p) for p in comps_df.to_dict(orient="records")
+        ],
     }
 
     # TODO: What is this used for?
@@ -163,34 +124,6 @@ def submit_cook_sf(comp_submit, mail):
 
     comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
 
-    """
-    # update submission log
-    targ = get_pin('detroit', pin)
-
-    if comp_submit['validcharacteristics'] == 'No':
-        c_flag = 'Yes. Homeowner Input: ' + comp_submit['characteristicsinput']
-    else:
-        c_flag = 'No'
-
-    sub_dict = {
-        'Client Name' : comp_submit['name'],
-        'Address' : comp_submit['address'],
-        'Taxpayer of Record' : targ['taxpayer'].to_string(index=False),
-        'pin' : pin,
-        'Phone Number' : comp_submit['phone'],
-        'Email Address' : comp_submit['email'],
-        'Preferred Contact Method' : comp_submit['preferred'],
-        'PRE' : targ['homestead_exemption'].to_string(index=False),
-        'Eligibility Flag' : comp_submit['eligibility'],
-        'Characteristics Flag': c_flag,
-        'SEV' : str(pin_av),
-        'TV' : targ['taxable_va'].to_string(index=False),
-        'CV' : str(comps_avg)
-    }
-
-    log_url = record_final_submission(sub_dict)
-    comp_submit['log_url'] = log_url
-    """
     if os.getenv("GOOGLE_SHEET_SID"):
         comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
             "GOOGLE_SHEET_SID"

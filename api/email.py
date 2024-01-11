@@ -118,12 +118,11 @@ def cook_submission_email(mail, data):
 
     msg = Message(subj, recipients=ptap_chi, cc=ptap)
     msg.html = body
-    if os.getenv("ATTACH_LETTERS"):
-        msg.attach(
-            data["output_name"][13:],
-            WORD_MIMETYPE,
-            data["file_stream"].getvalue(),
-        )
+    msg.attach(
+        data["output_name"][13:],
+        WORD_MIMETYPE,
+        data["file_stream"].getvalue(),
+    )
     mail.send(msg)
 
     # receipt to user

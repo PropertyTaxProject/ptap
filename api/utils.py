@@ -98,3 +98,18 @@ def update_s3_submission(data):
         Bucket=os.getenv("S3_SUBMISSIONS_BUCKET"),
         Key=f"submissions/{timestamp_path}/{data.get('uuid')}.json",
     )
+
+
+def clean_cook_parcel(parcel):
+    meters_in_mile = 1609.344
+    exterior_map = {1: "Wood", 2: "Masonry", 3: "Wood/Masonry", 4: "Stucco"}
+    if "distance" in parcel:
+        parcel["distance"] = "{:0.2f}mi".format(parcel["distance"] / meters_in_mile)
+    return {
+        **parcel,
+        "assessed_value": "{:,.0f}".format(parcel["assessed_value"]),
+        "building_sq_ft": "{:,.0f}".format(parcel["building_sq_ft"]),
+        "basement": "Yes" if parcel["basement"] else "No",
+        "exterior": exterior_map.get(parcel["exterior"]),
+        "garage": "Yes" if parcel["garage"] else "No",
+    }
