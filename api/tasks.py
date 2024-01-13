@@ -10,39 +10,55 @@ import sentry_sdk
 from .email import detroit_reminder_email
 
 
-def handle_individual_reminder(mail, logger, s3, bucket, key):
-    logger.info(f"CRON: send_reminders: {key}")
-    # Load key, check whether it should trigger a reminder, send, then update
-    obj = s3.get_object(Bucket=bucket, Key=key)
-    data = json.load(obj["Body"])
-    step = data.get("step")
-
-    # Maybe have more rigid check in the future, now just checking incomplete/not sent
-    if not step or step == "submit" or data.get("reminder_sent"):
-        return
-
-    mail.send(detroit_reminder_email(data))
-
-    data["reminder_sent"] = True
-    s3.put_object(Body=json.dumps(data), Bucket=bucket, Key=key)
-    logger.info(f"CRON: send_reminders: sent for {key}")
-
-
 def send_reminders(mail, logger):
     logger.info("CRON: send reminders")
     s3 = boto3.client("s3")
     bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
     today = datetime.now(pytz.timezone("America/Detroit"))
+    # We should only send emails when someone hasn't been contacted already and doesn't
+    # have a separate completed submission. This will ignore someone who submits two
+    # days ago and then has an incomplete submission the next day, but since landlords
+    # aren't allowed that shouldn't be an issue and is lower risk
+    emails_to_ignore = set()
+    # Make sure we only send one email per email address
+    email_map = {}
 
+    submission_keys = []
     for day_diff in range(1, 3):
         day = today - timedelta(day_diff)
         res = s3.list_objects_v2(
             Bucket=bucket, Prefix="submissions/" + day.strftime("%Y/%m/%d/")
         )
         for obj in res.get("Contents", []):
-            try:
-                handle_individual_reminder(mail, logger, s3, bucket, obj["Key"])
-            except Exception as e:
-                sentry_sdk.capture_exception(e)
-            time.sleep(3)
-            continue
+            submission_keys.append(obj["Key"])
+
+    for key in submission_keys:
+        try:
+            data = json.load(s3.get_object(Bucket=bucket, Key=key)["Body"])
+            step = data.get("step")
+            email = data.get("user", {}).get("email", "").lower()
+            if (
+                not step
+                or step == "submit"
+                or data.get("reminder_sent")
+                or email in emails_to_ignore
+            ):
+                emails_to_ignore.add(email)
+            else:
+                email_map[email] = {"key": key, "data": data}
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+
+    for email_obj in email_map.values():
+        key = email_obj["key"]
+        data = email_obj["data"]
+        logger.info(f"CRON: send_reminders: {key}")
+
+        try:
+            mail.send(detroit_reminder_email(data))
+            data["reminder_sent"] = True
+            s3.put_object(Body=json.dumps(data), Bucket=bucket, Key=key)
+            logger.info(f"CRON: send_reminders: sent for {key}")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+        time.sleep(3)
