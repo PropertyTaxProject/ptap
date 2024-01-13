@@ -97,6 +97,9 @@ function appealReducer(appeal, action) {
     case "complete": {
       return { ...initialAppeal }
     }
+    case "resume": {
+      return { ...action.appeal }
+    }
     default: {
       throw Error("Unknown action: " + action.type)
     }

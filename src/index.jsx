@@ -15,6 +15,7 @@ import ReviewAppeal from "./pages/steps/review-appeal"
 import NotFound from "./pages/not-found"
 import Agreement from "./pages/steps/agreement"
 import Damage from "./pages/steps/damage"
+import Resume from "./pages/resume"
 
 const appealRoutes = [
   {
@@ -49,6 +50,10 @@ const appealRoutes = [
   {
     path: "complete",
     element: <FinalPage />,
+  },
+  {
+    path: "resume",
+    element: <Resume />,
   },
 ]
 

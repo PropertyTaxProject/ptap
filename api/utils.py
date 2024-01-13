@@ -18,6 +18,10 @@ def get_region(request_data):
     return "detroit" if "detroit" in request_data.get("appeal_type", "") else "cook"
 
 
+def load_s3_json(s3, bucket, key):
+    return json.load(s3.get_object(Bucket=bucket, Key=key)["Body"])
+
+
 def render_agreement(name, parcel):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(

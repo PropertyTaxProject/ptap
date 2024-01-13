@@ -5,9 +5,10 @@ from logging.config import dictConfig
 
 import boto3
 import sentry_sdk
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, abort, jsonify, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
+from jinja2 import Environment, FileSystemLoader
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.exceptions import HTTPException
@@ -16,7 +17,7 @@ from .db import db
 from .email import agreement_email
 from .mainfct import address_candidates, comparables, process_comps_input
 from .tasks import send_reminders
-from .utils import get_region, log_step
+from .utils import get_region, load_s3_json, log_step
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
@@ -61,6 +62,7 @@ app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["S3_CLIENT"] = boto3.client("s3")
 
 
 db.init_app(app)
@@ -149,10 +151,9 @@ def handle_agreement():
 
 @app.route("/api/upload", methods=["POST"])
 def handle_upload():
-    s3_client = boto3.client("s3")
     s3_key = f"{uuid.uuid4()}/{request.json['filename']}"
     return jsonify(
-        s3_client.generate_presigned_post(
+        app.config["S3_CLIENT"].generate_presigned_post(
             os.getenv("S3_UPLOADS_BUCKET"), s3_key, ExpiresIn=3600
         )
     )
@@ -162,6 +163,28 @@ def handle_upload():
 def handle_reminder():
     send_reminders(mail, app.logger)
     return ("", 200)
+
+
+@app.route("/<city>/resume", methods=["GET"])
+def resume(city):
+    app.logger.info("STARTING")
+    bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
+    key = request.args.get("submission", "")
+    app.logger.info(f"RESUME: {key}")
+
+    # Restrict access to submissions subpath, not ideal
+    if not key.startswith("submissions/"):
+        return abort(404)
+
+    try:
+        # TODO: Add prop so emails not all re-sent?
+        data = load_s3_json(app.config["S3_CLIENT"], bucket, key)
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        return abort(404)
+
+    jinja_env = Environment(loader=FileSystemLoader(STATIC_BUILD_DIR))
+    return jinja_env.get_template("index.html").render(frontend_props=data)
 
 
 @app.errorhandler(404)
