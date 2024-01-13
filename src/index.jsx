@@ -22,6 +22,8 @@ if (import.meta.env.PROD) {
   // Could move to configuration, but not sensitive and will be on client side
   Sentry.init({
     dsn: "https://b8a640bb5e1b226438d5c61550608d0f@o86794.ingest.sentry.io/4506107981529088",
+    environment:
+      window.location.host === "app.propertytaxproject.com" ? "prod" : "dev",
   })
 }
 
