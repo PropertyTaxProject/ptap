@@ -82,9 +82,12 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 *min_max_query(
                     model, "land_sq_ft", float, targ["land_sq_ft"].values[0], land_dif
                 ),
-                model.exterior == int(targ["exterior"].values[0] or 0),
             ]
         )
+        # If not stucco (4) then include this filter
+        exterior_value = int(targ["exterior"].values[0] or 0)
+        if exterior_value != 4:
+            query_filters.append(model.exterior == exterior_value)
     else:
         raise Exception("Invalid Region for Comps")
 
@@ -132,6 +135,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
             )
         )
 
+    query_limit = 30 if region == "cook" else 10
     query = (
         db.session.query(
             aliased(model, distance_subquery),
@@ -140,7 +144,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         )
         .filter(literal_column("distance") < distance)
         .order_by(literal_column("diff_score"))
-        .limit(10)
+        .limit(query_limit)
     )
 
     result = pd.DataFrame(
