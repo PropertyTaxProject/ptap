@@ -11,6 +11,7 @@
     "prettier:fix": "prettier --write \"./src/**/*.{js,jsx,css}\""
   },
   "dependencies": {
+    "@sentry/react": "^7.93.0",
     "antd": "^4.24.15",
     "axios": "^1.6.2",
     "file-saver": "^2.0.5",

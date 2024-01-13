@@ -4,6 +4,7 @@ import React from "react"
 import { createRoot } from "react-dom/client"
 import App from "./app"
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom"
+import * as Sentry from "@sentry/react"
 import AppealLookup from "./pages/steps/appeal-lookup"
 import SelectRegion from "./pages/select-region"
 import FinalPage from "./pages/final-page"
@@ -16,6 +17,13 @@ import NotFound from "./pages/not-found"
 import Agreement from "./pages/steps/agreement"
 import Damage from "./pages/steps/damage"
 import Resume from "./pages/resume"
+
+if (import.meta.env.PROD) {
+  // Could move to configuration, but not sensitive and will be on client side
+  Sentry.init({
+    dsn: "https://b8a640bb5e1b226438d5c61550608d0f@o86794.ingest.sentry.io/4506107981529088",
+  })
+}
 
 const appealRoutes = [
   {
