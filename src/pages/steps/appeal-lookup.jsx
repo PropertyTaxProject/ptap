@@ -136,6 +136,7 @@ const AppealLookup = () => {
             max={1}
             isSelectLabels
             onChange={setPin}
+            pins={appeal.pin ? [appeal.pin] : []}
           />
         </>
       )}

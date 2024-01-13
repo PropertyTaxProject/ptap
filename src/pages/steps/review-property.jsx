@@ -32,7 +32,9 @@ const ReviewProperty = () => {
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [showCharInput, updateCharInput] = useState(false)
+  const [showCharInput, updateCharInput] = useState(
+    appeal.userProperty.validcharacteristics
+  )
 
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
@@ -53,6 +55,7 @@ const ReviewProperty = () => {
       <Divider />
       <Form
         form={form}
+        initialValues={appeal.userProperty}
         name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"

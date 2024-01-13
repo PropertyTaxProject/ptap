@@ -7,10 +7,10 @@ const PinChooser = ({
   propertyOptions,
   onChange,
   max,
+  pins = [],
   isSelectLabels = false,
 }) => {
-  // TODO: Maybe manage state outside?
-  const [selectedPins, setSelectedPins] = useState([])
+  const [selectedPins, setSelectedPins] = useState(pins)
 
   const maxOptions = max > 0 ? max : propertyOptions.length
   const [addLabel, removeLabel] = isSelectLabels
@@ -65,6 +65,7 @@ PinChooser.propTypes = {
   propertyOptions: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func,
   max: PropTypes.number,
+  pins: PropTypes.arrayOf(PropTypes.string),
   isSelectLabels: PropTypes.bool,
 }
 
