@@ -33,7 +33,7 @@ const ReviewProperty = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [showCharInput, updateCharInput] = useState(
-    appeal.userProperty.validcharacteristics
+    appeal.userProperty?.validcharacteristics
   )
 
   const onFinish = (info) => {
