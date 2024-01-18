@@ -105,7 +105,7 @@ const Damage = () => {
           />
         </Form.Item>
 
-        {appeal.city !== "chicago" && (
+        {appeal.region !== "chicago" && (
           <>
             <h2>Upload images</h2>
             <p>
@@ -129,7 +129,7 @@ const Damage = () => {
           type="danger"
           onClick={() =>
             navigate(
-              appeal.city === "detroit"
+              appeal.region === "detroit"
                 ? "../review-property"
                 : "../comparables"
             )
@@ -147,7 +147,7 @@ const Damage = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel(appeal.city, "damage")}</p>
+      <p>{getPageLabel(appeal.region, "damage")}</p>
     </>
   )
 }

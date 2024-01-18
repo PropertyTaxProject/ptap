@@ -44,14 +44,14 @@ const ReviewProperty = () => {
       type: "select-comparables",
       pins: [],
     })
-    navigate(appeal.city === "detroit" ? "../damage" : "../comparables")
+    navigate(appeal.region === "detroit" ? "../damage" : "../comparables")
   }
 
   return (
     <>
       <h1>Your Property Information</h1>
       <p>Below is the data that the Assessor has on file for your property.</p>
-      <PropertyInfo city={appeal.city} target={appeal.target} cols={5} />
+      <PropertyInfo region={appeal.region} target={appeal.target} cols={5} />
       <Divider />
       <Form
         form={form}
@@ -109,7 +109,7 @@ const ReviewProperty = () => {
               onClick={() =>
                 // TODO: Abstract out navigation
                 navigate(
-                  appeal.city === "detroit"
+                  appeal.region === "detroit"
                     ? "../agreement"
                     : "../homeowner-info"
                 )
@@ -124,7 +124,7 @@ const ReviewProperty = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel(appeal.city, "review-property")}</p>
+      <p>{getPageLabel(appeal.region, "review-property")}</p>
     </>
   )
 }

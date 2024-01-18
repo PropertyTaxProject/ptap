@@ -5,7 +5,7 @@ import { HELP_LINK } from "../../utils"
 import coalition from "../../assets/coalition_logo.png"
 import ilo from "../../assets/ilo.png"
 
-const AppealIntro = ({ city }) => (
+const AppealIntro = ({ region }) => (
   <>
     <h1>Who We Are</h1>
     <p>
@@ -34,7 +34,7 @@ const AppealIntro = ({ city }) => (
       Here is a general overview of the property tax assessment appeal process:
     </p>
 
-    {city === "detroit" && (
+    {region === "detroit" && (
       <>
         <ul>
           <li>
@@ -65,7 +65,7 @@ const AppealIntro = ({ city }) => (
         </p>
       </>
     )}
-    {city === "chicago" && (
+    {region === "chicago" && (
       <ul>
         <li>
           <b>Step 1</b>: Contact the Coalition for Property Tax Justice and work
@@ -100,7 +100,7 @@ const AppealIntro = ({ city }) => (
     <h2>Who is Eligible for ILO&apos;s Services?</h2>
     <p>You are eligible for services if you meet all of these criteria:</p>
 
-    {city == "detroit" && (
+    {region == "detroit" && (
       <ul>
         <li>You own a home in the City of Detroit;</li>
         <li>
@@ -110,7 +110,7 @@ const AppealIntro = ({ city }) => (
         <li>Your home is worth $200,000 or less.</li>
       </ul>
     )}
-    {city == "chicago" && (
+    {region == "chicago" && (
       <ul>
         <li>You own a home in Cook County.</li>
         <li>
@@ -124,7 +124,7 @@ const AppealIntro = ({ city }) => (
 )
 
 AppealIntro.propTypes = {
-  city: PropTypes.string,
+  region: PropTypes.string,
 }
 
 export default AppealIntro

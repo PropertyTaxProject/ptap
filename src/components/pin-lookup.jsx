@@ -4,7 +4,7 @@ import { lookupPin } from "../requests"
 import { Form, Input, Button, Space } from "antd"
 import { getAppealType } from "../utils"
 
-const PinLookup = ({ city, onSearch }) => {
+const PinLookup = ({ region, onSearch }) => {
   const [form] = Form.useForm()
 
   return (
@@ -15,7 +15,7 @@ const PinLookup = ({ city, onSearch }) => {
       onFinish={async (data) => {
         const res = await lookupPin({
           ...data,
-          appeal_type: getAppealType(city),
+          appeal_type: getAppealType(region),
         })
         onSearch(res)
       }}
@@ -54,7 +54,7 @@ const PinLookup = ({ city, onSearch }) => {
 }
 
 PinLookup.propTypes = {
-  city: PropTypes.string,
+  region: PropTypes.string,
   onSearch: PropTypes.func,
 }
 

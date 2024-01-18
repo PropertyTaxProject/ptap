@@ -16,8 +16,8 @@ const ReviewComparables = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
-  const minComparables = getMinComparables(appeal.city)
-  const maxComparables = getMaxComparables(appeal.city)
+  const minComparables = getMinComparables(appeal.region)
+  const maxComparables = getMaxComparables(appeal.region)
 
   const advancePage = () => {
     // add up to exactly five on advance, update on submit
@@ -38,7 +38,7 @@ const ReviewComparables = () => {
     navigate("../damage")
   }
 
-  const displayFields = ["cook", "chicago"].includes(appeal.city)
+  const displayFields = ["cook", "chicago"].includes(appeal.region)
     ? DISPLAY_FIELDS_COOK
     : DISPLAY_FIELDS
 
@@ -77,7 +77,7 @@ const ReviewComparables = () => {
           <h2>Your property</h2>
         </Col>
       </Row>
-      <PropertyInfo city={appeal.city} target={appeal.target} cols={5} />
+      <PropertyInfo region={appeal.region} target={appeal.target} cols={5} />
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h2>Potential comparable properties near you</h2>
@@ -116,7 +116,7 @@ const ReviewComparables = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel(appeal.city, "review-comparables")}</p>
+      <p>{getPageLabel(appeal.region, "review-comparables")}</p>
     </>
   )
 }

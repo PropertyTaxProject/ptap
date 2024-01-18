@@ -4,22 +4,22 @@ import React, { createContext, useEffect, useReducer } from "react"
 export const AppealContext = createContext(null)
 export const AppealDispatchContext = createContext(null)
 
-const getInitialAppeal = (city) => {
-  const sessionAppeal = window.sessionStorage.getItem(`appeal-${city}`)
+const getInitialAppeal = (region) => {
+  const sessionAppeal = window.sessionStorage.getItem(`appeal-${region}`)
   let appeal = initialAppeal
   try {
     appeal = sessionAppeal ? JSON.parse(sessionAppeal) : initialAppeal
   } catch (e) {
     console.error(e)
   }
-  return { ...appeal, city }
+  return { ...appeal, region }
 }
 
-export function AppealProvider({ city, children }) {
-  const [appeal, dispatch] = useReducer(appealReducer, getInitialAppeal(city))
+export function AppealProvider({ region, children }) {
+  const [appeal, dispatch] = useReducer(appealReducer, getInitialAppeal(region))
 
   useEffect(() => {
-    window.sessionStorage.setItem(`appeal-${city}`, JSON.stringify(appeal))
+    window.sessionStorage.setItem(`appeal-${region}`, JSON.stringify(appeal))
   }, [appeal])
 
   return (
@@ -32,7 +32,7 @@ export function AppealProvider({ city, children }) {
 }
 
 AppealProvider.propTypes = {
-  city: PropTypes.string,
+  region: PropTypes.string,
   children: PropTypes.any,
 }
 
@@ -98,7 +98,7 @@ function appealReducer(appeal, action) {
       return { ...initialAppeal }
     }
     case "resume": {
-      return { ...action.appeal }
+      return { ...action.appeal, resumed: true }
     }
     default: {
       throw Error("Unknown action: " + action.type)
@@ -127,4 +127,5 @@ const initialAppeal = {
   damage: null,
   damage_level: null,
   files: [],
+  resumed: false,
 }

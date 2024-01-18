@@ -79,7 +79,7 @@ const router = createBrowserRouter([
       {
         path: "/detroit/*",
         element: (
-          <AppealProvider city="detroit">
+          <AppealProvider region="detroit">
             <Outlet />
           </AppealProvider>
         ),
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
       {
         path: "/cook/*",
         element: (
-          <AppealProvider city="chicago">
+          <AppealProvider region="chicago">
             <Outlet />
           </AppealProvider>
         ),

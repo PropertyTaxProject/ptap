@@ -61,11 +61,11 @@ const nameFieldsLayout = {
   },
 }
 
-const getInitialFormData = ({ user, target, city: appealCity }) => {
-  const state = appealCity === "detroit" ? "MI" : "IL"
+const getInitialFormData = ({ user, target, region }) => {
+  const state = region === "detroit" ? "MI" : "IL"
   let { address, city } = target || {}
-  if (["detroit", "chicago"].includes(appealCity)) {
-    city = appealCity === "detroit" ? "Detroit" : "Chicago"
+  if (["detroit", "chicago"].includes(region.toLowerCase().trim())) {
+    city = region === "detroit" ? "Detroit" : "Chicago"
   }
   const targetProps = { address, city, state }
   return { ...targetProps, ...user }
@@ -88,11 +88,15 @@ const HomeownerInfo = () => {
     const info = {
       ...values,
       pin: appeal.pin,
-      appeal_type: getAppealType(appeal.city),
+      appeal_type: getAppealType(appeal.region),
       uuid: appeal.uuid,
     }
     console.log("Received values of form: ", info)
-    const res = await submitForm(info)
+    const res = await submitForm({
+      ...appeal,
+      appeal_type: getAppealType(appeal.region),
+      user: { ...appeal.user, ...values },
+    })
 
     if (window.fbq) {
       window.fbq("track", "CompleteRegistration")
@@ -107,7 +111,7 @@ const HomeownerInfo = () => {
       target: res.target_pin[0],
       propertyInfo: res.prop_info,
     })
-    if (appeal.city === "detroit") {
+    if (appeal.region === "detroit") {
       navigate("../agreement")
     } else {
       navigate("../review-property")
@@ -484,7 +488,7 @@ const HomeownerInfo = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel(appeal.city, "homeowner-info")}</p>
+      <p>{getPageLabel(appeal.region, "homeowner-info")}</p>
     </>
   )
 }

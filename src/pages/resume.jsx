@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { AppealDispatchContext } from "../context/appeal"
+import { AppealContext, AppealDispatchContext } from "../context/appeal"
+import { getAppealType } from "../utils"
 
 const Resume = () => {
+  const appealCtx = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
 
@@ -10,7 +12,12 @@ const Resume = () => {
     const dataStr = document.getElementById("frontend-props").innerText
     try {
       const appeal = JSON.parse(dataStr)
-      dispatch({ type: "resume", appeal })
+      dispatch({
+        type: "resume",
+        appeal,
+        region: appealCtx.region,
+        appeal_type: getAppealType(appealCtx.region),
+      })
     } catch (e) {
       console.error(e)
     }

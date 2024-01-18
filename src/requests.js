@@ -38,12 +38,12 @@ export const submitAgreement = async ({
   agreement_name,
   user,
   pin,
-  city,
+  region,
   ...data
 }) => {
   const res = await axios.post(
     `${BASE_URL}/api/agreement`,
-    { uuid, agreement, agreement_name, user, pin, city, ...data },
+    { uuid, agreement, agreement_name, user, pin, region, ...data },
     { responseType: "json" }
   )
   return res.data

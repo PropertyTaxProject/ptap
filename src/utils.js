@@ -3,18 +3,18 @@ const METERS_IN_MILE = 1609.344
 
 // TODO: Constant for now, may change
 // eslint-disable-next-line
-export function getMinComparables(city) {
+export function getMinComparables(region) {
   return 3
 }
 // TODO: Constant for now, may change
 // eslint-disable-next-line
-export function getMaxComparables(city) {
+export function getMaxComparables(region) {
   return 5
 }
 
-export function getPageLabel(city, pageName) {
+export function getPageLabel(region, pageName) {
   const pages =
-    city === "detroit"
+    region === "detroit"
       ? [
           "appeal-lookup",
           "homeowner-info",
@@ -220,11 +220,12 @@ export function cleanParcel(parcel) {
   return parcel
 }
 
-export const getAppealType = (city) => {
-  if (city === "detroit") {
+export const getAppealType = (region) => {
+  const cleanRegion = region.toLowerCase().trim()
+  if (cleanRegion === "detroit") {
     return "detroit_single_family"
-  } else if (city === "chicago") {
+  } else if (cleanRegion === "chicago") {
     return "cook_county_single_family"
   }
-  return city
+  return cleanRegion
 }

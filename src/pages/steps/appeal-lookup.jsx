@@ -51,7 +51,7 @@ const AppealLookup = () => {
     <>
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
-          <AppealIntro city={appeal.city} />
+          <AppealIntro region={appeal.region} />
         </Col>
       </Row>
       <Form
@@ -93,7 +93,7 @@ const AppealLookup = () => {
             <Radio value="No">No</Radio>
           </Radio.Group>
         </Form.Item>
-        {appeal.city === "detroit" && (
+        {appeal.region === "detroit" && (
           <Form.Item
             name="hope"
             rules={[{ required: true, message: "Your response is required." }]}
@@ -113,7 +113,7 @@ const AppealLookup = () => {
         button next to your address.
       </p>
       <PinLookup
-        city={appeal.city}
+        region={appeal.region}
         onSearch={({ candidates: propertyOptions, uuid }) =>
           dispatch({ type: "property-options", propertyOptions, uuid })
         }
@@ -164,7 +164,7 @@ const AppealLookup = () => {
           !appeal.target ||
           !appeal.eligibility?.owner ||
           !appeal.eligibility?.residence ||
-          (!appeal.eligibility?.hope && appeal.city === "detroit")
+          (!appeal.eligibility?.hope && appeal.region === "detroit")
         }
         onClick={() => {
           // TODO: Turn into actual link
@@ -175,7 +175,7 @@ const AppealLookup = () => {
         Next Page
       </Button>
       <Divider />
-      <p>{getPageLabel(appeal.city, "appeal-lookup")}</p>
+      <p>{getPageLabel(appeal.region, "appeal-lookup")}</p>
     </>
   )
 }

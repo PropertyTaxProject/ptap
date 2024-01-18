@@ -4,8 +4,8 @@ import { Table } from "antd"
 import { cleanParcel, DISPLAY_FIELDS, DISPLAY_FIELDS_COOK } from "../utils"
 
 // displays the target property information
-const PropertyInfo = ({ city, target }) => {
-  const baseFields = ["chicago", "cook"].includes(city)
+const PropertyInfo = ({ region, target }) => {
+  const baseFields = ["chicago", "cook"].includes(region)
     ? DISPLAY_FIELDS_COOK
     : DISPLAY_FIELDS
   const fields = baseFields.filter(({ title }) => title !== "Distance")
@@ -27,7 +27,7 @@ const PropertyInfo = ({ city, target }) => {
 }
 
 PropertyInfo.propTypes = {
-  city: PropTypes.string,
+  region: PropTypes.string,
   target: PropTypes.object,
 }
 

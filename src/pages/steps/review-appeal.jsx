@@ -70,7 +70,7 @@ const ReviewAppeal = () => {
   const confirmInfo = async () => {
     setLoading(true)
     await submitAppeal(appeal)
-    window.sessionStorage.removeItem(`appeal-${appeal.city}`)
+    window.sessionStorage.removeItem(`appeal-${appeal.region}`)
     setLoading(false)
     dispatch({ type: "complete" })
     if (window.fbq) {
@@ -105,7 +105,7 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      {appeal.city === "chicago" && (
+      {appeal.region === "chicago" && (
         <>
           <h2>Your Comparables</h2>
           <Table
@@ -158,7 +158,7 @@ const ReviewAppeal = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel(appeal.city, "review-appeal")}</p>
+      <p>{getPageLabel(appeal.region, "review-appeal")}</p>
     </>
   )
 }

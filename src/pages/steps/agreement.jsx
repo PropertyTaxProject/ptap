@@ -94,10 +94,13 @@ const Agreement = () => {
           onClick={async () => {
             setLoading(true)
             // TODO: Handle this, allow feature flagging in dev
-            try {
-              await submitAgreement(appeal)
-            } catch (e) {
-              console.error(e)
+            // Don't re-submit agreement if this is a resumed appeal
+            if (!appeal.resumed) {
+              try {
+                await submitAgreement(appeal)
+              } catch (e) {
+                console.error(e)
+              }
             }
             navigate("../review-property")
           }}
@@ -107,7 +110,7 @@ const Agreement = () => {
       </Space>
 
       <Divider />
-      <p>{getPageLabel(appeal.city, "agreement")}</p>
+      <p>{getPageLabel(appeal.region, "agreement")}</p>
     </>
   )
 }

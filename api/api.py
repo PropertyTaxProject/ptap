@@ -144,7 +144,7 @@ def handle_form2():
 @app.route("/api/agreement", methods=["POST"])
 def handle_agreement():
     log_step(app.logger, {**request.json, "step": "agreement"})
-    if "detroit" in request.json.get("city", ""):
+    if "detroit" in request.json.get("region", ""):
         mail.send(agreement_email(request.json))
     return ("", 204)
 
