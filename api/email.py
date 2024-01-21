@@ -5,7 +5,7 @@ from flask_mail import Message
 
 from .constants import WORD_MIMETYPE
 from .dataqueries import _get_pin
-from .utils import render_agreement
+from .utils import record_final_submission, render_agreement
 
 
 def agreement_email(data):
@@ -32,7 +32,9 @@ def agreement_email(data):
 
     agreement_name = data.get("agreement_name")
     if agreement_name:
-        agreement_bytes = render_agreement(agreement_name, parcel)
+        agreement_bytes = render_agreement(
+            agreement_name, parcel, data.get("agreement_date")
+        )
         msg.attach(
             f"Property Tax Appeal Project Representation Agreement {name}.docx",
             WORD_MIMETYPE,
@@ -42,21 +44,16 @@ def agreement_email(data):
     return msg
 
 
-def detroit_submission_email(mail, data):
+def detroit_submission_email(mail, data, letter_bytes):
     # email to ptap account with info
     name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
     addr = data["target_pin"]["address"]
-    submit_email = [data["email"]]
-    doc_bytes = None
-    subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
-    msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
-    msg.html = render_template(
-        "emails/submission_log.html", name=name, address=addr, log_url=data["log_url"]
-    )
-    if os.getenv("ATTACH_LETTERS"):
-        doc_bytes = data["file_stream"].getvalue()
-        msg.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
-    mail.send(msg)
+    subject = f"Property Tax Appeal Project Submission: {name} ({addr})"
+
+    if data.get("resumed"):
+        recipients = [os.getenv("PTAP_MAIL")]
+    else:
+        recipients = [data["email"]]
 
     if data.get("eligibility", {}).get("hope", "").lower() == "yes":
         body = render_template("emails/submission_detroit_hope.html", name=name)
@@ -67,22 +64,43 @@ def detroit_submission_email(mail, data):
             address=addr,
             has_images=len(data["files"]) > 0,
         )
-    msg2 = Message(subj, recipients=submit_email, reply_to=os.getenv("PTAP_MAIL"))
-    msg2.html = body
-    if os.getenv("ATTACH_LETTERS"):
-        msg2.attach(data["output_name"][13:], WORD_MIMETYPE, doc_bytes)
+
+    msg = Message(subject, recipients=recipients, reply_to=os.getenv("PTAP_MAIL"))
+    msg.html = body
+    if letter_bytes:
+        msg.attach(data["output_name"][13:], WORD_MIMETYPE, letter_bytes)
 
     agreement_name = data.get("agreement_name")
     if agreement_name:
         parcel = _get_pin("detroit", data.get("pin"))
-        agreement_bytes = render_agreement(agreement_name, parcel)
-        msg2.attach(
+        agreement_bytes = render_agreement(
+            agreement_name, parcel, data.get("agreement_date")
+        )
+        msg.attach(
             f"Property Tax Appeal Project Representation Agreement {name}.docx",
             WORD_MIMETYPE,
             agreement_bytes,
         )
 
-    mail.send(msg2)
+    mail.send(msg)
+
+
+def detroit_internal_submission_email(mail, data, letter_bytes):
+    name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
+    addr = data["target_pin"]["address"]
+
+    subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
+    msg = Message(subj, recipients=[os.getenv("PTAP_MAIL")])
+    msg.html = render_template(
+        "emails/submission_log.html",
+        name=name,
+        address=addr,
+        log_url=record_final_submission(data),
+    )
+    if letter_bytes:
+        msg.attach(data["output_name"][13:], WORD_MIMETYPE, letter_bytes)
+
+    mail.send(msg)
 
 
 def detroit_reminder_email(data):

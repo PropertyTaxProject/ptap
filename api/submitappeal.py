@@ -1,84 +1,20 @@
-import json
 import os
 from datetime import datetime
 
-import gspread
 import pandas as pd
 import pytz
 from docxtpl import DocxTemplate
-from google.oauth2 import service_account
 
 from .constants import DAMAGE_TO_CONDITION
 from .dataqueries import avg_ecf, get_pin
-from .email import cook_submission_email, detroit_submission_email
+from .email import (
+    cook_submission_email,
+    detroit_internal_submission_email,
+    detroit_submission_email,
+)
 from .utils import clean_cook_parcel, render_doc_to_bytes
 
 gsheet_submission = None
-
-
-def record_final_submission(submission):
-    if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
-        return
-
-    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT"))
-    credentials = service_account.Credentials.from_service_account_info(
-        credentials_json,
-        scopes=[
-            "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-
-    client = gspread.authorize(credentials)
-    worksheet = client.open(os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")).worksheet(
-        "submissions"
-    )
-
-    timestamp = datetime.now(pytz.timezone("America/Detroit"))
-    key = f"submissions/{timestamp.strftime('%Y/%m/%d')}/{submission.get('uuid')}.json"
-    # TODO: For now just append, in the future update like lambda for resubmission
-
-    info = submission.get("user", {})
-    eligibility = submission.get("eligibility", {})
-    row_data = [
-        submission.get("uuid"),
-        key,
-        timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        info.get("name", f'{submission["first_name"]} {submission["last_name"]}'),
-        info.get("email"),
-        info.get("phone"),
-        info.get("phonetype"),
-        submission.get("pin"),
-        submission.get("address"),
-        info.get("city"),
-        info.get("state"),
-        eligibility.get("residence"),
-        eligibility.get("owner"),
-        eligibility.get("hope"),
-        info.get("mailingaddress"),
-        info.get("altcontactname"),
-        info.get("heardabout"),
-        info.get("localinput"),
-        info.get("socialmedia"),
-        submission.get("validcharacteristics"),
-        submission.get("characteristicsinput"),
-        submission.get("valueestimate"),
-        len(submission.get("selectedComparables", [])),
-        submission.get("damage_level"),
-        submission.get("damage"),
-        len(submission.get("files", [])),
-    ]
-    worksheet.append_rows([row_data])
-
-    val_list = worksheet.col_values(1)
-    base_url = "https://docs.google.com/spreadsheets/d/"
-
-    # TODO: Pull SID dynamically
-    return (
-        f"{base_url}{os.getenv('GOOGLE_SHEET_SID')}/edit#gid=0&range=A{len(val_list)}"
-    )
 
 
 def submit_cook_sf(comp_submit, mail):
@@ -205,38 +141,10 @@ def submit_detroit_sf(comp_submit, mail):
     for i, j in get_pin("detroit", pin).to_dict(orient="records")[0].items():
         propinfo.append([i, j])
 
-    # update submission log
-    targ = get_pin("detroit", pin)
-
-    if comp_submit.get("validcharacteristics") == "No":
-        c_flag = "Yes. Homeowner Input: " + (
-            comp_submit.get("characteristicsinput") or "No"
-        )
-    else:
-        c_flag = "No"
-
-    sub_dict = {
-        "Client Name": owner_name,
-        "Address": comp_submit["address"],
-        "Taxpayer of Record": targ["taxpayer"].to_string(index=False),
-        "pin": pin,
-        "Phone Number": comp_submit["phone"],
-        "Email Address": comp_submit["email"],
-        "Phone Contact Time": comp_submit.get("phonetime", ""),
-        "PRE": targ["homestead_exemption"].to_string(index=False),
-        "Eligibility Flag": comp_submit["eligible"],
-        "Characteristics Flag": c_flag,
-        "SEV": str(pin_av),
-        "TV": targ["taxable_value"].to_string(index=False),
-        "CV": str(comps_avg),
-    }
-
     if not os.getenv("ATTACH_LETTERS"):
-        log_url = record_final_submission(comp_submit)
-        comp_submit["log_url"] = log_url
-
-        # send email
-        detroit_submission_email(mail, comp_submit)
+        detroit_submission_email(mail, comp_submit, None)
+        if not comp_submit.get("resumed"):
+            detroit_internal_submission_email(mail, comp_submit, None)
         return
 
     context = {
@@ -261,13 +169,11 @@ def submit_detroit_sf(comp_submit, mail):
     # TODO:
     output = {}
 
-    comp_submit["file_stream"] = render_doc_to_bytes(doc, context, comp_submit["files"])
+    letter_bytes = render_doc_to_bytes(doc, context, comp_submit["files"])
 
-    log_url = record_final_submission(sub_dict)
-    comp_submit["log_url"] = log_url
-
-    # send email
-    detroit_submission_email(mail, comp_submit)
+    if not comp_submit.get("resumed"):
+        detroit_internal_submission_email(mail, comp_submit, letter_bytes)
+    detroit_submission_email(mail, comp_submit, letter_bytes)
 
     return output
 

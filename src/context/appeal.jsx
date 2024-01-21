@@ -115,6 +115,7 @@ const initialAppeal = {
   propertyInfo: null,
   agreement: true, // TODO: Remove from multiple places
   agreement_name: null,
+  agreement_date: null, // only populated by resume
   estimate: {},
   step: 1,
   selected: false,

@@ -123,21 +123,12 @@ def handle_form():
 def handle_form2():
     # submit selected comps / finalize appeal / send to summary or complete page
     comps_data = request.json
-    download = False
     log_step(
         app.logger, {**comps_data, "region": get_region(request.json), "step": "submit"}
     )
 
     response_dict = process_comps_input(comps_data, mail)
-    if download:
-        return send_file(
-            response_dict["file_stream"],
-            as_attachment=True,
-            attachment_filename="%s-appeal.docx"
-            % comps_data["name"].lower().replace(" ", "-"),
-        )
     resp = jsonify({"request_status": time.time(), "response": response_dict})
-
     return resp
 
 
