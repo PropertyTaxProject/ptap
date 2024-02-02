@@ -110,7 +110,7 @@ const Agreement = () => {
       </Space>
 
       <Divider />
-      <p>{getPageLabel(appeal.region, "agreement")}</p>
+      <p>{getPageLabel("agreement", appeal)}</p>
     </>
   )
 }

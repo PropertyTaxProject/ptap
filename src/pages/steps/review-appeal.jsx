@@ -105,18 +105,19 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      {appeal.region === "chicago" && (
-        <>
-          <h2>Your Comparables</h2>
-          <Table
-            dataSource={appeal.selectedComparables.map(cleanParcel)}
-            columns={compCols}
-            pagination={false}
-            scroll={{ x: true }}
-          />
-          <Divider />
-        </>
-      )}
+      {appeal.region === "chicago" ||
+        (appeal.resumed && (
+          <>
+            <h2>Your Comparables</h2>
+            <Table
+              dataSource={appeal.selectedComparables.map(cleanParcel)}
+              columns={compCols}
+              pagination={false}
+              scroll={{ x: true }}
+            />
+            <Divider />
+          </>
+        ))}
       <h2>Your Property Condition</h2>
       <p>
         <strong>Damage level</strong>
@@ -158,7 +159,7 @@ const ReviewAppeal = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel(appeal.region, "review-appeal")}</p>
+      <p>{getPageLabel("review-appeal", appeal)}</p>
     </>
   )
 }

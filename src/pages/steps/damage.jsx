@@ -28,6 +28,16 @@ const Damage = () => {
   return (
     <>
       <h1>Damage</h1>
+      {appeal.resumed && (
+        <div>
+          <p>
+            <strong>Age</strong>: {appeal.target.age}
+          </p>
+          <p>
+            <strong>Effective Age</strong>: {appeal.target.effective_age}
+          </p>
+        </div>
+      )}
       <Form
         form={form}
         initialValues={appeal}
@@ -129,7 +139,7 @@ const Damage = () => {
           type="danger"
           onClick={() =>
             navigate(
-              appeal.region === "detroit"
+              appeal.region === "detroit" && !appeal.resumed
                 ? "../review-property"
                 : "../comparables"
             )
@@ -147,7 +157,7 @@ const Damage = () => {
         </Button>
       </Space>
       <Divider />
-      <p>{getPageLabel(appeal.region, "damage")}</p>
+      <p>{getPageLabel("damage", appeal)}</p>
     </>
   )
 }

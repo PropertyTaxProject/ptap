@@ -44,7 +44,11 @@ const ReviewProperty = () => {
       type: "select-comparables",
       pins: [],
     })
-    navigate(appeal.region === "detroit" ? "../damage" : "../comparables")
+    navigate(
+      appeal.region === "detroit" && !appeal.resumed
+        ? "../damage"
+        : "../comparables"
+    )
   }
 
   return (
@@ -124,7 +128,7 @@ const ReviewProperty = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel(appeal.region, "review-property")}</p>
+      <p>{getPageLabel("review-property", appeal)}</p>
     </>
   )
 }

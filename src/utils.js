@@ -4,7 +4,7 @@ const METERS_IN_MILE = 1609.344
 // TODO: Constant for now, may change
 // eslint-disable-next-line
 export function getMinComparables(region) {
-  return 3
+  return region === "detroit" ? 1 : 3
 }
 // TODO: Constant for now, may change
 // eslint-disable-next-line
@@ -12,7 +12,7 @@ export function getMaxComparables(region) {
   return 5
 }
 
-export function getPageLabel(region, pageName) {
+export function getPageLabel(pageName, { region, resumed }) {
   const pages =
     region === "detroit"
       ? [
@@ -20,7 +20,7 @@ export function getPageLabel(region, pageName) {
           "homeowner-info",
           "agreement",
           "review-property",
-          // "review-comparables",
+          ...(resumed ? ["review-comparables"] : []),
           "damage",
           "review-appeal",
         ]
@@ -81,18 +81,18 @@ export const DISPLAY_FIELDS = [
   //   title: "Neighborhood",
   //   field: "neighborhood",
   // },
-  // {
-  //   title: "Assessor Market Value",
-  //   field: "market_value_display",
-  // },
-  // {
-  //   title: "Sale Price",
-  //   field: "sale_price_display",
-  // },
-  // {
-  //   title: "Sale Date",
-  //   field: "sale_date",
-  // },
+  {
+    title: "Assessor Market Value",
+    field: "market_value_display",
+  },
+  {
+    title: "Sale Price",
+    field: "sale_price_display",
+  },
+  {
+    title: "Sale Date",
+    field: "sale_date",
+  },
 ]
 
 export const DISPLAY_FIELDS_COOK = [

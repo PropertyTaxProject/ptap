@@ -87,7 +87,7 @@ def comparables(input_data, sales_comps=False):
 
     if "sale_date" in cur_comps:
         cur_comps["sale_date"] = cur_comps["sale_date"].apply(
-            lambda v: v.strftime("%Y-%m-%d")
+            lambda v: v.strftime("%Y-%m-%d") if v else None
         )
     output["target_pin"] = new_targ.drop(["geom"], axis=1).to_dict(orient="records")
     if len(cur_comps.index) == 0:

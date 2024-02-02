@@ -150,7 +150,7 @@ def render_doc_to_bytes(doc, context, files):
         file_stream = io.BytesIO()
         doc.save(file_stream)  # save to stream
         file_stream.seek(0)  # reset pointer to head
-    return file_stream
+    return file_stream.getvalue()
 
 
 def log_step(logger, data):

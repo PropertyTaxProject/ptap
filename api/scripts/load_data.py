@@ -87,9 +87,9 @@ if __name__ == "__main__":
             if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
             sale_price = float(row["Sale Price"]) if row["Sale Price"] != "" else None
-            total_sq_ft = float(row["TOTALSQFT"])
+            total_sq_ft = float(row["total_squa"]) if row["total_squa"] != "" else None
             price_per_sq_ft = None
-            if sale_price and total_sq_ft > 0:
+            if sale_price and total_sq_ft and total_sq_ft > 0:
                 price_per_sq_ft = sale_price / total_sq_ft
             year_built = (
                 int(row["resb_yearbuilt"]) if row["resb_yearbuilt"] != "" else None
@@ -121,7 +121,9 @@ if __name__ == "__main__":
                     else None,
                     total_sq_ft=total_sq_ft,
                     total_acreage=float(row["TOTALACREAGE"]) or None,
-                    total_floor_area=total_sq_ft,  # TODO: Same as square footage?
+                    total_floor_area=row["total_floor_area"]
+                    if row["total_floor_area"] not in ["", "NA"]
+                    else None,
                     price_per_sq_ft=price_per_sq_ft,
                     stories=row["heightcat"].replace(".0", "")
                     if row["heightcat"] not in ["", "-1"]

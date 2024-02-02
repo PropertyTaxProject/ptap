@@ -175,7 +175,7 @@ const AppealLookup = () => {
         Next Page
       </Button>
       <Divider />
-      <p>{getPageLabel(appeal.region, "appeal-lookup")}</p>
+      <p>{getPageLabel("appeal-lookup", appeal)}</p>
     </>
   )
 }

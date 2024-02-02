@@ -141,7 +141,7 @@ def cook_submission_email(mail, data):
     msg.attach(
         data["output_name"][13:],
         WORD_MIMETYPE,
-        data["file_stream"].getvalue(),
+        data["file_stream"],
     )
     mail.send(msg)
 

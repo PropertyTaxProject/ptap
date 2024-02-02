@@ -92,7 +92,7 @@ def submit_detroit_sf(comp_submit, mail):
         "sale_date": "Sale Date",
     }
     t_df = pd.DataFrame([comp_submit["target_pin"]])
-    comps_df = pd.DataFrame(comp_submit["comparables"])
+    comps_df = pd.DataFrame(comp_submit["selectedComparables"])
     pin_av = t_df.assessed_value[0]
     pin = t_df.pin[0]
     if "sale_price" not in comps_df:

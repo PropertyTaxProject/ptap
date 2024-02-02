@@ -488,7 +488,7 @@ const HomeownerInfo = () => {
         </Form.Item>
       </Form>
       <Divider />
-      <p>{getPageLabel(appeal.region, "homeowner-info")}</p>
+      <p>{getPageLabel("homeowner-info", appeal)}</p>
     </>
   )
 }
