@@ -74,6 +74,7 @@ class DetroitParcel(db.Model):
     sale_date = db.Column(db.Date)
     sale_year = db.Column(db.Integer)
     age = db.Column(db.Integer)
+    effective_age = db.Column(db.Integer)
     year_built = db.Column(db.Integer)
     total_sq_ft = db.Column(db.Float)
     price_per_sq_ft = db.Column(db.Float)

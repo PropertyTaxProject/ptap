@@ -28,4 +28,4 @@ build/*
 cypress/downloads
 cypress/screenshots
 cypress/videos
-api/database/cook.csv
+api/database/*.csv

@@ -79,57 +79,63 @@ if __name__ == "__main__":
             db.session.bulk_save_objects(cook_parcels)
             db.session.commit()
 
-    with open(os.path.join(DATA_DIR, "detroit_sf_2022sales_2023avtent.csv"), "r") as f:
+    with open(os.path.join(DATA_DIR, "detroit.csv"), "r") as f:
         detroit_parcels = []
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
             point = None
-            if row["Longitude"] != "NA":
+            if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
-            sale_price = (
-                float(row["Sale Price"])
-                if row["Sale Price"] not in ["", "NA"]
-                else None
-            )
-            total_sq_ft = float(row["total_squa"])
+            sale_price = float(row["SALEPRICE"]) if row["SALEPRICE"] != "" else None
+            total_sq_ft = float(row["TOTALSQFT"])
             price_per_sq_ft = None
-            if sale_price:
+            if sale_price and total_sq_ft > 0:
                 price_per_sq_ft = sale_price / total_sq_ft
-            year_built = int(row["year_built"]) if row["year_built"] != "NA" else None
+            year_built = (
+                int(row["resb_yearbuilt"]) if row["resb_yearbuilt"] != "" else None
+            )
             age = None
             if year_built:
                 age = current_year - year_built
+            sale_date = None
+            sale_year = None
+            if row["SALEDATE"]:
+                sale_date = datetime.strptime(row["SALEDATE"][:10], "%Y/%m/%d").date()
+                sale_year = sale_date.year
             detroit_parcels.append(
                 DetroitParcel(
                     id=idx,
                     pin=row["parcel_num"],
                     street_number=row["st_num"],
                     street_name=row["st_name"],
-                    neighborhood=row["Neighborhood"],
-                    assessed_value=float(row["assessed_v"]),
-                    taxable_value=float(row["taxable_va"]),
+                    neighborhood=row["ECF"],
+                    assessed_value=float(row["ASSESSEDVALUE"]),
+                    taxable_value=float(row["TAXABLEVALUE"]),
                     sale_price=sale_price,
-                    sale_date=datetime.strptime(
-                        row["Sale Date"][:10], "%Y-%m-%d"
-                    ).date()
-                    if row["Sale Date"] != "NA"
-                    else None,
-                    sale_year=row["SALE_YEAR"] if row["SALE_YEAR"] != "NA" else None,
+                    sale_date=sale_date,
+                    sale_year=sale_year,
                     year_built=year_built,
                     age=age,
-                    total_sq_ft=total_sq_ft,
-                    total_acreage=row["total_acre"] or None,
-                    total_floor_area=row["total_floor_area"]
-                    if row["total_floor_area"] != "NA"
+                    effective_age=int(row["resb_effage"])
+                    if row["resb_effage"]
                     else None,
+                    total_sq_ft=total_sq_ft,
+                    total_acreage=float(row["TOTALACREAGE"]) or None,
+                    total_floor_area=total_sq_ft,  # TODO: Same as square footage?
                     price_per_sq_ft=price_per_sq_ft,
-                    stories=row["heightcat"] if row["heightcat"] != "-1" else None,
-                    baths=row["bathcat"] if row["bathcat"] != "-1" else None,
-                    exterior=row["extcat"] if row["extcat"] != "-1" else None,
+                    stories=row["heightcat"].replace(".0", "")
+                    if row["heightcat"] not in ["", "-1"]
+                    else None,
+                    baths=row["bathcat"].replace(".0", "")
+                    if row["bathcat"] not in ["", "-1"]
+                    else None,
+                    exterior=row["extcat"].replace(".0", "")
+                    if (row["extcat"] not in ["-1", ""])
+                    else None,
                     basement=row["has_basement"] == "1",
                     garage=row["has_garage"] == "1",
-                    taxpayer=row["taxpayer_1"],
-                    homestead_exemption=row["homestead_"],
+                    taxpayer=row["TAXPAYER1"],
+                    homestead_exemption=row["TAXPAYER1"],
                     geom=point,
                 )
             )
