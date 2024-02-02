@@ -86,7 +86,7 @@ if __name__ == "__main__":
             point = None
             if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
-            sale_price = float(row["SALEPRICE"]) if row["SALEPRICE"] != "" else None
+            sale_price = float(row["Sale Price"]) if row["Sale Price"] != "" else None
             total_sq_ft = float(row["TOTALSQFT"])
             price_per_sq_ft = None
             if sale_price and total_sq_ft > 0:
@@ -99,8 +99,8 @@ if __name__ == "__main__":
                 age = current_year - year_built
             sale_date = None
             sale_year = None
-            if row["SALEDATE"]:
-                sale_date = datetime.strptime(row["SALEDATE"][:10], "%Y/%m/%d").date()
+            if row["Sale Date"]:
+                sale_date = datetime.strptime(row["Sale Date"][:10], "%Y-%m-%d").date()
                 sale_year = sale_date.year
             detroit_parcels.append(
                 DetroitParcel(
