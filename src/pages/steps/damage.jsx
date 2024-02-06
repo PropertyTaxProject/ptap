@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 import { getPageLabel } from "../../utils"
-import { Button, Divider, Form, Radio, Space, Input } from "antd"
+import { Button, Divider, Form, Radio, Space, Input, Checkbox } from "antd"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -130,6 +130,22 @@ const Damage = () => {
               onChange={(files) => dispatch({ type: "set-files", files })}
             />
           </>
+        )}
+        {appeal.resumed && appeal.region === "detroit" && (
+          <p>
+            <Checkbox
+              name="economic_obsolescence"
+              checked={appeal.economic_obsolescence}
+              onChange={(value) =>
+                dispatch({
+                  type: "set-economic-obsolescence",
+                  economic_obsolescence: value,
+                })
+              }
+            >
+              Include Economic Obsolescence argument
+            </Checkbox>
+          </p>
         )}
       </Form>
       <Divider />

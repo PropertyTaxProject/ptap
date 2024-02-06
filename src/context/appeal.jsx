@@ -94,6 +94,9 @@ function appealReducer(appeal, action) {
     case "set-files": {
       return { ...appeal, files: action.files }
     }
+    case "set-economic-obsolescence": {
+      return { ...appeal, economic_obsolescence: action.economic_obsolescence }
+    }
     case "complete": {
       return { ...initialAppeal }
     }
@@ -128,5 +131,6 @@ const initialAppeal = {
   damage: null,
   damage_level: null,
   files: [],
+  economic_obsolescence: false,
   resumed: false,
 }

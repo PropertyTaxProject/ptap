@@ -6,7 +6,7 @@ import pytz
 from docxtpl import DocxTemplate
 
 from .constants import DAMAGE_TO_CONDITION
-from .dataqueries import avg_ecf, get_pin
+from .dataqueries import _get_pin, avg_ecf
 from .email import (
     cook_submission_email,
     detroit_internal_submission_email,
@@ -138,7 +138,8 @@ def submit_detroit_sf(comp_submit, mail):
 
     allinfo.append(["Average Price Per Sqft in ECF", round(avg_ecf_price, 3)])
 
-    for i, j in get_pin("detroit", pin).to_dict(orient="records")[0].items():
+    parcel = _get_pin("detroit", pin)
+    for i, j in pd.DataFrame([parcel.as_dict()]).to_dict(orient="records")[0].items():
         propinfo.append([i, j])
 
     if not os.getenv("ATTACH_LETTERS"):
@@ -163,7 +164,13 @@ def submit_detroit_sf(comp_submit, mail):
         "allinfo": allinfo,
         "propinfo": propinfo,
         "year": 2024,
-        # **detroit_depreciation(None, None, None, None),
+        "economic_obsolescence": comp_submit.get("economic_obsolescence"),
+        **detroit_depreciation(
+            parcel.age,
+            parcel.effective_age,
+            comp_submit["damage"],
+            comp_submit["damage_level"],
+        ),
     }
 
     # TODO:
@@ -191,7 +198,7 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
         "age": actual_age,
         "actual_age": min(actual_age, 55),
         "effective_age": effective_age,
-        "new_effective_age": 100 - actual_age,
+        "new_effective_age": 100 - condition[1],
         "percent_good": percent_good,
         "schedule_incorrect": schedule_incorrect,
         "damage": damage,
