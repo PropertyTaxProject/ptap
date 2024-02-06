@@ -77,13 +77,17 @@ export const DISPLAY_FIELDS = [
     title: "Distance",
     field: "distance_display",
   },
-  // {
-  //   title: "Neighborhood",
-  //   field: "neighborhood",
-  // },
   {
-    title: "Assessor Market Value",
-    field: "market_value_display",
+    title: "Neighborhood",
+    field: "neighborhood",
+  },
+  {
+    title: "Total Sq Ft.",
+    field: "total_sq_ft",
+  },
+  {
+    title: "Assessed Value Tentative",
+    field: "assessed_value_display",
   },
   {
     title: "Sale Price",

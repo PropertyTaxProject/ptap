@@ -133,6 +133,7 @@ const Damage = () => {
         )}
         {appeal.resumed && appeal.region === "detroit" && (
           <p>
+            <br />
             <Checkbox
               name="economic_obsolescence"
               checked={appeal.economic_obsolescence}
