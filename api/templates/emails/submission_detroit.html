@@ -2,11 +2,18 @@
 <p>
   The Property Tax Appeal Project has received a submission for {{ address }}.
   {% if not has_images %} Our records show that you did not upload any photos
-  with your submission. We strongly encourage you to go back and upload photos
-  showing damage to the inside and outside of your home because appeals that
-  include photos are more effective. No neighborhood photos are necessary. {%
-  endif %}
+  with your submission.
+  <strong
+    >We strongly encourage you to reply to this email with photos showing damage
+    to the inside and outside of your home because appeals that include photos
+    are more effective.</strong
+  >
+  No neighborhood photos are necessary.
 </p>
+<h3>Please Send Photos By Replying To This Email</h3>
+{% else %}
+</p>
+{% endif %}
 <p>What to expect next</p>
 <p>
   Our team will contact you before our March 1st deadline. {% if has_images %}
@@ -21,7 +28,7 @@
 <p>Steps in Appeal Process:</p>
 <ul>
   <li>
-    <b>Step 1</b>: Complete this online application by <b>March 1, 2024</b>.
+    <b>Step 1</b>: Complete our online application by <b>March 1, 2024</b>.
   </li>
   <li>
     <b>Step 2</b>: We will review your application, determine if you are
