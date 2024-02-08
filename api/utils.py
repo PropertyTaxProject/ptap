@@ -130,7 +130,7 @@ def process_doc_images(doc, files, temp_dir):
         res = requests.get(file["url"])
         if res.status_code != 200:
             continue
-        img = Image.open(io.BytesIO(res.content))
+        img = Image.open(io.BytesIO(res.content)).convert("RGB")
         temp_file = NamedTemporaryFile(dir=temp_dir, suffix=".jpg", delete=False)
         img.save(temp_file.name, format="JPEG")
         # Only constrain the larger dimension
