@@ -120,6 +120,11 @@ resource "aws_iam_policy" "update_access" {
           "arn:aws:s3:::${local.name}*/*"
         ]
       },
+      {
+        Action = ["iam:UpdateOpenIDConnectProviderThumbprint"],
+        Effect = "Allow",
+        Resource = ["*"]
+      }
     ]
   })
 
