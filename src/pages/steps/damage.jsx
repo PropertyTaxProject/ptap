@@ -137,12 +137,12 @@ const Damage = () => {
             <Checkbox
               name="economic_obsolescence"
               checked={appeal.economic_obsolescence}
-              onChange={(value) =>
+              onChange={(e) => {
                 dispatch({
                   type: "set-economic-obsolescence",
-                  economic_obsolescence: value,
+                  economic_obsolescence: e.target.checked,
                 })
-              }
+              }}
             >
               Include Economic Obsolescence argument
             </Checkbox>

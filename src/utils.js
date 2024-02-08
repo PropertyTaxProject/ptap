@@ -4,7 +4,7 @@ const METERS_IN_MILE = 1609.344
 // TODO: Constant for now, may change
 // eslint-disable-next-line
 export function getMinComparables(region) {
-  return region === "detroit" ? 1 : 3
+  return region === "detroit" ? 0 : 3
 }
 // TODO: Constant for now, may change
 // eslint-disable-next-line

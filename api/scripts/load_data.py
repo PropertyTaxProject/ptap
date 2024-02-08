@@ -109,8 +109,8 @@ if __name__ == "__main__":
                     street_number=row["st_num"],
                     street_name=row["st_name"],
                     neighborhood=row["ECF"],
-                    assessed_value=float(row["ASSESSEDVALUE"]),
-                    taxable_value=float(row["TAXABLEVALUE"]),
+                    assessed_value=float(row["ASSESSEDVALUETENTATIVE"]),
+                    taxable_value=float(row["TAXABLEVALUETENTATIVE"]),
                     sale_price=sale_price,
                     sale_date=sale_date,
                     sale_year=sale_year,
@@ -134,8 +134,8 @@ if __name__ == "__main__":
                     exterior=row["extcat"].replace(".0", "")
                     if (row["extcat"] not in ["-1", ""])
                     else None,
-                    basement=row["has_basement"] == "1",
-                    garage=row["has_garage"] == "1",
+                    basement="1" in row.get("has_basement", ""),
+                    garage="1" in row.get("has_garage", ""),
                     taxpayer=row["TAXPAYER1"],
                     homestead_exemption=row["TAXPAYER1"],
                     geom=point,
