@@ -6,7 +6,7 @@ import pytz
 from docxtpl import DocxTemplate
 
 from .constants import DAMAGE_TO_CONDITION
-from .dataqueries import _get_pin, avg_ecf
+from .dataqueries import _get_pin
 from .email import (
     cook_submission_email,
     detroit_internal_submission_email,
@@ -75,22 +75,6 @@ def submit_detroit_sf(comp_submit, mail):
     owner_name = comp_submit.get(
         "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
     )
-    rename_dict = {
-        "pin": "Parcel ID",
-        "address": "Address",
-        "assessed_value": "Assessed Value",
-        "total_acreage": "Acres",
-        "total_floor_area": "Floor Area",
-        "total_sq_ft": "Square Footage (Abv. Ground)",
-        "year_built": "Year Built",
-        "exterior": "Exterior Material",
-        "distance": "Dist.",
-        "stories": "Number of Stories",
-        "sale_price": "Sale Price",
-        "neighborhood": "Neighborhood",
-        "baths": "Baths",
-        "sale_date": "Sale Date",
-    }
     t_df = pd.DataFrame([comp_submit["target_pin"]])
     comps_df = pd.DataFrame(comp_submit["selectedComparables"])
     pin_av = t_df.assessed_value[0]
@@ -98,26 +82,6 @@ def submit_detroit_sf(comp_submit, mail):
     if "sale_price" not in comps_df:
         comps_df["sale_price"] = 0
     comps_avg = comps_df["sale_price"].mean()
-
-    # rename cols
-    t_df = t_df.rename(columns=rename_dict)
-    comps_df = comps_df.rename(columns=rename_dict)
-
-    # tbl cols
-    target_cols = [
-        "Baths",
-        "Square Footage (Abv. Ground)",
-        "Year Built",
-        "Exterior Material",
-        "Number of Stories",
-        "Neighborhood",
-    ]
-
-    comp_cols = ["Address", "Dist.", "Sale Price", "Sale Date"] + target_cols
-    comps_df = comps_df.reindex(columns=comp_cols)
-
-    # avg ecf price
-    avg_ecf_price = avg_ecf(t_df["Neighborhood"].values[0])
 
     # generate docx
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -129,24 +93,16 @@ def submit_detroit_sf(comp_submit, mail):
         os.path.join(base_dir, "templates", "docs", "detroit_template_2024.docx")
     )
 
-    allinfo = []
-    propinfo = []
-    skip_ls = ["target_pin", "comparables", "output_name"]
-    for key, val in comp_submit.items():
-        if key not in skip_ls:
-            allinfo.append([key, val])
-
-    allinfo.append(["Average Price Per Sqft in ECF", round(avg_ecf_price, 3)])
-
     parcel = _get_pin("detroit", pin)
-    for i, j in pd.DataFrame([parcel.as_dict()]).to_dict(orient="records")[0].items():
-        propinfo.append([i, j])
 
     if not os.getenv("ATTACH_LETTERS"):
         detroit_submission_email(mail, comp_submit, None)
         if not comp_submit.get("resumed"):
             detroit_internal_submission_email(mail, comp_submit, None)
         return
+
+    target = t_df.to_dict(orient="records")[0]
+    comparables = comps_df.to_dict(orient="records")
 
     context = {
         "pin": pin,
@@ -157,12 +113,8 @@ def submit_detroit_sf(comp_submit, mail):
         "current_faircash": "${:,.0f}".format(pin_av * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
         "contention_faircash": "${:,.0f}".format(comps_avg),
-        "target_labels": ["Beds"] + target_cols,
-        "target_contents": [["XXX"] + t_df[target_cols].to_numpy().tolist()[0]],
-        "comp_labels": comp_cols,
-        "comp_contents": comps_df[comp_cols].to_numpy().tolist(),
-        "allinfo": allinfo,
-        "propinfo": propinfo,
+        "target": target,
+        "comparables": comparables,
         "year": 2024,
         "economic_obsolescence": comp_submit.get("economic_obsolescence"),
         **detroit_depreciation(
@@ -206,5 +158,5 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
         "damage_midpoint": condition[1],
         "damage_incorrect": damage_incorrect,
         "damage_correct": damage_correct,
-        "show_depreciation": not schedule_incorrect and damage_correct,
+        "show_depreciation": not (schedule_incorrect and damage_correct),
     }
