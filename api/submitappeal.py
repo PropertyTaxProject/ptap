@@ -109,11 +109,11 @@ def submit_detroit_sf(comp_submit, mail):
         "owner": owner_name,
         "address": comp_submit["address"],
         "formal_owner": owner_name,
-        "current_sev": "{:,.0f}".format(pin_av),
         "current_faircash": "${:,.0f}".format(pin_av * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
         "contention_faircash": "${:,.0f}".format(comps_avg),
         "target": target,
+        "has_comparables": len(comparables) > 0,
         "comparables": comparables,
         "year": 2024,
         "economic_obsolescence": comp_submit.get("economic_obsolescence"),
@@ -125,16 +125,13 @@ def submit_detroit_sf(comp_submit, mail):
         ),
     }
 
-    # TODO:
-    output = {}
-
     letter_bytes = render_doc_to_bytes(doc, context, comp_submit["files"])
 
     if not comp_submit.get("resumed"):
         detroit_internal_submission_email(mail, comp_submit, letter_bytes)
     detroit_submission_email(mail, comp_submit, letter_bytes)
 
-    return output
+    return {}
 
 
 def detroit_depreciation(actual_age, effective_age, damage, damage_level):
@@ -158,5 +155,5 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
         "damage_midpoint": condition[1],
         "damage_incorrect": damage_incorrect,
         "damage_correct": damage_correct,
-        "show_depreciation": not (schedule_incorrect and damage_correct),
+        "show_depreciation": damage_incorrect,
     }

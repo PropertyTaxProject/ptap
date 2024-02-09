@@ -121,8 +121,8 @@ resource "aws_iam_policy" "update_access" {
         ]
       },
       {
-        Action = ["iam:UpdateOpenIDConnectProviderThumbprint"],
-        Effect = "Allow",
+        Action   = ["iam:UpdateOpenIDConnectProviderThumbprint"],
+        Effect   = "Allow",
         Resource = ["*"]
       }
     ]
@@ -421,8 +421,7 @@ module "lambda" {
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
-    # CHICAGO_MAIL           = data.aws_ssm_parameter.chicago_mail.value
-    # ATTACH_LETTERS         = "true"
+    ATTACH_LETTERS         = "true"
 
     GOOGLE_SHEET_SUBMISSION_NAME = local.sheet_name
   }
