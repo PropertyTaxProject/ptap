@@ -75,10 +75,8 @@ def submit_detroit_sf(comp_submit, mail):
     owner_name = comp_submit.get(
         "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
     )
-    t_df = pd.DataFrame([comp_submit["target_pin"]])
     comps_df = pd.DataFrame(comp_submit["selectedComparables"])
-    pin_av = t_df.assessed_value[0]
-    pin = t_df.pin[0]
+    pin = comp_submit["target_pin"]["pin"]
     if "sale_price" not in comps_df:
         comps_df["sale_price"] = 0
     comps_avg = comps_df["sale_price"].mean()
@@ -93,7 +91,7 @@ def submit_detroit_sf(comp_submit, mail):
         os.path.join(base_dir, "templates", "docs", "detroit_template_2024.docx")
     )
 
-    parcel = _get_pin("detroit", pin)
+    target = _get_pin("detroit", pin)
 
     if not os.getenv("ATTACH_LETTERS"):
         detroit_submission_email(mail, comp_submit, None)
@@ -101,7 +99,6 @@ def submit_detroit_sf(comp_submit, mail):
             detroit_internal_submission_email(mail, comp_submit, None)
         return
 
-    target = t_df.to_dict(orient="records")[0]
     comparables = comps_df.to_dict(orient="records")
 
     context = {
@@ -109,7 +106,7 @@ def submit_detroit_sf(comp_submit, mail):
         "owner": owner_name,
         "address": comp_submit["address"],
         "formal_owner": owner_name,
-        "current_faircash": "${:,.0f}".format(pin_av * 2),
+        "current_faircash": "${:,.0f}".format(target.assessed_value * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
         "contention_faircash": "${:,.0f}".format(comps_avg),
         "target": target,
@@ -118,8 +115,8 @@ def submit_detroit_sf(comp_submit, mail):
         "year": 2024,
         "economic_obsolescence": comp_submit.get("economic_obsolescence"),
         **detroit_depreciation(
-            parcel.age,
-            parcel.effective_age,
+            target.age,
+            target.effective_age,
             comp_submit["damage"],
             comp_submit["damage_level"],
         ),
