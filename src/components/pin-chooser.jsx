@@ -7,8 +7,11 @@ const PinChooser = ({
   propertyOptions,
   onChange,
   max,
+  onChangePrimary,
+  primary = null,
   pins = [],
   isSelectLabels = false,
+  includePrimary = false,
 }) => {
   const [selectedPins, setSelectedPins] = useState(pins)
 
@@ -34,6 +37,24 @@ const PinChooser = ({
       {headers.map(({ title, field }) => (
         <Table.Column title={title} dataIndex={field} key={field} />
       ))}
+      {includePrimary && (
+        <Table.Column
+          title="Primary"
+          key="primary"
+          render={(record) => {
+            const isSelected = primary === record.pin
+            return (
+              <Button
+                danger={isSelected}
+                disabled={primary && !isSelected}
+                onClick={() => onChangePrimary(isSelected ? null : record.pin)}
+              >
+                {isSelected ? "Remove primary" : "Set primary"}
+              </Button>
+            )
+          }}
+        />
+      )}
       <Table.Column
         title="Action"
         key="action"
@@ -67,6 +88,9 @@ PinChooser.propTypes = {
   max: PropTypes.number,
   pins: PropTypes.arrayOf(PropTypes.string),
   isSelectLabels: PropTypes.bool,
+  onChangePrimary: PropTypes.func,
+  primary: PropTypes.string,
+  includePrimary: PropTypes.bool,
 }
 
 export default PinChooser

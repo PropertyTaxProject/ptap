@@ -92,6 +92,7 @@ def submit_detroit_sf(comp_submit, mail):
     )
 
     target = _get_pin("detroit", pin)
+    primary = _get_pin("detroit", comp_submit.get("selected_primary"))
 
     if not os.getenv("ATTACH_LETTERS"):
         detroit_submission_email(mail, comp_submit, None)
@@ -108,8 +109,12 @@ def submit_detroit_sf(comp_submit, mail):
         "formal_owner": owner_name,
         "current_faircash": "${:,.0f}".format(target.assessed_value * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
-        "contention_faircash": "${:,.0f}".format(comps_avg),
+        "contention_faircash": "${:,.0f}".format(primary.sale_price / 2),
+        "contention_faircash2": "${:,.0f}".format(comps_avg),
         "target": target,
+        "primary": primary,
+        "primary_sale_price": "${:,.0f}".format(primary.sale_price),
+        "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
         "has_comparables": len(comparables) > 0,
         "comparables": comparables,
         "year": 2024,
@@ -140,12 +145,14 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
     damage_incorrect = condition[2] < percent_good
     damage_correct = condition[0] > percent_good
 
+    assessor_damage_level = get_damage_level(percent_good).title().replace("_", " ")
     return {
         "age": actual_age,
         "actual_age": min(actual_age, 55),
         "effective_age": effective_age,
         "new_effective_age": 100 - condition[1],
         "percent_good": percent_good,
+        "assessor_damage_level": assessor_damage_level,
         "schedule_incorrect": schedule_incorrect,
         "damage": damage,
         "damage_level": damage_level.title().replace("_", " "),
@@ -154,3 +161,10 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
         "damage_correct": damage_correct,
         "show_depreciation": damage_incorrect,
     }
+
+
+def get_damage_level(percent_good):
+    for level, value_range in DAMAGE_TO_CONDITION.items():
+        if percent_good >= value_range[0] and percent_good <= value_range[2]:
+            return level
+    return ""

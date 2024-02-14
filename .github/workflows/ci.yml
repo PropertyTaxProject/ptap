@@ -37,6 +37,8 @@ jobs:
 
       - run: poetry run ruff check .
 
+      - run: poetry run pytest
+
   js-checks:
     runs-on: ubuntu-latest
 

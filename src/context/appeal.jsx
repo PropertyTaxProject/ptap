@@ -80,8 +80,20 @@ function appealReducer(appeal, action) {
     case "select-comparables": {
       return {
         ...appeal,
-        selectedComparables: appeal.comparables.filter(({ pin }) =>
-          action.pins.includes(pin)
+        selectedComparables: appeal.comparables.filter(
+          ({ pin }) =>
+            action.pins.includes(pin) || appeal.selected_primary === pin
+        ),
+      }
+    }
+    case "select-primary-comparable": {
+      const selectedPins = appeal.selectedComparables.map(({ pin }) => pin)
+      return {
+        ...appeal,
+        selected_primary: action.pin,
+        selectedComparables: appeal.comparables.filter(
+          ({ pin }) =>
+            selectedPins.includes(pin) || appeal.selected_primary === pin
         ),
       }
     }
@@ -124,6 +136,7 @@ const initialAppeal = {
   selected: false,
   headers: [],
   comparables: [],
+  selected_primary: null,
   selectedComparables: [],
   propertyOptions: null,
   user: null,
