@@ -14,6 +14,8 @@ from google.oauth2 import service_account
 from PIL import Image
 from pillow_heif import register_heif_opener
 
+from .constants import DETROIT_EXTERIOR_MAP, METERS_IN_MILE
+
 
 def record_final_submission(submission):
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
@@ -177,10 +179,9 @@ def update_s3_submission(data):
 
 
 def clean_cook_parcel(parcel):
-    meters_in_mile = 1609.344
     exterior_map = {1: "Wood", 2: "Masonry", 3: "Wood/Masonry", 4: "Stucco"}
     if "distance" in parcel:
-        parcel["distance"] = "{:0.2f}mi".format(parcel["distance"] / meters_in_mile)
+        parcel["distance"] = "{:0.2f}mi".format(parcel["distance"] / METERS_IN_MILE)
     return {
         **parcel,
         "assessed_value": "{:,.0f}".format(parcel["assessed_value"]),
@@ -188,4 +189,13 @@ def clean_cook_parcel(parcel):
         "basement": "Yes" if parcel["basement"] else "No",
         "exterior": exterior_map.get(parcel["exterior"]),
         "garage": "Yes" if parcel["garage"] else "No",
+    }
+
+
+def clean_detroit_parcel(parcel):
+    if "distance" in parcel:
+        parcel["distance"] = "{:0.2f}mi".format(parcel["distance"] / METERS_IN_MILE)
+    return {
+        **parcel,
+        "exterior_display": DETROIT_EXTERIOR_MAP.get(parcel["exterior"], ""),
     }

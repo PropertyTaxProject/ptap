@@ -12,7 +12,7 @@ from .email import (
     detroit_internal_submission_email,
     detroit_submission_email,
 )
-from .utils import clean_cook_parcel, render_doc_to_bytes
+from .utils import clean_cook_parcel, clean_detroit_parcel, render_doc_to_bytes
 
 gsheet_submission = None
 
@@ -109,14 +109,11 @@ def submit_detroit_sf(comp_submit, mail):
         "formal_owner": owner_name,
         "current_faircash": "${:,.0f}".format(target.assessed_value * 2),
         "contention_sev": "{:,.0f}".format(comps_avg / 2),
-        "contention_faircash": "${:,.0f}".format(primary.sale_price / 2),
         "contention_faircash2": "${:,.0f}".format(comps_avg),
         "target": target,
         "primary": primary,
-        "primary_sale_price": "${:,.0f}".format(primary.sale_price),
-        "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
         "has_comparables": len(comparables) > 0,
-        "comparables": comparables,
+        "comparables": [clean_detroit_parcel(p) for p in comparables],
         "year": 2024,
         "economic_obsolescence": comp_submit.get("economic_obsolescence"),
         **detroit_depreciation(
@@ -125,6 +122,7 @@ def submit_detroit_sf(comp_submit, mail):
             comp_submit["damage"],
             comp_submit["damage_level"],
         ),
+        **primary_details(primary),
     }
 
     letter_bytes = render_doc_to_bytes(doc, context, comp_submit["files"])
@@ -146,9 +144,11 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
     damage_correct = condition[0] > percent_good
 
     assessor_damage_level = get_damage_level(percent_good).title().replace("_", " ")
+    capped_age = min(actual_age, 55)
     return {
         "age": actual_age,
-        "actual_age": min(actual_age, 55),
+        "capped_age": capped_age,
+        "capped_percent_good": 100 - capped_age,
         "effective_age": effective_age,
         "new_effective_age": 100 - condition[1],
         "percent_good": percent_good,
@@ -160,6 +160,16 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
         "damage_incorrect": damage_incorrect,
         "damage_correct": damage_correct,
         "show_depreciation": damage_incorrect,
+    }
+
+
+def primary_details(primary):
+    if not primary:
+        return {}
+    return {
+        "contention_faircash": "${:,.0f}".format(primary.sale_price / 2),
+        "primary_sale_price": "${:,.0f}".format(primary.sale_price),
+        "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
     }
 
 

@@ -3,6 +3,7 @@ from datetime import datetime
 from geoalchemy2 import Geometry, WKBElement
 from geoalchemy2.shape import to_shape
 
+from .constants import DETROIT_EXTERIOR_MAP
 from .db import db
 
 
@@ -101,3 +102,7 @@ class DetroitParcel(db.Model):
             "exterior",
         ),
     )
+
+    @property
+    def exterior_display(self):
+        return DETROIT_EXTERIOR_MAP.get(self.exterior, "")

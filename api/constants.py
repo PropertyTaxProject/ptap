@@ -6,6 +6,7 @@ class Region(StrEnum):
     DETROIT = "detroit"
 
 
+METERS_IN_MILE = 1609.344
 WORD_MIMETYPE = (
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 )
@@ -20,3 +21,5 @@ DAMAGE_TO_CONDITION = {
     "very_poor": [20, 25, 29],
     "unsound": [0, 10, 19],
 }
+
+DETROIT_EXTERIOR_MAP = {1: "Siding", 2: "Brick/other", 3: "Brick", 4: "Other"}
