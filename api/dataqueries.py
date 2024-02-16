@@ -1,4 +1,5 @@
 import pandas as pd
+from geoalchemy2.functions import ST_DistanceSphere
 from sqlalchemy.sql import func
 
 from .db import db
@@ -22,6 +23,20 @@ def _get_pin(region, pin):
     elif region == "detroit":
         model = DetroitParcel
     return model.query.filter(model.pin == pin).first()
+
+
+def _get_pin_with_distance(region, pin, parcel):
+    if region == "cook":
+        model = CookParcel
+    elif region == "detroit":
+        model = DetroitParcel
+    return (
+        db.session.query(
+            model, ST_DistanceSphere(model.geom, parcel.geom).label("distance")
+        )
+        .filter(model.pin == pin)
+        .first()
+    )
 
 
 def get_pin(region, pin):

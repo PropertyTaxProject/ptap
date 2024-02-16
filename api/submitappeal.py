@@ -5,8 +5,8 @@ import pandas as pd
 import pytz
 from docxtpl import DocxTemplate
 
-from .constants import DAMAGE_TO_CONDITION
-from .dataqueries import _get_pin
+from .constants import DAMAGE_TO_CONDITION, METERS_IN_MILE
+from .dataqueries import _get_pin, _get_pin_with_distance
 from .email import (
     cook_submission_email,
     detroit_internal_submission_email,
@@ -92,7 +92,9 @@ def submit_detroit_sf(comp_submit, mail):
     )
 
     target = _get_pin("detroit", pin)
-    primary = _get_pin("detroit", comp_submit.get("selected_primary"))
+    primary, primary_distance = _get_pin_with_distance(
+        "detroit", comp_submit.get("selected_primary"), target
+    )
 
     if not os.getenv("ATTACH_LETTERS"):
         detroit_submission_email(mail, comp_submit, None)
@@ -122,7 +124,7 @@ def submit_detroit_sf(comp_submit, mail):
             comp_submit["damage"],
             comp_submit["damage_level"],
         ),
-        **primary_details(primary),
+        **primary_details(primary, primary_distance),
     }
 
     letter_bytes = render_doc_to_bytes(doc, context, comp_submit["files"])
@@ -163,10 +165,13 @@ def detroit_depreciation(actual_age, effective_age, damage, damage_level):
     }
 
 
-def primary_details(primary):
+def primary_details(primary, primary_distance):
     if not primary:
         return {}
+    if primary_distance:
+        primary_distance = "{:0.2f}mi".format(primary_distance / METERS_IN_MILE)
     return {
+        "primary_distance": primary_distance or "",
         "contention_faircash": "${:,.0f}".format(primary.sale_price / 2),
         "primary_sale_price": "${:,.0f}".format(primary.sale_price),
         "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
