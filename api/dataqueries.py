@@ -30,13 +30,16 @@ def _get_pin_with_distance(region, pin, parcel):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
-    return (
+    result = (
         db.session.query(
             model, ST_DistanceSphere(model.geom, parcel.geom).label("distance")
         )
         .filter(model.pin == pin)
         .first()
     )
+    if result is None:
+        return (None, None)
+    return result
 
 
 def get_pin(region, pin):

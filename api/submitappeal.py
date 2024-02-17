@@ -104,17 +104,19 @@ def submit_detroit_sf(comp_submit, mail):
 
     comparables = comps_df.to_dict(orient="records")
 
+    primary_pin = primary.pin if primary else ""
+    has_comparables = len([c for c in comparables if c["pin"] != primary_pin]) > 0
+
     context = {
         "pin": pin,
         "owner": owner_name,
         "address": comp_submit["address"],
         "formal_owner": owner_name,
         "current_faircash": "${:,.0f}".format(target.assessed_value * 2),
-        "contention_sev": "{:,.0f}".format(comps_avg / 2),
         "contention_faircash2": "${:,.0f}".format(comps_avg),
-        "target": target,
-        "primary": primary,
-        "has_comparables": len(comparables) > 0,
+        "target": clean_detroit_parcel(target.as_dict()),
+        "primary": clean_detroit_parcel(primary.as_dict() if primary else {}),
+        "has_comparables": has_comparables,
         "comparables": [clean_detroit_parcel(p) for p in comparables],
         "year": 2024,
         "economic_obsolescence": comp_submit.get("economic_obsolescence"),
@@ -172,7 +174,8 @@ def primary_details(primary, primary_distance):
         primary_distance = "{:0.2f}mi".format(primary_distance / METERS_IN_MILE)
     return {
         "primary_distance": primary_distance or "",
-        "contention_faircash": "${:,.0f}".format(primary.sale_price / 2),
+        "contention_faircash": "${:,.0f}".format(primary.sale_price),
+        "contention_sev": "{:,.0f}".format(primary.sale_price / 2),
         "primary_sale_price": "${:,.0f}".format(primary.sale_price),
         "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
     }
