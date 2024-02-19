@@ -116,6 +116,7 @@ def submit_detroit_sf(comp_submit, mail):
         "contention_faircash2": "${:,.0f}".format(comps_avg),
         "target": clean_detroit_parcel(target.as_dict()),
         "primary": clean_detroit_parcel(primary.as_dict() if primary else {}),
+        "has_primary": primary is not None,
         "has_comparables": has_comparables,
         "comparables": [clean_detroit_parcel(p) for p in comparables],
         "year": 2024,

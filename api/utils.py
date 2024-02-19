@@ -200,9 +200,10 @@ def clean_detroit_parcel(parcel):
         "sale_price": "${:,.0f}".format(parcel["sale_price"])
         if parcel.get("sale_price")
         else "",
-        "assessed_value": "{:,.0f}".format(parcel["assessed_value"]),
-        "total_sq_ft": "{:,.0f}".format(parcel["total_sq_ft"]),
-        "exterior_display": DETROIT_EXTERIOR_MAP.get(parcel["exterior"], ""),
+        "total_sq_ft": "{:,.0f}".format(parcel["total_sq_ft"])
+        if parcel.get("total_sq_ft")
+        else "",
+        "exterior_display": DETROIT_EXTERIOR_MAP.get(parcel.get("exterior"), ""),
     }
     if parcel.get("assessed_value"):
         data["assessed_value"] = "{:,.0f}".format(parcel["assessed_value"])

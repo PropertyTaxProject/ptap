@@ -434,6 +434,7 @@ const HomeownerInfo = () => {
             <Form.Item
               name="socialmediainput"
               label="Whose social media account did you learn about us from?"
+              rules={[{ required: true }]}
             >
               <Input name="socialmediainput" placeholder="Organization" />
             </Form.Item>
