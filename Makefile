@@ -2,6 +2,10 @@
 clean:
 	rm -f api/database/data.db
 
+.PHONY: backfill-submissions
+backfill-submissions:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/reload_submissions.py
+
 .PHONY: data
 data:
 	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
