@@ -8,6 +8,7 @@ import boto3
 import gspread
 import pytz
 import requests
+import sentry_sdk
 from docx.shared import Inches
 from docxtpl import DocxTemplate, InlineImage
 from google.oauth2 import service_account
@@ -132,7 +133,11 @@ def process_doc_images(doc, files, temp_dir):
         res = requests.get(file["url"])
         if res.status_code != 200:
             continue
-        img = Image.open(io.BytesIO(res.content)).convert("RGB")
+        try:
+            img = Image.open(io.BytesIO(res.content)).convert("RGB")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            continue
         temp_file = NamedTemporaryFile(dir=temp_dir, suffix=".jpg", delete=False)
         img.save(temp_file.name, format="JPEG")
         # Only constrain the larger dimension
