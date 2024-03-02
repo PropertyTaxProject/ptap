@@ -2,6 +2,7 @@ import React, { useContext } from "react"
 import PinLookup from "../../components/pin-lookup"
 import PinChooser from "../../components/pin-chooser"
 import AppealIntro from "../content/appeal-intro"
+import AppealClosed from "../content/appeal-closed"
 import { Button, Divider, Form, Radio, Row, Col } from "antd"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -45,6 +46,16 @@ const AppealLookup = () => {
       appeal.eligibility.residence !== "Yes" &&
       appeal.eligibility.owner !== "Yes"
     dispatch({ type: "set-target", pin, target, eligible })
+  }
+
+  if (appeal.region === "detroit" && !appeal.resumed) {
+    return (
+      <Row>
+        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
+          <AppealClosed region={appeal.region} />
+        </Col>
+      </Row>
+    )
   }
 
   return (
