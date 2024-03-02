@@ -399,10 +399,10 @@ module "lambda" {
       principal  = "events.amazonaws.com"
       source_arn = aws_cloudwatch_event_rule.keep_warm.arn
     },
-    AllowExecutionFromCloudWatchCron = {
-      principal  = "events.amazonaws.com"
-      source_arn = aws_cloudwatch_event_rule.lambda_cron.arn
-    }
+    # AllowExecutionFromCloudWatchCron = {
+    #   principal  = "events.amazonaws.com"
+    #   source_arn = aws_cloudwatch_event_rule.lambda_cron.arn
+    # }
   }
 
   environment_variables = {
@@ -440,20 +440,20 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   arn       = module.lambda.lambda_function_arn
 }
 
-resource "aws_cloudwatch_event_rule" "lambda_cron" {
-  name = "${local.name}-${local.env}-lambda-cron"
-  # 9/10am ET daily
-  schedule_expression = "cron(0 14 * * ? *)"
-}
+# resource "aws_cloudwatch_event_rule" "lambda_cron" {
+#   name = "${local.name}-${local.env}-lambda-cron"
+#   # 9/10am ET daily
+#   schedule_expression = "cron(0 14 * * ? *)"
+# }
 
-resource "aws_cloudwatch_event_target" "lambda_cron" {
-  rule      = aws_cloudwatch_event_rule.lambda_cron.name
-  target_id = "${local.name}-${local.env}"
-  arn       = module.lambda.lambda_function_arn
-  input = jsonencode({
-    cron = "/cron/reminders"
-  })
-}
+# resource "aws_cloudwatch_event_target" "lambda_cron" {
+#   rule      = aws_cloudwatch_event_rule.lambda_cron.name
+#   target_id = "${local.name}-${local.env}"
+#   arn       = module.lambda.lambda_function_arn
+#   input = jsonencode({
+#     cron = "/cron/reminders"
+#   })
+# }
 
 data "aws_route53_zone" "domain" {
   name = local.domain
