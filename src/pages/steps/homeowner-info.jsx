@@ -62,10 +62,20 @@ const nameFieldsLayout = {
 }
 
 const getInitialFormData = ({ user, target, region }) => {
-  const state = region === "detroit" ? "MI" : "IL"
+  const regionMap = {
+    detroit: "Detroit",
+    chicago: "Chicago",
+    milwaukee: "Milwaukee",
+  }
+  const stateMap = {
+    detroit: "MI",
+    chicago: "IL",
+    milwaukee: "WI",
+  }
+  const state = stateMap[region]
   let { address, city } = target || {}
-  if (["detroit", "chicago"].includes(region.toLowerCase().trim())) {
-    city = region === "detroit" ? "Detroit" : "Chicago"
+  if (regionMap[region.toLowerCase().trim()]) {
+    city = regionMap[region.toLowerCase().trim()]
   }
   const targetProps = { address, city, state }
   return { ...targetProps, ...user }

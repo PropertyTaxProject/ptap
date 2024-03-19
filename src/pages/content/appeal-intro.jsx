@@ -96,6 +96,32 @@ const AppealIntro = ({ region }) => (
         </li>
       </ul>
     )}
+    {region === "milwaukee" && (
+      <ul>
+        <li>
+          <b>Step 1</b>: Complete our online application by{" "}
+          <strong>April 22, 2024</strong>.
+        </li>
+        <li>
+          <b>Step 2</b>: Community Advocates will review your application,
+          determine if you are eligible, and reach out for any further
+          information we may need.
+        </li>
+        <li>
+          <b>Step 3</b>: If you are eligible, Community Advocates will refer
+          your application to the University of Wisconsin Law School. There, a
+          clinical law student and/or attorney will review your application to
+          determine whether they can file your appeal. If they can file your
+          appeal, you will receive free legal representation. Our team will
+          submit your appeal, along with any important documents, to the Board
+          of Assessors by its deadline, which is May 20, 2024.
+        </li>
+        <li>
+          <b>Step 4</b>: Before October 14, 2024, the Board of Assessors will
+          send you a letter notifying you whether or not you won your appeal.
+        </li>
+      </ul>
+    )}
 
     <h2>Who is Eligible for ILO&apos;s Services?</h2>
     <p>You are eligible for services if you meet all of these criteria:</p>
@@ -118,6 +144,16 @@ const AppealIntro = ({ region }) => (
           landlords).
         </li>
         <li>Your home is worth $225,000 or less.</li>
+      </ul>
+    )}
+    {region == "milwaukee" && (
+      <ul>
+        <li>You own a home in the City of Milwaukee;</li>
+        <li>
+          You occupy that home as your permanent residence (we do not service
+          landlords); and
+        </li>
+        <li>Your home is worth $150,000 or less.</li>
       </ul>
     )}
   </>

@@ -151,3 +151,34 @@ def cook_submission_email(mail, data):
     msg2.html = body
     mail.send(msg2)
     print("emailed")
+
+
+def milwaukee_submission_email(mail, data):
+    # email to ptap account with info
+    name = data.get("name", f'{data["first_name"]} {data["last_name"]}')
+    addr = data["target_pin"]["address"]
+    submit_email = [data["email"]]
+    admin_email = os.getenv("MILWAUKEE_MAIL", "")
+
+    subj = f"Property Tax Appeal Project Submission: {name} ({addr})"
+    body = render_template(
+        "emails/submission_log.html",
+        name=name,
+        address=addr,
+        log_url=data.get("log_url"),
+    )
+
+    msg = Message(subj, recipients=[admin_email])
+    msg.html = body
+    msg.attach(
+        data["output_name"][13:],
+        WORD_MIMETYPE,
+        data["file_stream"],
+    )
+    mail.send(msg)
+
+    # receipt to user
+    body = render_template("emails/submission_milwaukee.html", name=name, address=addr)
+    msg2 = Message(subj, recipients=submit_email, reply_to=admin_email)
+    msg2.html = body
+    mail.send(msg2)

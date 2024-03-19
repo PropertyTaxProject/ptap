@@ -2,7 +2,7 @@ import React from "react"
 import { Button, Space } from "antd"
 import { Link } from "react-router-dom"
 
-const PTAPHeader3 = () => (
+const SelectRegion = () => (
   <>
     <h2>
       We currently have automated appeal systems for Detroit, Michigan and Cook
@@ -16,8 +16,11 @@ const PTAPHeader3 = () => (
       <Button size="large">
         <Link to="/cook">Cook County</Link>
       </Button>
+      <Button size="large">
+        <Link to="/milwaukee">Milwaukee</Link>
+      </Button>
     </Space>
   </>
 )
 
-export default PTAPHeader3
+export default SelectRegion

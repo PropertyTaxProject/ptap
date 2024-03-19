@@ -95,6 +95,15 @@ const router = createBrowserRouter([
         children: appealRoutes,
       },
       {
+        path: "/milwaukee/*",
+        element: (
+          <AppealProvider region="milwaukee">
+            <Outlet />
+          </AppealProvider>
+        ),
+        children: appealRoutes,
+      },
+      {
         path: "/completedappeal",
         element: <FinalPage />,
       },

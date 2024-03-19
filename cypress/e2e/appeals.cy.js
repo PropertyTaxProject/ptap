@@ -10,6 +10,7 @@ describe("Appeal flow", () => {
     cy.fixture("cook").then((f) => {
       cook = f
     })
+    // TODO: add milwaukee
   })
 
   it("Submits an appeal", () => {

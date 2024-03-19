@@ -106,3 +106,38 @@ class DetroitParcel(db.Model):
     @property
     def exterior_display(self):
         return DETROIT_EXTERIOR_MAP.get(self.exterior, "")
+
+
+class MilwaukeeParcel(db.Model):
+    __tablename__ = "milwaukee"
+    id = db.Column(db.Integer, primary_key=True)
+    pin = db.Column(db.String(64), index=True)
+    street_number = db.Column(db.String(64), index=True)
+    street_name = db.Column(db.String(64), index=True)
+    neighborhood = db.Column(db.String(64), index=True)
+    assessed_value = db.Column(db.Float)
+    sale_price = db.Column(db.Float)
+    sale_date = db.Column(db.Date)
+    sale_year = db.Column(db.Integer)
+    age = db.Column(db.Integer)
+    year_built = db.Column(db.Integer)
+    total_sq_ft = db.Column(db.Float)
+    price_per_sq_ft = db.Column(db.Float)
+    kitchen = db.Column(db.Integer)
+    baths = db.Column(db.Integer)
+    half_baths = db.Column(db.Integer)
+    improved_status = db.Column(db.String(16))
+    building_category = db.Column(db.String(32))
+    building_sequence = db.Column(db.Integer)
+    building_type = db.Column(db.String(16))
+    condition = db.Column(db.String(16))
+    quality = db.Column(db.String(16))
+    rating_kitchen = db.Column(db.String(16))
+    rating_bath = db.Column(db.String(16))
+    rating_half_bath = db.Column(db.String(16))
+    geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
+    as_dict = as_dict
+    as_json_dict = as_json_dict
+    __table_args__ = (
+        db.Index("milwaukee_compound_match_index", "pin", "age", "total_sq_ft"),
+    )

@@ -13,25 +13,27 @@ export function getMaxComparables(region) {
 }
 
 export function getPageLabel(pageName, { region, resumed }) {
-  const pages =
-    region === "detroit"
-      ? [
-          "appeal-lookup",
-          "homeowner-info",
-          "agreement",
-          "review-property",
-          ...(resumed ? ["review-comparables"] : []),
-          "damage",
-          "review-appeal",
-        ]
-      : [
-          "appeal-lookup",
-          "homeowner-info",
-          "review-property",
-          "review-comparables",
-          "damage",
-          "review-appeal",
-        ]
+  let pages = []
+  if (region === "detroit") {
+    pages = [
+      "appeal-lookup",
+      "homeowner-info",
+      "agreement",
+      "review-property",
+      ...(resumed ? ["review-comparables"] : []),
+      "damage",
+      "review-appeal",
+    ]
+  } else {
+    pages = [
+      "appeal-lookup",
+      "homeowner-info",
+      "review-property",
+      "review-comparables",
+      "damage",
+      "review-appeal",
+    ]
+  }
   return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
 }
 
@@ -154,6 +156,55 @@ export const DISPLAY_FIELDS_COOK = [
   },
 ]
 
+// TODO: Others?
+export const DISPLAY_FIELDS_MKE = [
+  {
+    title: "Address",
+    field: "address",
+  },
+  {
+    title: "Year built",
+    field: "year_built",
+  },
+  {
+    title: "Baths",
+    field: "baths_display",
+  },
+  {
+    title: "Distance",
+    field: "distance_display",
+  },
+  {
+    title: "Neighborhood",
+    field: "neighborhood",
+  },
+  {
+    title: "Total Sq Ft.",
+    field: "total_sq_ft",
+  },
+  {
+    title: "Assessed Value Tentative",
+    field: "assessed_value_display",
+  },
+  {
+    title: "Sale Price",
+    field: "sale_price_display",
+  },
+  {
+    title: "Sale Date",
+    field: "sale_date",
+  },
+]
+
+export function getDisplayFields(region) {
+  if (["chicago", "cook"].includes(region)) {
+    return DISPLAY_FIELDS_COOK
+  } else if (region === "milwaukee") {
+    return DISPLAY_FIELDS_MKE
+  }
+  return DISPLAY_FIELDS
+}
+
 /* eslint-disable no-prototype-builtins */
 export function cleanParcel(parcel) {
   const usd = new Intl.NumberFormat("en-US", {
@@ -230,6 +281,8 @@ export const getAppealType = (region) => {
     return "detroit_single_family"
   } else if (cleanRegion === "chicago") {
     return "cook_county_single_family"
+  } else if (region === "milwaukee") {
+    return "milwaukee"
   }
   return cleanRegion
 }

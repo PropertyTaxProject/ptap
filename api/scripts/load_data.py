@@ -1,16 +1,21 @@
 import csv
 import os
+import sys
 from datetime import datetime
 
-from sqlalchemy import text
-
+import geopandas as gpd
+import pandas as pd
+import pyreadr
 from api.api import app
 from api.db import db
 from api.models import CookParcel, DetroitParcel
+from sqlalchemy import text
 
 DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database"
 )
+
+current_year = datetime.now().year
 
 with app.app_context():
     db.session.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
@@ -19,8 +24,7 @@ with app.app_context():
     db.session.commit()
 
 
-if __name__ == "__main__":
-    current_year = datetime.now().year
+def load_cook():
     with open(os.path.join(DATA_DIR, "cook.csv"), "r") as f:
         cook_parcels = []
         reader = csv.DictReader(f)
@@ -79,6 +83,8 @@ if __name__ == "__main__":
             db.session.bulk_save_objects(cook_parcels)
             db.session.commit()
 
+
+def load_detroit():
     with open(os.path.join(DATA_DIR, "detroit.csv"), "r") as f:
         detroit_parcels = []
         reader = csv.DictReader(f)
@@ -144,3 +150,88 @@ if __name__ == "__main__":
         with app.app_context():
             db.session.bulk_save_objects(detroit_parcels)
             db.session.commit()
+
+
+def load_milwaukee():
+    data = pyreadr.read_r(os.path.join(DATA_DIR, "mke.RData"))
+    parcel_geom_df = gpd.read_file(os.path.join(DATA_DIR, "mke-parcel-points.geojson"))
+    value_df = data["PropertyValuesProd"][data["PropertyValuesProd"]["YearID"] == 2023][
+        ["ParcelID", "YearID", "TotalAssessedValue"]
+    ]
+    parcel_df = data["PropertyCharacteristics2023"].merge(
+        value_df, on=["ParcelID"], how="left"
+    )
+    sale_df = data["SalesProduction"]
+    sale_df = sale_df.sort_values(
+        by=["ParcelID", "SaleDate"], ascending=[True, False]
+    ).drop_duplicates(subset="ParcelID", keep="first")[
+        ["ParcelID", "SaleDate", "SalePrice"]
+    ]
+
+    parcel_df = parcel_geom_df.merge(
+        parcel_df.merge(sale_df, on=["ParcelID"], how="left"),
+        on=["ParcelID"],
+        how="left",
+    ).rename(
+        columns={
+            "ParcelID": "pin",
+            "StreetNumb": "street_number",
+            "TotalAssessedValue": "assessed_value",
+            "SaleDate": "sale_date",
+            "SalePrice": "sale_price",
+            "YearBuilt": "year_built",
+            "Kitchen": "kitchen",
+            "FullBath": "baths",
+            "HalfBath": "half_baths",
+            "Neighborhood": "neighborhood",
+            "BuildingSequence": "building_sequence",
+            "PhysicalCondition": "condition",
+            "RatingKitchen": "rating_kitchen",
+            "RatingBath": "rating_bath",
+            "RatingHalfBath": "rating_half_bath",
+            "Quality": "quality",
+            "TotalFinishedArea": "total_sq_ft",
+            "BuildingCategory": "building_category",
+            "BuildingType": "building_type",
+            "ImprovedStatus": "improved_status",
+            "geometry": "geom",
+        }
+    )
+    parcel_df = parcel_df[parcel_df.geom.is_valid]
+    parcel_df["id"] = parcel_df.reset_index().index
+    parcel_df["street_name"] = parcel_df.apply(
+        lambda row: " ".join(
+            [
+                str(val)
+                for val in row[["StreetDire", "StreetName", "StreetType"]]
+                if pd.notnull(val)
+            ]
+        ),
+        axis=1,
+    )
+    parcel_df["sale_year"] = parcel_df["sale_date"].dt.year
+    parcel_df["age"] = parcel_df["year_built"].apply(
+        lambda y: current_year - y if y else y
+    )
+    parcel_df["price_per_sq_ft"] = (
+        parcel_df["assessed_value"] / parcel_df["total_sq_ft"]
+    )
+    parcel_df = parcel_df.drop(
+        columns=["StreetDire", "StreetName", "StreetType", "PropertyID", "YearID"]
+    ).set_geometry("geom")
+
+    with app.app_context():
+        parcel_df.to_postgis("milwaukee", db.engine, if_exists="replace", index=False)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        load_cook()
+        load_detroit()
+        load_milwaukee()
+    elif sys.argv[1] == "cook":
+        load_cook()
+    elif sys.argv[1] == "detroit":
+        load_detroit()
+    elif sys.argv[1] == "mke":
+        load_milwaukee()

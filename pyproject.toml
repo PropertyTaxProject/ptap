@@ -5,6 +5,7 @@ description = ""
 authors = ["Eric Langowski"]
 license = "BSD-3-Clause"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11.3,<3.13.0"
@@ -32,6 +33,10 @@ pillow-heif = "^0.13.1"
 black = "^23.9.1"
 ruff = "^0.0.292"
 pytest = "^8.0.0"
+
+# Only used for loading data script
+pyreadr = "^0.5.0"
+geopandas = "^0.14.3"
 
 [build-system]
 requires = ["poetry-core"]

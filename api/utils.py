@@ -19,6 +19,7 @@ from .constants import DETROIT_EXTERIOR_MAP, METERS_IN_MILE
 
 
 def record_final_submission(submission):
+    # TODO:
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
         return
 
@@ -85,7 +86,14 @@ def record_final_submission(submission):
 
 # TODO: Just use that as the request
 def get_region(request_data):
-    return "detroit" if "detroit" in request_data.get("appeal_type", "") else "cook"
+    appeal_type = request_data.get("appeal_type", "")
+    if "detroit" in appeal_type:
+        return "detroit"
+    if "cook" in appeal_type:
+        return "cook"
+    if "milwaukee" in appeal_type:
+        return "milwaukee"
+    return "detroit"
 
 
 def load_s3_json(s3, bucket, key):
@@ -209,6 +217,23 @@ def clean_detroit_parcel(parcel):
         if parcel.get("total_sq_ft")
         else "",
         "exterior_display": DETROIT_EXTERIOR_MAP.get(parcel.get("exterior"), ""),
+    }
+    if parcel.get("assessed_value"):
+        data["assessed_value"] = "{:,.0f}".format(parcel["assessed_value"])
+    return data
+
+
+def clean_milwaukee_parcel(parcel):
+    if "distance" in parcel:
+        parcel["distance"] = "{:0.2f}mi".format(parcel["distance"] / METERS_IN_MILE)
+    data = {
+        **parcel,
+        "sale_price": "${:,.0f}".format(parcel["sale_price"])
+        if parcel.get("sale_price")
+        else "",
+        "total_sq_ft": "{:,.0f}".format(parcel["total_sq_ft"])
+        if parcel.get("total_sq_ft")
+        else "",
     }
     if parcel.get("assessed_value"):
         data["assessed_value"] = "{:,.0f}".format(parcel["assessed_value"])

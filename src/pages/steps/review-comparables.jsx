@@ -1,12 +1,7 @@
 import React, { useContext } from "react"
 import { Button, Row, Col, Space, Divider } from "antd"
 import PropertyInfo from "../../components/property-info"
-import {
-  cleanParcel,
-  DISPLAY_FIELDS,
-  DISPLAY_FIELDS_COOK,
-  getPageLabel,
-} from "../../utils"
+import { cleanParcel, getDisplayFields, getPageLabel } from "../../utils"
 import PinChooser from "../../components/pin-chooser"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -38,9 +33,7 @@ const ReviewComparables = () => {
     navigate("../damage")
   }
 
-  const displayFields = ["cook", "chicago"].includes(appeal.region)
-    ? DISPLAY_FIELDS_COOK
-    : DISPLAY_FIELDS
+  const displayFields = getDisplayFields(appeal.region)
 
   return (
     <>

@@ -10,6 +10,10 @@ backfill-submissions:
 data:
 	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py
 
+.PHONY: data-%
+data-%:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/load_data.py $*
+
 .PHONY: download-data
 download-data:
 	wget https://$(S3_BUCKET).s3.amazonaws.com/data.dump

@@ -187,3 +187,60 @@ def get_damage_level(percent_good):
         if percent_good >= value_range[0] and percent_good <= value_range[2]:
             return level
     return ""
+
+
+def submit_milwaukee_sf(comp_submit, mail):
+    return
+    # owner_name = comp_submit.get(
+    #     "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
+    # )
+
+    # t_df = pd.DataFrame([comp_submit["target_pin"]])
+    # comps_df = pd.DataFrame(comp_submit["selectedComparables"])
+
+    # pin_av = t_df.assessed_value[0]
+    # pin = t_df.pin[0]
+    # comps_avg = comps_df["assessed_value"].mean()
+
+    # base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # # generate docx
+    # output_name = (
+    #     f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
+    # )
+    # comp_submit["output_name"] = output_name
+    # doc = DocxTemplate(
+    #     os.path.join(base_dir, "templates", "docs", "cook_template_2024.docx")
+    # )
+
+    # context = {
+    #     "date": datetime.now(pytz.timezone("America/Chicago")).strftime("%B %-d, %Y"),
+    #     "pin": pin,
+    #     "address": comp_submit["address"],
+    #     "homeowner_name": owner_name,
+    #     "assessor_av": "{:,.0f}".format(pin_av),
+    #     "assessor_mv": "${:,.0f}".format(pin_av * 10),
+    #     "contention_av": "{:,.0f}".format(comps_avg),
+    #     "contention_mv": "${:,.0f}".format(comps_avg),
+    #     "target": clean_cook_parcel(t_df.to_dict(orient="records")[0]),
+    #     "comparables": [
+    #         clean_cook_parcel(p) for p in comps_df.to_dict(orient="records")
+    #     ],
+    # }
+
+    # # TODO: What is this used for?
+    # output = {}
+
+    # comp_submit["file_stream"] = render_doc_to_bytes(
+    # doc, context, comp_submit["files"])
+
+    # if os.getenv("GOOGLE_SHEET_SID"):
+    #     comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" +
+    # os.getenv(
+    #         "GOOGLE_SHEET_SID"
+    #     )
+
+    # # send email
+    # cook_submission_email(mail, comp_submit)
+
+    # return output

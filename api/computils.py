@@ -4,7 +4,7 @@ from sqlalchemy import Integer, func, literal_column
 from sqlalchemy.orm import aliased
 
 from .db import db
-from .models import CookParcel, DetroitParcel
+from .models import CookParcel, DetroitParcel, MilwaukeeParcel
 
 MILE_IN_METERS = 1609.34
 
@@ -20,6 +20,11 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         age_dif = 15
         build_dif = (0.1 * multiplier) * targ["building_sq_ft"].values[0]
         land_dif = (0.1 * multiplier) * targ["land_sq_ft"].values[0]
+        distance = MILE_IN_METERS * multiplier
+    elif region == "milwaukee":
+        model = MilwaukeeParcel
+        sq_ft_diff = 100 * multiplier
+        age_dif = 15 * multiplier
         distance = MILE_IN_METERS * multiplier
 
     # construct query
@@ -88,6 +93,18 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         exterior_value = int(targ["exterior"].values[0] or 0)
         if exterior_value != 4:
             query_filters.append(model.exterior == exterior_value)
+    elif region == "milwaukee":
+        query_filters.extend(
+            [
+                *min_max_query(
+                    model,
+                    "total_sq_ft",
+                    float,
+                    targ["total_sq_ft"].values[0],
+                    sq_ft_diff,
+                ),
+            ]
+        )
     else:
         raise Exception("Invalid Region for Comps")
 
@@ -134,6 +151,9 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 / (float(targ["land_sq_ft"].values[0] or 0) * 0.10)
             )
         )
+    elif region == "milwaukee":
+        # TODO:
+        pass
 
     query_limit = 30 if region == "cook" else 10
     query = (
@@ -151,9 +171,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
         [{**m.as_dict(), "distance": d, "diff_score": s} for (m, d, s) in query]
     )
 
-    if region == "detroit":
-        return targ, result
-    elif region == "cook":
+    if region in ["cook", "detroit", "milwaukee"]:
         return targ, result
 
 

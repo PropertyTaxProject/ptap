@@ -85,7 +85,7 @@ def robots():
 @app.route("/api_v1/pin-lookup", methods=["POST"])
 def handle_form0():
     response_dict = address_candidates(
-        request.json, {"detroit": 150000, "cook": 225000}
+        request.json, {"detroit": 150000, "cook": 225000, "milwaukee": 150000}
     )
     uid = uuid.uuid4().urn[9:]
     log_step(

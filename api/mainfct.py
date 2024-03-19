@@ -4,7 +4,7 @@ from rapidfuzz import process
 
 from .computils import find_comps
 from .dataqueries import address_candidates_query, get_pin
-from .submitappeal import submit_cook_sf, submit_detroit_sf
+from .submitappeal import submit_cook_sf, submit_detroit_sf, submit_milwaukee_sf
 
 
 # TODO: Pydantic to enforce types on input? https://pypi.org/project/Flask-Pydantic/
@@ -24,6 +24,10 @@ def address_candidates(input_data, cutoff_info):
         cutoff = cutoff_info["cook"]
         region = "cook"
 
+    elif input_data["appeal_type"] == "milwaukee":
+        cutoff = cutoff_info["milwaukee"]
+        region = "milwaukee"
+
     candidates = address_candidates_query(region, st_num)
     parcel_dict = {p.street_name.upper(): p.as_dict() for p in candidates}
     results = process.extract(st_name.upper(), parcel_dict.keys(), score_cutoff=50)
@@ -33,7 +37,9 @@ def address_candidates(input_data, cutoff_info):
     selected = pd.DataFrame([parcel_dict[r[0]] for r in results])
 
     selected["Distance"] = 0
-    selected["address"] = selected["street_number"] + " " + selected["street_name"]
+    selected["address"] = (
+        selected["street_number"].astype(str) + " " + selected["street_name"]
+    )
 
     # if input_data["appeal_type"] == "detroit_single_family":
     #     selected = prettify_detroit(selected, False)
@@ -66,6 +72,13 @@ def comparables(input_data, sales_comps=False):
     elif input_data["appeal_type"] == "cook_county_single_family":
         sales_comps = False
         region = "cook"
+        targ = get_pin(region, target_pin)
+        if targ.empty:
+            raise Exception("Invalid PIN")
+        targ["Distance"] = 0
+    elif input_data["appeal_type"] == "milwaukee":
+        sales_comps = True
+        region = "milwaukee"
         targ = get_pin(region, target_pin)
         if targ.empty:
             raise Exception("Invalid PIN")
@@ -126,6 +139,9 @@ def process_comps_input(comp_submit, mail):
 
     elif comp_submit["appeal_type"] == "cook_county_single_family":
         return submit_cook_sf(comp_submit, mail)
+
+    elif comp_submit["appeal_type"] == "milwaukee":
+        return submit_milwaukee_sf(comp_submit, mail)
 
 
 def format_baths(baths):

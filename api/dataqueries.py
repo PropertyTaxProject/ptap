@@ -3,7 +3,7 @@ from geoalchemy2.functions import ST_DistanceSphere
 from sqlalchemy.sql import func
 
 from .db import db
-from .models import CookParcel, DetroitParcel
+from .models import CookParcel, DetroitParcel, MilwaukeeParcel
 
 
 # TODO: autocomplete/typeahead?
@@ -14,6 +14,8 @@ def address_candidates_query(region, st_num):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
+    elif region == "milwaukee":
+        model = MilwaukeeParcel
     return model.query.filter(model.street_number == st_num.strip())
 
 
@@ -22,6 +24,8 @@ def _get_pin(region, pin):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
+    elif region == "milwaukee":
+        model = MilwaukeeParcel
     return model.query.filter(model.pin == pin).first()
 
 
@@ -30,6 +34,8 @@ def _get_pin_with_distance(region, pin, parcel):
         model = CookParcel
     elif region == "detroit":
         model = DetroitParcel
+    elif region == "milwaukee":
+        model = MilwaukeeParcel
     result = (
         db.session.query(
             model, ST_DistanceSphere(model.geom, parcel.geom).label("distance")

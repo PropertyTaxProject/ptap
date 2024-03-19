@@ -1,14 +1,13 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { Table } from "antd"
-import { cleanParcel, DISPLAY_FIELDS, DISPLAY_FIELDS_COOK } from "../utils"
+import { cleanParcel, getDisplayFields } from "../utils"
 
 // displays the target property information
 const PropertyInfo = ({ region, target }) => {
-  const baseFields = ["chicago", "cook"].includes(region)
-    ? DISPLAY_FIELDS_COOK
-    : DISPLAY_FIELDS
-  const fields = baseFields.filter(({ title }) => title !== "Distance")
+  const fields = getDisplayFields(region).filter(
+    ({ title }) => title !== "Distance"
+  )
 
   return (
     <>

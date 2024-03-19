@@ -3,3 +3,5 @@
 /.venv
 /tf
 *.csv
+/api/database/*
+*.dump
