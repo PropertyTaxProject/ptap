@@ -29,7 +29,7 @@ sentry-sdk = {extras = ["flask"], version = "^1.32.0"}
 pillow-heif = "^0.13.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
+black = "^24.3.0"
 ruff = "^0.0.292"
 pytest = "^8.0.0"
 
