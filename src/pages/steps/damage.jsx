@@ -156,7 +156,8 @@ const Damage = () => {
           type="danger"
           onClick={() =>
             navigate(
-              appeal.region === "detroit" && !appeal.resumed
+              ["detroit", "milwaukee"].includes(appeal.region) &&
+                !appeal.resumed
                 ? "../review-property"
                 : "../comparables"
             )

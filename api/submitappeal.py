@@ -11,8 +11,15 @@ from .email import (
     cook_submission_email,
     detroit_internal_submission_email,
     detroit_submission_email,
+    milwaukee_submission_email,
 )
-from .utils import clean_cook_parcel, clean_detroit_parcel, render_doc_to_bytes
+from .utils import (
+    clean_cook_parcel,
+    clean_detroit_parcel,
+    clean_milwaukee_parcel,
+    record_final_submission,
+    render_doc_to_bytes,
+)
 
 gsheet_submission = None
 
@@ -190,57 +197,59 @@ def get_damage_level(percent_good):
 
 
 def submit_milwaukee_sf(comp_submit, mail):
-    return
-    # owner_name = comp_submit.get(
-    #     "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
-    # )
+    owner_name = comp_submit.get(
+        "name", f'{comp_submit["first_name"]} {comp_submit["last_name"]}'
+    )
+    comps_df = pd.DataFrame(comp_submit["selectedComparables"])
+    pin = comp_submit["target_pin"]["pin"]
+    if "sale_price" not in comps_df:
+        comps_df["sale_price"] = 0
+    comps_avg = comps_df["sale_price"].mean()
 
-    # t_df = pd.DataFrame([comp_submit["target_pin"]])
-    # comps_df = pd.DataFrame(comp_submit["selectedComparables"])
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # pin_av = t_df.assessed_value[0]
-    # pin = t_df.pin[0]
-    # comps_avg = comps_df["assessed_value"].mean()
+    comp_submit[
+        "output_name"
+    ] = f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
+    doc = DocxTemplate(
+        os.path.join(base_dir, "templates", "docs", "milwaukee_template_2024.docx")
+    )
 
-    # base_dir = os.path.dirname(os.path.abspath(__file__))
+    target = _get_pin("milwaukee", pin)
+    primary, primary_distance = _get_pin_with_distance(
+        "milwaukee", comp_submit.get("selected_primary"), target
+    )
 
-    # # generate docx
-    # output_name = (
-    #     f"{pin} Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx"
-    # )
-    # comp_submit["output_name"] = output_name
-    # doc = DocxTemplate(
-    #     os.path.join(base_dir, "templates", "docs", "cook_template_2024.docx")
-    # )
+    comparables = comps_df.to_dict(orient="records")
 
-    # context = {
-    #     "date": datetime.now(pytz.timezone("America/Chicago")).strftime("%B %-d, %Y"),
-    #     "pin": pin,
-    #     "address": comp_submit["address"],
-    #     "homeowner_name": owner_name,
-    #     "assessor_av": "{:,.0f}".format(pin_av),
-    #     "assessor_mv": "${:,.0f}".format(pin_av * 10),
-    #     "contention_av": "{:,.0f}".format(comps_avg),
-    #     "contention_mv": "${:,.0f}".format(comps_avg),
-    #     "target": clean_cook_parcel(t_df.to_dict(orient="records")[0]),
-    #     "comparables": [
-    #         clean_cook_parcel(p) for p in comps_df.to_dict(orient="records")
-    #     ],
-    # }
+    primary_pin = primary.pin if primary else ""
+    has_comparables = len([c for c in comparables if c["pin"] != primary_pin]) > 0
 
-    # # TODO: What is this used for?
-    # output = {}
+    context = {
+        "pin": pin,
+        "owner": owner_name,
+        "address": comp_submit["address"],
+        "formal_owner": owner_name,
+        "current_faircash": "${:,.0f}".format(target.assessed_value * 2),
+        "contention_faircash2": "${:,.0f}".format(comps_avg),
+        "target": clean_milwaukee_parcel(target.as_dict()),
+        "primary": clean_milwaukee_parcel(primary.as_dict() if primary else {}),
+        "has_primary": primary is not None,
+        "has_comparables": has_comparables,
+        "comparables": [clean_milwaukee_parcel(p) for p in comparables],
+        "year": 2024,
+        **primary_details(primary, primary_distance),
+    }
 
-    # comp_submit["file_stream"] = render_doc_to_bytes(
-    # doc, context, comp_submit["files"])
+    letter_bytes = render_doc_to_bytes(doc, context, comp_submit["files"])
 
-    # if os.getenv("GOOGLE_SHEET_SID"):
-    #     comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" +
-    # os.getenv(
-    #         "GOOGLE_SHEET_SID"
-    #     )
+    if os.getenv("GOOGLE_SHEET_SID"):
+        comp_submit["log_url"] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
+            "GOOGLE_SHEET_SID"
+        )
 
-    # # send email
-    # cook_submission_email(mail, comp_submit)
+    if not comp_submit.get("resumed"):
+        record_final_submission(comp_submit)
+    milwaukee_submission_email(mail, comp_submit, letter_bytes)
 
-    # return output
+    return {}

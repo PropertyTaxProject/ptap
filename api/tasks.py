@@ -40,6 +40,7 @@ def send_reminders(mail, logger):
             if (
                 not step
                 or step == "submit"
+                or data.get("region") != "detroit"
                 or data.get("reminder_sent")
                 or email in emails_to_ignore
             ):

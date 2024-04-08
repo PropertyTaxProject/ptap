@@ -1,0 +1,23 @@
+{
+  "region": "milwaukee",
+  "appealUrl": "/milwaukee",
+  "pin": "2829968000",
+  "street_number": "3418",
+  "street_name": "N HUBBARD ST",
+  "assessed_value": "48,800",
+  "updated_assessed_value": "19,850",
+  "comparables": [
+    {
+      "street_number": "3438",
+      "street_name": "N PALMER ST"
+    },
+    {
+      "street_number": "3720",
+      "street_name": "N 3RD ST"
+    },
+    {
+      "street_number": "3759",
+      "street_name": "N 1ST ST"
+    }
+  ]
+}

@@ -26,6 +26,9 @@ def lambda_handler(event, context):
     worksheet = client.open(os.getenv("GOOGLE_SHEET_NAME")).worksheet(
         os.getenv("SHEET_NAME", "logs")
     )
+    mke_worksheet = client.open(os.getenv("MKE_GOOGLE_SHEET_NAME")).worksheet(
+        os.getenv("SHEET_NAME", "logs")
+    )
 
     # Store a dictionary referencing each UUID so we can get the latest event for each
     step_dict = {}
@@ -43,7 +46,8 @@ def lambda_handler(event, context):
             }
 
     for log_data in step_dict.values():
-        update_google_spreadsheet(worksheet, log_data)
+        log_sheet = mke_worksheet if log_data["region"] == "milwaukee" else worksheet
+        update_google_spreadsheet(log_sheet, log_data)
 
 
 def load_compressed_event(b64_str):

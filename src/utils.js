@@ -14,13 +14,12 @@ export function getMaxComparables(region) {
 
 export function getPageLabel(pageName, { region, resumed }) {
   let pages = []
-  if (region === "detroit") {
+  if (region === "cook") {
     pages = [
       "appeal-lookup",
       "homeowner-info",
-      "agreement",
       "review-property",
-      ...(resumed ? ["review-comparables"] : []),
+      "review-comparables",
       "damage",
       "review-appeal",
     ]
@@ -28,8 +27,9 @@ export function getPageLabel(pageName, { region, resumed }) {
     pages = [
       "appeal-lookup",
       "homeowner-info",
+      ...(region === "detroit" ? ["agreement"] : []),
       "review-property",
-      "review-comparables",
+      ...(resumed ? ["review-comparables"] : []),
       "damage",
       "review-appeal",
     ]

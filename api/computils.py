@@ -103,6 +103,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                     targ["total_sq_ft"].values[0],
                     sq_ft_diff,
                 ),
+                model.neighborhood == int(targ["neighborhood"].values[0] or 0),
             ]
         )
     else:
@@ -152,8 +153,12 @@ def calculate_comps(targ, region, sales_comps, multiplier):
             )
         )
     elif region == "milwaukee":
-        # TODO:
-        pass
+        diff_score = diff_score + (
+            func.abs(
+                model_alias.total_sq_ft - float(targ["total_sq_ft"].values[0] or 0)
+            )
+            / (float(targ["total_sq_ft"].values[0] or 0) * 0.10)
+        )
 
     query_limit = 30 if region == "cook" else 10
     query = (

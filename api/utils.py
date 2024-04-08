@@ -35,9 +35,12 @@ def record_final_submission(submission):
     )
 
     client = gspread.authorize(credentials)
-    worksheet = client.open(os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")).worksheet(
-        "submissions"
-    )
+    sheet_name = os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")
+    sheet_sid = os.getenv("GOOGLE_SHEET_SID")
+    if submission.get("region") == "milwaukee":
+        sheet_name = os.getenv("MKE_GOOGLE_SHEET_SUBMISSION_NAME")
+        sheet_sid = os.getenv("MKE_GOOGLE_SHEET_SID")
+    worksheet = client.open(sheet_name).worksheet("submissions")
 
     timestamp = datetime.now(pytz.timezone("America/Detroit"))
     key = f"submissions/{timestamp.strftime('%Y/%m/%d')}/{submission.get('uuid')}.json"
@@ -79,9 +82,7 @@ def record_final_submission(submission):
     base_url = "https://docs.google.com/spreadsheets/d/"
 
     # TODO: Pull SID dynamically
-    return (
-        f"{base_url}{os.getenv('GOOGLE_SHEET_SID')}/edit#gid=0&range=A{len(val_list)}"
-    )
+    return f"{base_url}{sheet_sid}/edit#gid=0&range=A{len(val_list)}"
 
 
 # TODO: Just use that as the request
@@ -235,6 +236,10 @@ def clean_milwaukee_parcel(parcel):
         if parcel.get("total_sq_ft")
         else "",
     }
+    if isinstance(parcel.get("sale_date"), str):
+        parcel["sale_date"] = parcel["sale_date"][:10]
     if parcel.get("assessed_value"):
         data["assessed_value"] = "{:,.0f}".format(parcel["assessed_value"])
+    if (parcel.get("half_baths") or 0) > 0:
+        parcel["baths"] = f"{parcel['baths']}.{parcel['half_baths']}"
     return data

@@ -45,7 +45,7 @@ const ReviewProperty = () => {
       pins: [],
     })
     navigate(
-      appeal.region === "detroit" && !appeal.resumed
+      ["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed
         ? "../damage"
         : "../comparables"
     )

@@ -8,6 +8,14 @@ import ilo from "../../assets/ilo.png"
 const AppealIntro = ({ region }) => (
   <>
     <h1>Who We Are</h1>
+    {region === "milwaukee" && (
+      <p>
+        Community Advocates, a Milwaukee nonprofit, is working with the
+        University of Wisconsin Law School and the Coalition for Property Tax
+        Justice to assist homeowners in appealing their property tax
+        assessments.
+      </p>
+    )}
     <p>
       The Coalition for Property Tax Justice is the current campaign of the
       Institute for Law and Organizing (ILO). We are a nonprofit community
