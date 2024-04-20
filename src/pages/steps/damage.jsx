@@ -30,6 +30,9 @@ const Damage = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
+  const allowNext =
+    (appeal.damage_level || appeal.region === "milwaukee") && appeal.damage
+
   return (
     <>
       <h1>Damage</h1>
@@ -181,7 +184,7 @@ const Damage = () => {
         <Button
           size="large"
           type="primary"
-          disabled={!appeal.damage_level || !appeal.damage}
+          disabled={!allowNext}
           onClick={() => navigate("../review-appeal")}
         >
           Next Page
