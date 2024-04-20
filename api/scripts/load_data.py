@@ -6,10 +6,11 @@ from datetime import datetime
 import geopandas as gpd
 import pandas as pd
 import pyreadr
+from sqlalchemy import text
+
 from api.api import app
 from api.db import db
 from api.models import CookParcel, DetroitParcel
-from sqlalchemy import text
 
 DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database"
