@@ -15,6 +15,7 @@ import ReviewComparables from "./pages/steps/review-comparables"
 import ReviewAppeal from "./pages/steps/review-appeal"
 import NotFound from "./pages/not-found"
 import Agreement from "./pages/steps/agreement"
+import MkeAgreement from "./pages/steps/mke-agreement"
 import Damage from "./pages/steps/damage"
 import Resume from "./pages/resume"
 
@@ -40,6 +41,10 @@ const appealRoutes = [
   {
     path: "agreement",
     element: <Agreement />,
+  },
+  {
+    path: "mke-agreement",
+    element: <MkeAgreement />,
   },
   {
     path: "review-property",

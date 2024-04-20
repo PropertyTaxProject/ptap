@@ -69,6 +69,9 @@ function appealReducer(appeal, action) {
         agreement_name: action.agreement_name,
       }
     }
+    case "set-terms-name": {
+      return { ...appeal, terms_name: action.terms_name }
+    }
     case "set-homeowner-info": {
       const { user, comparables, headers, target, propertyInfo } = action
       user.name = `${user.first_name || ``} ${user.last_name || ``}`
@@ -130,6 +133,7 @@ const initialAppeal = {
   propertyInfo: null,
   agreement: true, // TODO: Remove from multiple places
   agreement_name: null,
+  terms_name: null,
   agreement_date: null, // only populated by resume
   estimate: {},
   step: 1,

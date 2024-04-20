@@ -123,6 +123,8 @@ const HomeownerInfo = () => {
     })
     if (appeal.region === "detroit") {
       navigate("../agreement")
+    } else if (appeal.region === "milwaukee") {
+      navigate("../mke-agreement")
     } else {
       navigate("../review-property")
     }

@@ -158,7 +158,7 @@ def load_milwaukee():
     value_df = data["PropertyValuesProd"][data["PropertyValuesProd"]["YearID"] == 2023][
         ["ParcelID", "YearID", "TotalAssessedValue"]
     ]
-    parcel_df = data["PropertyCharacteristics2023"].merge(
+    parcel_df = data["PropertyCharacteristics2024"].merge(
         value_df, on=["ParcelID"], how="left"
     )
     sale_df = data["SalesProduction"]
@@ -183,6 +183,7 @@ def load_milwaukee():
             "Kitchen": "kitchen",
             "FullBath": "baths",
             "HalfBath": "half_baths",
+            "BedRooms": "bedrooms",
             "Neighborhood": "neighborhood",
             "BuildingSequence": "building_sequence",
             "PhysicalCondition": "condition",

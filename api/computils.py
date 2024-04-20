@@ -96,6 +96,8 @@ def calculate_comps(targ, region, sales_comps, multiplier):
     elif region == "milwaukee":
         query_filters.extend(
             [
+                model.bedrooms == int(targ["bedrooms"].values[0] or 0),
+                model.building_type == targ["building_type"].values[0],
                 *min_max_query(
                     model,
                     "total_sq_ft",
@@ -103,7 +105,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                     targ["total_sq_ft"].values[0],
                     sq_ft_diff,
                 ),
-                model.neighborhood == int(targ["neighborhood"].values[0] or 0),
+                model.neighborhood == str(targ["neighborhood"].values[0]),
             ]
         )
     else:

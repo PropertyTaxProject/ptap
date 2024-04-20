@@ -14,6 +14,9 @@ const AppealLookup = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
+  const orgName = "Community Advocates"
+  const lawName = "University of Wisconsin Law School"
+
   const checkEligibility = () => {
     let alertMessage = null
     if (
@@ -158,10 +161,10 @@ const AppealLookup = () => {
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <p>
-            <b>Disclaimer:</b> The information you provide will help ILO
+            <b>Disclaimer:</b> The information you provide will help {orgName}
             determine if we can assist you. Therefore, we cannot guarantee that
-            ILO will be able to represent you. After completing this
-            application, ILO will try to contact you three times. If we
+            {lawName} will be able to represent you. After completing this
+            application, {orgName} will try to contact you three times. If we
             don&apos;t hear from you after three attempts, we will not be able
             to submit your appeal.
           </p>

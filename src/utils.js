@@ -37,8 +37,7 @@ export function getPageLabel(pageName, { region, resumed }) {
   return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
 }
 
-export const HELP_LINK =
-  "https://calendly.com/d/3gr-nwc-zfx/property-tax-appeal-support-call"
+export const HELP_LINK = "https://calendly.com/stopforeclosuremke/appealhelp"
 
 export const CONTACT_EMAIL = "help@illegalforeclosures.org"
 
@@ -169,6 +168,14 @@ export const DISPLAY_FIELDS_MKE = [
   {
     title: "Baths",
     field: "baths_display",
+  },
+  {
+    title: "Bedrooms",
+    field: "bedrooms",
+  },
+  {
+    title: "Building type",
+    field: "building_type",
   },
   {
     title: "Distance",

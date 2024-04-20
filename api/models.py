@@ -123,6 +123,7 @@ class MilwaukeeParcel(db.Model):
     year_built = db.Column(db.Integer)
     total_sq_ft = db.Column(db.Float)
     price_per_sq_ft = db.Column(db.Float)
+    bedrooms = db.Column(db.Integer)
     kitchen = db.Column(db.Integer)
     baths = db.Column(db.Integer)
     half_baths = db.Column(db.Integer)
