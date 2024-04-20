@@ -123,7 +123,7 @@ const ReviewAppeal = () => {
         <strong>Damage level</strong>
         <span style={{ "text-transform": "capitalize" }}>
           {" "}
-          {appeal.damage_level.replace(/_/g, " ")}
+          {(appeal.damage_level || "").replace(/_/g, " ")}
         </span>
       </p>
       <p>
