@@ -56,6 +56,12 @@ describe("Appeal flow", () => {
           cy.get("button").contains("Next Page").click()
         }
 
+        if (region === "milwaukee") {
+          cy.get("#Agreement_release_name").type(contact.name)
+          cy.get("#Agreement_terms_name").type(contact.name)
+          cy.get("button").contains("Next Page").click()
+        }
+
         cy.get(".ant-table-row")
           .contains(`${street_number} ${street_name}`)
           .should("be.visible")
@@ -79,7 +85,9 @@ describe("Appeal flow", () => {
           cy.get("button").contains("Next Page").click()
         }
 
-        cy.get("#damage_damage_level label").contains("Average").click()
+        if (region !== "milwaukee") {
+          cy.get("#damage_damage_level label").contains("Average").click()
+        }
         cy.get("#damage_damage").type("Damage description")
         cy.get("button").contains("Next Page").click()
 
