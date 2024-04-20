@@ -29,6 +29,7 @@ locals {
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
   sheet_name      = "PTAP Submissions"
+  mke_sheet_name  = "MKE PTAP Submissions"
 
   tags = {
     project     = local.name
@@ -68,6 +69,10 @@ data "aws_ssm_parameter" "google_sheet_sid" {
   name = "/${local.name}/${local.env}/google_sheet_sid"
 }
 
+data "aws_ssm_parameter" "mke_google_sheet_sid" {
+  name = "/${local.name}/${local.env}/mke_google_sheet_sid"
+}
+
 data "aws_ssm_parameter" "ptap_mail" {
   name = "/${local.name}/${local.env}/ptap_mail"
 }
@@ -78,6 +83,10 @@ data "aws_ssm_parameter" "uofm_mail" {
 
 data "aws_ssm_parameter" "chicago_mail" {
   name = "/${local.name}/${local.env}/chicago_mail"
+}
+
+data "aws_ssm_parameter" "milwaukee_mail" {
+  name = "/${local.name}/${local.env}/milwaukee_mail"
 }
 
 # Use OIDC across multiple environments
@@ -415,15 +424,18 @@ module "lambda" {
     SENTRY_DSN             = data.aws_ssm_parameter.sentry_dsn.value
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
     GOOGLE_SHEET_SID       = data.aws_ssm_parameter.google_sheet_sid.value
+    MKE_GOOGLE_SHEET_SID   = data.aws_ssm_parameter.mke_google_sheet_sid.value
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
     S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
     DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
+    MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
     ATTACH_LETTERS         = "true"
 
-    GOOGLE_SHEET_SUBMISSION_NAME = local.sheet_name
+    GOOGLE_SHEET_SUBMISSION_NAME     = local.sheet_name
+    MKE_GOOGLE_SHEET_SUBMISSION_NAME = local.mke_sheet_name
   }
 
   tags = local.tags
@@ -704,6 +716,7 @@ module "logs_lambda" {
   environment_variables = {
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
     GOOGLE_SHEET_NAME      = local.sheet_name
+    MKE_GOOGLE_SHEET_NAME  = local.mke_sheet_name
   }
 
   tags = local.tags
