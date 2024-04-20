@@ -24,10 +24,16 @@ export function getPageLabel(pageName, { region, resumed }) {
       "review-appeal",
     ]
   } else {
+    let agreementPage = []
+    if (region === "detroit") {
+      agreementPage = ["agreement"]
+    } else if (region === "milwaukee") {
+      agreementPage = ["mke-agreement"]
+    }
     pages = [
       "appeal-lookup",
       "homeowner-info",
-      ...(region === "detroit" ? ["agreement"] : []),
+      ...agreementPage,
       "review-property",
       ...(resumed ? ["review-comparables"] : []),
       "damage",
