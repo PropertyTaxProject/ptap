@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import { HELP_LINK } from "../../utils"
 import coalition from "../../assets/coalition_logo.png"
 import ilo from "../../assets/ilo.png"
+import communityAdvocates from "../../assets/community-advocates.jpg"
 
 const AppealIntro = ({ region }) => (
   <>
@@ -34,6 +35,13 @@ const AppealIntro = ({ region }) => (
         style={{ height: "80px" }}
         alt="Coalition for Property Tax Justice logo"
       />
+      {region == "milwaukee" && (
+        <img
+          src={communityAdvocates}
+          style={{ height: "80px" }}
+          alt="Community Advocates logo"
+        />
+      )}
     </Space>
     <br />
     <br />
