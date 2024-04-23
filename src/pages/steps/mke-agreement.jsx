@@ -26,8 +26,8 @@ const MkeAgreement = () => {
           <h1>Release of Information</h1>
           <p>
             I agree that Community Advocates can share the information I provide
-            with the University of Wisconsin Law School and the Coalition for
-            Property Tax Justice in order to coordinate services.
+            with the University of Wisconsin Law School and the Institute for
+            Law and Organizing in order to coordinate services.
           </p>
           <Form.Item
             name="release_name"
@@ -48,6 +48,10 @@ const MkeAgreement = () => {
           <p>If Community Advocates determines I am eligible for services:</p>
           <ul>
             <li>
+              I understand that the services I receive through this program are
+              FREE.
+            </li>
+            <li>
               I understand that Community Advocates will refer my application to
               the University of Wisconsin Law School so that a clinical law
               student and/or attorney can determine if there is evidence my home
@@ -60,7 +64,7 @@ const MkeAgreement = () => {
             <li>
               If the University of Wisconsin Law School is able to represent me,
               I understand that it will reach out to me to offer representation,
-              that this representation will be free, and it will be limited to
+              that this representation will be FREE, and it will be limited to
               appealing my most recent property tax assessment.
             </li>
           </ul>
@@ -103,7 +107,7 @@ const MkeAgreement = () => {
       </Space>
 
       <Divider />
-      <p>{getPageLabel("agreement", appeal)}</p>
+      <p>{getPageLabel("mke-agreement", appeal)}</p>
     </Form>
   )
 }

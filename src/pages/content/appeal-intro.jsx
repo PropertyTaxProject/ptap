@@ -5,41 +5,60 @@ import { HELP_LINK } from "../../utils"
 import coalition from "../../assets/coalition_logo.png"
 import ilo from "../../assets/ilo.png"
 import communityAdvocates from "../../assets/community-advocates.jpg"
+import uwLaw from "../../assets/uw-law.png"
 
 const AppealIntro = ({ region }) => (
   <>
     <h1>Who We Are</h1>
-    {region === "milwaukee" && (
+    {region === "milwaukee" ? (
+      <>
+        <p>
+          Community Advocates, a Milwaukee nonprofit, is working with the
+          University of Wisconsin Law School and the Institute for Law and
+          Organizing to assist homeowners in appealing their property tax
+          assessments.
+        </p>
+        <p>
+          The Institute for Law and Organizing (ILO) is a nonprofit organization
+          dedicated to fighting dispossession of Black-owned property. ILO’s
+          current campaign is to end property tax injustice.
+        </p>
+      </>
+    ) : (
       <p>
-        Community Advocates, a Milwaukee nonprofit, is working with the
-        University of Wisconsin Law School and the Coalition for Property Tax
-        Justice to assist homeowners in appealing their property tax
-        assessments.
+        The Coalition for Property Tax Justice is the current campaign of the
+        Institute for Law and Organizing (ILO). We are a nonprofit community
+        organization. In addition to Detroit, ILO is working in Milwaukee,
+        Chicago, and nationally to end racialized property tax administration in
+        America.
       </p>
     )}
-    <p>
-      The Coalition for Property Tax Justice is the current campaign of the
-      Institute for Law and Organizing (ILO). We are a nonprofit community
-      organization. In addition to Detroit, ILO is working in Milwaukee,
-      Chicago, and nationally to end racialized property tax administration in
-      America.
-    </p>
+
     <Space wrap direction="horizontal">
       <img
         src={ilo}
         style={{ height: "80px" }}
         alt="Institute for Law and Organizing logo"
       />
-      <img
-        src={coalition}
-        style={{ height: "80px" }}
-        alt="Coalition for Property Tax Justice logo"
-      />
-      {region == "milwaukee" && (
+
+      {region == "milwaukee" ? (
+        <>
+          <img
+            src={communityAdvocates}
+            style={{ height: "80px" }}
+            alt="Community Advocates logo"
+          />
+          <img
+            src={uwLaw}
+            style={{ height: "80px" }}
+            alt="University of Wisconsin Law School logo"
+          />
+        </>
+      ) : (
         <img
-          src={communityAdvocates}
+          src={coalition}
           style={{ height: "80px" }}
-          alt="Community Advocates logo"
+          alt="Coalition for Property Tax Justice logo"
         />
       )}
     </Space>
@@ -116,7 +135,7 @@ const AppealIntro = ({ region }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete our online application by{" "}
-          <strong>April 22, 2024</strong>.
+          <strong>May 7, 2024</strong>.
         </li>
         <li>
           <b>Step 2</b>: Community Advocates will review your application,

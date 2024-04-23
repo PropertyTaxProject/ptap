@@ -4,7 +4,7 @@ const METERS_IN_MILE = 1609.344
 // TODO: Constant for now, may change
 // eslint-disable-next-line
 export function getMinComparables(region) {
-  return region === "detroit" ? 0 : 3
+  return ["detroit", "milwaukee"].includes(region) ? 0 : 3
 }
 // TODO: Constant for now, may change
 // eslint-disable-next-line
@@ -45,7 +45,7 @@ export function getPageLabel(pageName, { region, resumed }) {
 
 export const HELP_LINK = "https://calendly.com/stopforeclosuremke/appealhelp"
 
-export const CONTACT_EMAIL = "help@illegalforeclosures.org"
+export const CONTACT_EMAIL = "stoptaxforeclosure@communityadvocates.net"
 
 export const DISPLAY_FIELDS = [
   {

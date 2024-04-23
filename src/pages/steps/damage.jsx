@@ -7,8 +7,23 @@ import { useNavigate } from "react-router-dom"
 
 const damageLabel =
   "Please describe the condition of your home and neighborhood below. Be sure to include: (1) any damage to your property, both inside and out; and (2) any neighborhood characteristics that may lower your property’s value (for example, lots of vacant homes, nearby polluting factory, dumping, etc.)."
-const mkeLabel =
-  "First, please describe the condition of your home below. Be sure to include: (1) any current damage to your property, both inside and out; and (2) any other repairs or rehabilitation/updates that need to be done. Next, please describe the condition of your neighborhood below. Be sure to include any neighborhood characteristics that may lower your property’s value (for example, nearby vacant properties, polluting factories, high-traffic roads, trash dumping, etc.)."
+const mkeLabel = (
+  <p>
+    <span>
+      First, please describe the condition of your home below. Be sure to
+      include: (1) any current damage to your property, both inside and out; and
+      (2) any other repairs or rehabilitation/updates that need to be done.
+    </span>
+    <br />
+    <br />{" "}
+    <span>
+      Next, please describe the condition of your neighborhood below. Be sure to
+      include any neighborhood characteristics that may lower your property’s
+      value (for example, nearby vacant properties, polluting factories,
+      high-traffic roads, trash dumping, etc.).
+    </span>
+  </p>
+)
 
 const formItemLayout = {
   labelCol: {
