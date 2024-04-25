@@ -23,6 +23,10 @@ const AppealIntro = ({ region }) => (
           dedicated to fighting dispossession of Black-owned property. ILO’s
           current campaign is to end property tax injustice.
         </p>
+        <p>
+          If you want to appeal your property tax assessment, complete the short
+          application below.
+        </p>
       </>
     ) : (
       <p>
@@ -135,7 +139,9 @@ const AppealIntro = ({ region }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete our online application by{" "}
-          <strong>May 7, 2024</strong>.
+          <strong>May 7, 2024</strong>. You can fill this out for yourself, have
+          someone help you fill it out for yourself, or help someone else fill
+          it out for themselves.
         </li>
         <li>
           <b>Step 2</b>: Community Advocates will review your application,
@@ -145,11 +151,11 @@ const AppealIntro = ({ region }) => (
         <li>
           <b>Step 3</b>: If you are eligible, Community Advocates will refer
           your application to the University of Wisconsin Law School. There, a
-          clinical law student and/or attorney will review your application to
-          determine whether they can file your appeal. If they can file your
-          appeal, you will receive free legal representation. Our team will
-          submit your appeal, along with any important documents, to the Board
-          of Assessors by its deadline, which is May 20, 2024.
+          clinical law student supervised by an attorney will review your
+          application to determine whether they can file your appeal. If they
+          can file your appeal, you will receive free legal representation. Our
+          team will submit your appeal, along with any important documents, to
+          the Board of Assessors by its deadline, which is May 20, 2024.
         </li>
         <li>
           <b>Step 4</b>: Before October 14, 2024, the Board of Assessors will
