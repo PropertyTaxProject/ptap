@@ -139,7 +139,7 @@ const AppealIntro = ({ region }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete our online application by{" "}
-          <strong>May 7, 2024</strong>. You can fill this out for yourself, have
+          <strong>May 9, 2024</strong>. You can fill this out for yourself, have
           someone help you fill it out for yourself, or help someone else fill
           it out for themselves.
         </li>
