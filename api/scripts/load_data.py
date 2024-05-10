@@ -156,7 +156,7 @@ def load_detroit():
 def load_milwaukee():
     data = pyreadr.read_r(os.path.join(DATA_DIR, "mke.RData"))
     parcel_geom_df = gpd.read_file(os.path.join(DATA_DIR, "mke-parcel-points.geojson"))
-    value_df = data["PropertyValuesProd"][data["PropertyValuesProd"]["YearID"] == 2023][
+    value_df = data["PropertyValuesProd"][data["PropertyValuesProd"]["YearID"] == 2024][
         ["ParcelID", "YearID", "TotalAssessedValue"]
     ]
     parcel_df = data["PropertyCharacteristics2024"].merge(
