@@ -184,6 +184,10 @@ export const DISPLAY_FIELDS_MKE = [
     field: "building_type",
   },
   {
+    title: "Physical condition",
+    field: "condition",
+  },
+  {
     title: "Distance",
     field: "distance_display",
   },
