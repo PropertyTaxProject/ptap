@@ -162,11 +162,13 @@ def load_milwaukee():
     parcel_df = data["PropertyCharacteristics2024"].merge(
         value_df, on=["ParcelID"], how="left"
     )
-    sale_df = data["SalesProduction"]
+    sale_df = data["SalesProduction"].loc[
+        data["SalesProduction"]["SalesValidity"] != "I"
+    ]
     sale_df = sale_df.sort_values(
         by=["ParcelID", "SaleDate"], ascending=[True, False]
     ).drop_duplicates(subset="ParcelID", keep="first")[
-        ["ParcelID", "SaleDate", "SalePrice"]
+        ["ParcelID", "SaleDate", "SalePrice", "SalesValidity"]
     ]
 
     parcel_df = parcel_geom_df.merge(
@@ -180,6 +182,7 @@ def load_milwaukee():
             "TotalAssessedValue": "assessed_value",
             "SaleDate": "sale_date",
             "SalePrice": "sale_price",
+            "SalesValidity": "sale_validity",
             "YearBuilt": "year_built",
             "Kitchen": "kitchen",
             "FullBath": "baths",

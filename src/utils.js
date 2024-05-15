@@ -211,6 +211,10 @@ export const DISPLAY_FIELDS_MKE = [
     title: "Sale Date",
     field: "sale_date",
   },
+  {
+    title: "Sale Validity",
+    field: "sale_validity",
+  },
 ]
 
 export function getDisplayFields(region) {

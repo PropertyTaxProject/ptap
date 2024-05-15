@@ -119,6 +119,7 @@ class MilwaukeeParcel(db.Model):
     sale_price = db.Column(db.Float)
     sale_date = db.Column(db.Date)
     sale_year = db.Column(db.Integer)
+    sale_validity = db.Column(db.String(64))
     age = db.Column(db.Integer)
     year_built = db.Column(db.Integer)
     total_sq_ft = db.Column(db.Float)
