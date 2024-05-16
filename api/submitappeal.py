@@ -182,10 +182,18 @@ def primary_details(primary, primary_distance):
         primary_distance = "{:0.2f}mi".format(primary_distance / METERS_IN_MILE)
     return {
         "primary_distance": primary_distance or "",
-        "contention_faircash": "${:,.0f}".format(primary.sale_price),
-        "contention_sev": "{:,.0f}".format(primary.sale_price / 2),
-        "primary_sale_price": "${:,.0f}".format(primary.sale_price),
-        "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d"),
+        "contention_faircash": "${:,.0f}".format(primary.sale_price)
+        if primary.sale_price
+        else "",
+        "contention_sev": "{:,.0f}".format(primary.sale_price / 2)
+        if primary.sale_price
+        else "",
+        "primary_sale_price": "${:,.0f}".format(primary.sale_price)
+        if primary.sale_price
+        else "",
+        "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d")
+        if primary.sale_date
+        else "",
     }
 
 
@@ -222,6 +230,10 @@ def submit_milwaukee_sf(comp_submit, mail):
 
     comparables = comps_df.to_dict(orient="records")
 
+    if primary is None:
+        primary, primary_distance = _get_pin_with_distance(
+            "milwaukee", comparables["pin"], target
+        )
     primary_pin = primary.pin if primary else ""
     has_comparables = len([c for c in comparables if c["pin"] != primary_pin]) > 0
 
