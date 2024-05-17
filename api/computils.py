@@ -105,6 +105,7 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                     targ["total_sq_ft"].values[0],
                     sq_ft_diff,
                 ),
+                ((model.sale_year.is_(None)) | (model.sale_year >= 2021)),
             ]
         )
     else:
@@ -162,7 +163,12 @@ def calculate_comps(targ, region, sales_comps, multiplier):
                 )
                 / (float(targ["total_sq_ft"].values[0] or 0) * 0.10)
             )
-            - (model_alias.neighborhood == targ["neighborhood"].values[0]).cast(Integer)
+            - (
+                (model_alias.neighborhood == targ["neighborhood"].values[0]).cast(
+                    Integer
+                )
+                * 5
+            )
         )
 
     query_limit = 30 if region == "cook" else 10
