@@ -248,6 +248,7 @@ def submit_milwaukee_sf(comp_submit, mail):
         "primary": clean_milwaukee_parcel(primary.as_dict() if primary else {}),
         "has_primary": primary is not None,
         "has_comparables": has_comparables,
+        "comparables_count": len(comparables),
         "comparables": [clean_milwaukee_parcel(p) for p in comparables],
         "year": 2024,
         **primary_details(primary, primary_distance),
