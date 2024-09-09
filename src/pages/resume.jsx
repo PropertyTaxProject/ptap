@@ -16,7 +16,6 @@ const Resume = () => {
         type: "resume",
         appeal,
         region: appealCtx.region,
-        appeal_type: getAppealType(appealCtx.region),
       })
     } catch (e) {
       console.error(e)

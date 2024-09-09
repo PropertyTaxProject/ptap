@@ -19,13 +19,10 @@ const AppealLookup = () => {
 
   const checkEligibility = () => {
     let alertMessage = null
-    if (
-      appeal.eligibility.residence !== "Yes" ||
-      appeal.eligibility.owner !== "Yes"
-    ) {
+    if (!appeal.eligibility.residence || !appeal.eligibility.owner) {
       alertMessage =
         "We do not service landlords. You must be the owner-occupant of the listed property to be eligible for ILO’s services."
-    } else if (appeal.eligibility.hope === "Yes") {
+    } else if (appeal.eligibility.hope) {
       alertMessage =
         "If you qualify for HOPE, instead of filing an appeal, we will send you to our partners at Wayne Metro, who will help you complete a HOPE application."
     } else if (!appeal.target.eligible) {
@@ -43,23 +40,21 @@ const AppealLookup = () => {
     const pin = selectedProperties.length === 0 ? null : selectedProperties[0]
     if (!pin) return
 
-    const target = appeal.propertyOptions.find((o) => pin === o.pin)
+    const target = appeal.search_properties.find((o) => pin === o.pin)
 
-    const eligible =
-      appeal.eligibility.residence !== "Yes" &&
-      appeal.eligibility.owner !== "Yes"
+    const eligible = appeal.eligibility.residence && appeal.eligibility.owner
     dispatch({ type: "set-target", pin, target, eligible })
   }
 
-  if (appeal.region === "detroit" && !appeal.resumed) {
-    return (
-      <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
-          <AppealClosed region={appeal.region} />
-        </Col>
-      </Row>
-    )
-  }
+  // if (appeal.region === "detroit" && !appeal.resumed) {
+  //   return (
+  //     <Row>
+  //       <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
+  //         <AppealClosed region={appeal.region} />
+  //       </Col>
+  //     </Row>
+  //   )
+  // }
 
   return (
     <>
@@ -93,8 +88,8 @@ const AppealLookup = () => {
           label="Is this home your primary residence, meaning the place you live most of the year?"
         >
           <Radio.Group name="residence">
-            <Radio value="Yes">Yes</Radio>
-            <Radio value="No">No</Radio>
+            <Radio value={true}>Yes</Radio>
+            <Radio value={false}>No</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item
@@ -103,8 +98,8 @@ const AppealLookup = () => {
           label="Do you own this home?"
         >
           <Radio.Group name="owner">
-            <Radio value="Yes">Yes</Radio>
-            <Radio value="No">No</Radio>
+            <Radio value={true}>Yes</Radio>
+            <Radio value={false}>No</Radio>
           </Radio.Group>
         </Form.Item>
         {appeal.region === "detroit" && (
@@ -114,8 +109,8 @@ const AppealLookup = () => {
             label="Have you received the Homeowners Property Exemption (HOPE), Poverty Tax Exemption (PTE), or any other hardship program anytime in the last three years?"
           >
             <Radio.Group name="hope">
-              <Radio value="Yes">Yes</Radio>
-              <Radio value="No">No</Radio>
+              <Radio value={true}>Yes</Radio>
+              <Radio value={false}>No</Radio>
             </Radio.Group>
           </Form.Item>
         )}
@@ -128,11 +123,11 @@ const AppealLookup = () => {
       </p>
       <PinLookup
         region={appeal.region}
-        onSearch={({ candidates: propertyOptions, uuid }) =>
-          dispatch({ type: "property-options", propertyOptions, uuid })
+        onSearch={({ search_properties, uuid }) =>
+          dispatch({ type: "search-properties", search_properties, uuid })
         }
       />
-      {appeal.propertyOptions && appeal.propertyOptions.length > 0 && (
+      {appeal.search_properties && appeal.search_properties.length > 0 && (
         <>
           <br />
           <PinChooser
@@ -146,7 +141,7 @@ const AppealLookup = () => {
                 field: "pin",
               },
             ]}
-            propertyOptions={appeal.propertyOptions}
+            propertyOptions={appeal.search_properties}
             max={1}
             isSelectLabels
             onChange={setPin}
@@ -154,7 +149,7 @@ const AppealLookup = () => {
           />
         </>
       )}
-      {appeal.propertyOptions && appeal.propertyOptions.length === 0 && (
+      {appeal.search_properties && appeal.search_properties.length === 0 && (
         <p>Your property could not be found. Please try searching again.</p>
       )}
       <Divider />

@@ -38,10 +38,10 @@ AppealProvider.propTypes = {
 
 function appealReducer(appeal, action) {
   switch (action.type) {
-    case "property-options": {
+    case "search-properties": {
       return {
         ...appeal,
-        propertyOptions: action.propertyOptions,
+        search_properties: action.search_properties,
         uuid: action.uuid,
       }
     }
@@ -73,28 +73,27 @@ function appealReducer(appeal, action) {
       return { ...appeal, terms_name: action.terms_name }
     }
     case "set-homeowner-info": {
-      const { user, comparables, headers, target, propertyInfo } = action
-      user.name = `${user.first_name || ``} ${user.last_name || ``}`
-      return { ...appeal, user, comparables, headers, target, propertyInfo }
+      const { user, comparables, target } = action
+      return { ...appeal, user, comparables, target }
     }
     case "set-user-property": {
-      return { ...appeal, userProperty: { ...action.userProperty } }
+      return { ...appeal, property: { ...action.userProperty } }
     }
     case "select-comparables": {
       return {
         ...appeal,
-        selectedComparables: appeal.comparables.filter(
+        selected_comparables: appeal.comparables.filter(
           ({ pin }) =>
             action.pins.includes(pin) || appeal.selected_primary === pin
         ),
       }
     }
     case "select-primary-comparable": {
-      const selectedPins = appeal.selectedComparables.map(({ pin }) => pin)
+      const selectedPins = appeal.selected_comparables.map(({ pin }) => pin)
       return {
         ...appeal,
         selected_primary: action.pin,
-        selectedComparables: appeal.comparables.filter(
+        selected_comparables: appeal.comparables.filter(
           ({ pin }) =>
             selectedPins.includes(pin) || appeal.selected_primary === pin
         ),
@@ -127,27 +126,23 @@ function appealReducer(appeal, action) {
 const initialAppeal = {
   pin: null,
   uuid: null,
+  step: 1,
+  target: null,
   eligibility: {},
   eligible: null,
-  target: null,
-  propertyInfo: null,
-  agreement: true, // TODO: Remove from multiple places
-  agreement_name: null,
-  terms_name: null,
-  agreement_date: null, // only populated by resume
-  estimate: {},
-  step: 1,
-  selected: false,
-  headers: [],
-  comparables: [],
+  resumed: false,
+  search_properties: [],
+  selected_comparables: [],
   selected_primary: null,
-  selectedComparables: [],
-  propertyOptions: null,
+  agreement: true,
+  agreement_name: null,
+  agreement_date: null,
+  terms_name: null,
+  comparables: [],
   user: null,
-  userProperty: null,
+  property: null,
   damage: null,
   damage_level: null,
-  files: [],
   economic_obsolescence: false,
-  resumed: false,
+  files: [],
 }

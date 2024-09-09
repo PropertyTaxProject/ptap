@@ -1,5 +1,4 @@
 import os
-import time
 import uuid
 from logging.config import dictConfig
 
@@ -8,16 +7,19 @@ import sentry_sdk
 from flask import Flask, abort, jsonify, request, send_file
 from flask_cors import CORS
 from flask_mail import Mail
+from flask_pydantic import validate
 from jinja2 import Environment, FileSystemLoader
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.exceptions import HTTPException
 
+from .comparables import find_comparables
 from .db import db
-from .email import agreement_email
-from .mainfct import address_candidates, comparables, process_comps_input
+from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
+from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
+from .queries import find_address_candidates, find_parcel
 from .tasks import send_reminders
-from .utils import get_region, load_s3_json, log_step
+from .utils import load_s3_json, log_step
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
@@ -82,61 +84,67 @@ def robots():
     return send_file(os.path.join(STATIC_BUILD_DIR, "robots.txt"))
 
 
-@app.route("/api_v1/pin-lookup", methods=["POST"])
-def handle_form0():
-    response_dict = address_candidates(
-        request.json, {"detroit": 150000, "cook": 225000, "milwaukee": 150000}
-    )
+@app.route("/api/search-pin/<region>/<address>", methods=["GET"])
+@validate()
+def search_pin(region: str, address: str):
+    candidates = find_address_candidates(region, address)
     uid = uuid.uuid4().urn[9:]
-    log_step(
-        app.logger,
-        {
-            **request.json,
-            "uuid": uid,
-            "region": get_region(request.json),
-            "step": "pin-lookup",
-        },
-    )
-    response_dict["uuid"] = uid
-    resp = jsonify({"request_status": time.time(), "response": response_dict})
-
-    return resp
-
-
-@app.route("/api_v1/submit", methods=["POST"])
-def handle_form():
-    owner_data = request.json
-    log_step(
-        app.logger,
-        {
-            **request.json,
-            "region": get_region(request.json),
-            "step": "comparables",
-        },
-    )
-    response_dict = comparables(owner_data)
-    resp = jsonify({"request_status": time.time(), "response": response_dict})
-    return resp
-
-
-@app.route("/api_v1/submit2", methods=["POST"])
-def handle_form2():
-    # submit selected comps / finalize appeal / send to summary or complete page
-    comps_data = request.json
-    log_step(
-        app.logger, {**comps_data, "region": get_region(request.json), "step": "submit"}
+    # TODO: Logging, implement as middleware? Include request and response
+    return SearchResponseBody(
+        uuid=uid,
+        search_properties=[
+            ParcelResponseBody.from_parcel(candidate) for candidate in candidates
+        ],
     )
 
-    response_dict = process_comps_input(comps_data, mail)
-    resp = jsonify({"request_status": time.time(), "response": response_dict})
-    return resp
+
+@app.route("/api/user-form", methods=["POST"])
+@validate()
+def handle_user_form(body: RequestBody):
+    target = find_parcel(body.pin)
+    comparables = find_comparables(body.region, target)
+
+    # TODO: Logging
+    return ResponseBody(
+        **body,
+        comparables=[
+            ParcelResponseBody.from_parcel(comp, distance)
+            for (comp, distance) in comparables
+        ],
+    )
+
+
+@app.route("/api/submit-appeal", methods=["POST"])
+@validate()
+def handle_submit_appeal(body: RequestBody):
+    # TODO: Logging
+    if body.region == "cook":
+        mailer = CookDocumentMailer(body)
+    elif body.region == "detroit":
+        mailer = DetroitDocumentMailer(body)
+    elif body.region == "milwaukee":
+        mailer = MilwaukeeDocumentMailer(body)
+    else:
+        raise ValueError("Invalid region supplied")
+
+    mailer.send_mail(mail)
+
+    return ("", 204)
 
 
 @app.route("/api/agreement", methods=["POST"])
-def handle_agreement():
+def handle_agreement(body: RequestBody):
     log_step(app.logger, {**request.json, "step": "agreement"})
-    if "detroit" in request.json.get("region", ""):
-        mail.send(agreement_email(request.json))
+    if body.region == "cook":
+        mailer = CookDocumentMailer(body)
+    elif body.region == "detroit":
+        mailer = DetroitDocumentMailer(body)
+    elif body.region == "milwaukee":
+        mailer = MilwaukeeDocumentMailer(body)
+    else:
+        raise ValueError("Invalid region supplied")
+
+    mailer.send_agreement_email(mail)
     return ("", 204)
 
 
@@ -156,8 +164,8 @@ def handle_reminder():
     return ("", 200)
 
 
-@app.route("/<city>/resume", methods=["GET"])
-def resume(city):
+@app.route("/<region>/resume", methods=["GET"])
+def resume(region):
     app.logger.info("STARTING")
     bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
     key = request.args.get("submission", "")

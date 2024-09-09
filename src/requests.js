@@ -4,8 +4,8 @@ const BASE_URL = document.querySelector("meta[name=baseurl]").content || ""
 
 export const submitForm = async (info) => {
   try {
-    const resp = await axios.post(`${BASE_URL}/api_v1/submit`, info)
-    return resp.data.response
+    const resp = await axios.post(`${BASE_URL}/api/user-form`, info)
+    return resp.data
   } catch (e) {
     console.error(e)
     return null
@@ -14,17 +14,9 @@ export const submitForm = async (info) => {
 
 export const submitAppeal = async (appeal) => {
   try {
-    // TODO: Clean this up
-    const { target, user, userProperty, ...data } = appeal
-    const body = {
-      target_pin: target,
-      user,
-      userProperty,
-      ...data,
-      ...user,
-      ...userProperty,
-    }
-    await axios.post(`${BASE_URL}/api_v1/submit2`, body, {
+    const body = { ...appeal }
+    body.selected_comparables = body.selected_comparables.map(({ pin }) => pin)
+    await axios.post(`${BASE_URL}/api/submit-appeal`, body, {
       responseType: "json",
     })
   } catch (e) {
@@ -32,27 +24,19 @@ export const submitAppeal = async (appeal) => {
   }
 }
 
-export const submitAgreement = async ({
-  uuid,
-  agreement,
-  agreement_name,
-  user,
-  pin,
-  region,
-  ...data
-}) => {
-  const res = await axios.post(
-    `${BASE_URL}/api/agreement`,
-    { uuid, agreement, agreement_name, user, pin, region, ...data },
-    { responseType: "json" }
-  )
+export const submitAgreement = async (data) => {
+  const res = await axios.post(`${BASE_URL}/api/agreement`, data, {
+    responseType: "json",
+  })
   return res.data
 }
 
-export const lookupPin = async (data) => {
+export const lookupPin = async (region, address) => {
   try {
-    const resp = await axios.post(`${BASE_URL}/api_v1/pin-lookup`, data)
-    return resp.data.response
+    const resp = await axios.get(
+      `${BASE_URL}/api/search-pin/${region}/${address}`
+    )
+    return resp.data
   } catch (err) {
     return []
   }

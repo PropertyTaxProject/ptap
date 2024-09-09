@@ -3,10 +3,10 @@ import PropTypes from "prop-types"
 import { Button, Table } from "antd"
 
 const PinChooser = ({
-  headers,
   propertyOptions,
   onChange,
   max,
+  headers,
   onChangePrimary,
   primary = null,
   pins = [],

@@ -226,6 +226,7 @@ export function getDisplayFields(region) {
   return DISPLAY_FIELDS
 }
 
+// TODO: Remove
 /* eslint-disable no-prototype-builtins */
 export function cleanParcel(parcel) {
   const usd = new Intl.NumberFormat("en-US", {

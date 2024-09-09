@@ -1,27 +1,8 @@
-from datetime import datetime
+from typing import Union
 
-from geoalchemy2 import Geometry, WKBElement
-from geoalchemy2.shape import to_shape
+from geoalchemy2 import Geometry
 
-from .constants import DETROIT_EXTERIOR_MAP
 from .db import db
-
-
-def as_dict(obj):
-    return {col.name: getattr(obj, col.name) for col in obj.__table__.columns}
-
-
-def as_json_dict(obj):
-    obj_dict = {}
-    for col in obj.__table__.columns:
-        obj_value = getattr(obj, col.name)
-        if isinstance(obj_value, datetime):
-            obj_value = datetime.strftime("%Y-%m-%d")
-        elif isinstance(obj_value, WKBElement):
-            point = to_shape(obj_value)
-            obj_value = {"type": "Point", "coordinates": [point.x, point.y]}
-        obj_dict[col.name] = obj_value
-    return obj_dict
 
 
 class CookParcel(db.Model):
@@ -30,6 +11,7 @@ class CookParcel(db.Model):
     pin = db.Column(db.String(64), index=True)
     street_number = db.Column(db.String(64), index=True)
     street_name = db.Column(db.String(64), index=True)
+    street_address = db.Column(db.String(128))
     neighborhood = db.Column(db.String(64), index=True)
     assessed_value = db.Column(db.Float)
     sale_price = db.Column(db.Float)
@@ -47,8 +29,6 @@ class CookParcel(db.Model):
     basement = db.Column(db.Boolean)
     garage = db.Column(db.Boolean)
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
-    as_dict = as_dict
-    as_json_dict = as_json_dict
     __table_args__ = (
         db.Index(
             "cook_compound_match_index",
@@ -59,6 +39,12 @@ class CookParcel(db.Model):
             "land_sq_ft",
             "exterior",
         ),
+        db.Index(
+            "cook_street_address_trgm_index",
+            "street_address",
+            postgresql_using="gin",
+            postgresql_ops={"street_address": "gin_trgm_ops"},
+        ),
     )
 
 
@@ -68,6 +54,7 @@ class DetroitParcel(db.Model):
     pin = db.Column(db.String(64), index=True)
     street_number = db.Column(db.String(64), index=True)
     street_name = db.Column(db.String(64), index=True)
+    street_address = db.Column(db.String(128))
     neighborhood = db.Column(db.String(64), index=True)
     assessed_value = db.Column(db.Float)
     taxable_value = db.Column(db.Float)
@@ -89,8 +76,6 @@ class DetroitParcel(db.Model):
     taxpayer = db.Column(db.String(128))
     homestead_exemption = db.Column(db.String(64))
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
-    as_dict = as_dict
-    as_json_dict = as_json_dict
     __table_args__ = (
         db.Index(
             "detroit_compound_match_index",
@@ -101,11 +86,13 @@ class DetroitParcel(db.Model):
             "total_floor_area",
             "exterior",
         ),
+        db.Index(
+            "detroit_street_address_trgm_index",
+            "street_address",
+            postgresql_using="gin",
+            postgresql_ops={"street_address": "gin_trgm_ops"},
+        ),
     )
-
-    @property
-    def exterior_display(self):
-        return DETROIT_EXTERIOR_MAP.get(self.exterior, "")
 
 
 class MilwaukeeParcel(db.Model):
@@ -114,6 +101,7 @@ class MilwaukeeParcel(db.Model):
     pin = db.Column(db.String(64), index=True)
     street_number = db.Column(db.String(64), index=True)
     street_name = db.Column(db.String(64), index=True)
+    street_address = db.Column(db.String(128))
     neighborhood = db.Column(db.String(64), index=True)
     assessed_value = db.Column(db.Float)
     sale_price = db.Column(db.Float)
@@ -138,8 +126,15 @@ class MilwaukeeParcel(db.Model):
     rating_bath = db.Column(db.String(16))
     rating_half_bath = db.Column(db.String(16))
     geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
-    as_dict = as_dict
-    as_json_dict = as_json_dict
     __table_args__ = (
         db.Index("milwaukee_compound_match_index", "pin", "age", "total_sq_ft"),
+        db.Index(
+            "milwaukee_street_address_trgm_index",
+            "street_address",
+            postgresql_using="gin",
+            postgresql_ops={"street_address": "gin_trgm_ops"},
+        ),
     )
+
+
+ParcelType = Union[CookParcel, DetroitParcel, MilwaukeeParcel]

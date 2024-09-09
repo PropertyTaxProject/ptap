@@ -6,20 +6,22 @@ from datetime import datetime
 import geopandas as gpd
 import pandas as pd
 import pyreadr
-from sqlalchemy import text
-
 from api.api import app
 from api.db import db
 from api.models import CookParcel, DetroitParcel
+from sqlalchemy import text
 
 DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database"
 )
+DETROIT_EXTERIOR_MAP = {1: "Siding", 2: "Brick/other", 3: "Brick", 4: "Other"}
 
 current_year = datetime.now().year
 
 with app.app_context():
     db.session.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+    db.session.commit()
+    db.session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
     db.session.commit()
     db.create_all()
     db.session.commit()
@@ -58,6 +60,7 @@ def load_cook():
                     pin=row["pin"],
                     street_number=row["st_num"],
                     street_name=row["st_name"],
+                    street_address=f"{row['st_num']} {row['st_name']}",
                     sale_price=sale_price,
                     sale_year=row["year"].replace(".0", "") or None,
                     assessed_value=row["certified_tot"]
@@ -93,8 +96,16 @@ def load_detroit():
             point = None
             if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
-            sale_price = float(row["Sale Price"]) if row["Sale Price"] != "" else None
-            total_sq_ft = float(row["total_squa"]) if row["total_squa"] != "" else None
+            sale_price = (
+                float(row["Sale Price"])
+                if row["Sale Price"] not in ["", "NA"]
+                else None
+            )
+            total_sq_ft = (
+                float(row["total_squa"])
+                if row["total_squa"] not in ["", "NA"]
+                else None
+            )
             price_per_sq_ft = None
             if sale_price and total_sq_ft and total_sq_ft > 0:
                 price_per_sq_ft = sale_price / total_sq_ft
@@ -109,12 +120,15 @@ def load_detroit():
             if row["Sale Date"]:
                 sale_date = datetime.strptime(row["Sale Date"][:10], "%Y-%m-%d").date()
                 sale_year = sale_date.year
+            addr_split = row["PROPADDR"].split(" ")
+
             detroit_parcels.append(
                 DetroitParcel(
                     id=idx,
                     pin=row["parcel_num"],
-                    street_number=row["st_num"],
-                    street_name=row["st_name"],
+                    street_number=addr_split[0],
+                    street_name=" ".join(addr_split[1:]),
+                    street_address=row["PROPADDR"],
                     neighborhood=row["ECF"],
                     assessed_value=float(row["ASSESSEDVALUETENTATIVE"]),
                     taxable_value=float(row["TAXABLEVALUETENTATIVE"]),
@@ -213,6 +227,10 @@ def load_milwaukee():
             ]
         ),
         axis=1,
+    )
+    # TODO: Fix
+    parcel_df["street_address"] = (
+        parcel_df["street_number"].astype(str) + " " + parcel_df["street_name"]
     )
     parcel_df["sale_year"] = parcel_df["sale_date"].dt.year
     parcel_df["age"] = parcel_df["year_built"].apply(

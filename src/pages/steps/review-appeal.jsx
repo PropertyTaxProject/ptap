@@ -99,7 +99,10 @@ const ReviewAppeal = () => {
       <Divider />
       <h2>Your Information</h2>
       <Table
-        dataSource={[appeal.user]}
+        dataSource={[appeal.user].map((user) => ({
+          ...user,
+          name: `${user.first_name} ${user.last_name}`,
+        }))}
         columns={userCols}
         pagination={false}
         scroll={{ x: true }}
@@ -110,7 +113,7 @@ const ReviewAppeal = () => {
           <>
             <h2>Your Comparables</h2>
             <Table
-              dataSource={appeal.selectedComparables.map(cleanParcel)}
+              dataSource={appeal.selected_comparables}
               columns={compCols}
               pagination={false}
               scroll={{ x: true }}

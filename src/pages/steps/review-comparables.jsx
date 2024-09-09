@@ -16,7 +16,7 @@ const ReviewComparables = () => {
 
   const advancePage = () => {
     // add up to exactly five on advance, update on submit
-    const selectedPins = appeal.selectedComparables.map(({ pin }) => pin)
+    const selectedPins = appeal.selected_comparables.map(({ pin }) => pin)
     const availablePins = appeal.comparables
       .map(({ pin }) => pin)
       .filter((pin) => !selectedPins.includes(pin))
@@ -107,7 +107,7 @@ const ReviewComparables = () => {
         <Button
           size="large"
           type="primary"
-          disabled={appeal.selectedComparables.length < minComparables}
+          disabled={appeal.selected_comparables.length < minComparables}
           onClick={advancePage}
         >
           Next Page

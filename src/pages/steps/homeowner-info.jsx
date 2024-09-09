@@ -98,13 +98,11 @@ const HomeownerInfo = () => {
     const info = {
       ...values,
       pin: appeal.pin,
-      appeal_type: getAppealType(appeal.region),
       uuid: appeal.uuid,
     }
     console.log("Received values of form: ", info)
     const res = await submitForm({
       ...appeal,
-      appeal_type: getAppealType(appeal.region),
       user: { ...appeal.user, ...values },
     })
 
@@ -117,7 +115,6 @@ const HomeownerInfo = () => {
       type: "set-homeowner-info",
       user: info,
       comparables: res.comparables,
-      headers: res.labeled_headers,
       target: res.target_pin[0],
       propertyInfo: res.prop_info,
     })
