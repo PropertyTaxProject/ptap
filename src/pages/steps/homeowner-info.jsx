@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react"
 import { Form, Input, Button, Radio, Space, Select, Divider } from "antd"
-import { getAppealType, getPageLabel } from "../../utils"
+import { getPageLabel } from "../../utils"
 const { Option } = Select
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -113,10 +113,9 @@ const HomeownerInfo = () => {
     // TODO: Add an action to set on change as well?
     dispatch({
       type: "set-homeowner-info",
-      user: info,
+      user: values,
       comparables: res.comparables,
-      target: res.target_pin[0],
-      propertyInfo: res.prop_info,
+      target: res.target,
     })
     if (appeal.region === "detroit") {
       navigate("../agreement")

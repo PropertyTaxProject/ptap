@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { Table } from "antd"
-import { cleanParcel, getDisplayFields } from "../utils"
+import { getDisplayFields } from "../utils"
 
 // displays the target property information
 const PropertyInfo = ({ region, target }) => {
@@ -11,11 +11,7 @@ const PropertyInfo = ({ region, target }) => {
 
   return (
     <>
-      <Table
-        dataSource={[cleanParcel(target)]}
-        pagination={false}
-        scroll={{ x: true }}
-      >
+      <Table dataSource={[target]} pagination={false} scroll={{ x: true }}>
         {fields.map(({ title, field }) => (
           <Table.Column title={title} dataIndex={field} key={field} />
         ))}

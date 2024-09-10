@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from geoalchemy2.functions import ST_DistanceSphere
 from sqlalchemy import Integer, func, literal_column
 from sqlalchemy.orm import aliased
 
+from . import db
 from .constants import METERS_IN_MILE
-from .db import db
 from .models import ParcelType
 from .utils import model_from_region
 
@@ -15,20 +15,17 @@ from .utils import model_from_region
 class ComparableParameters:
     age_diff: float
     distance: float
-    floor_diff: float
-    build_diff: float
-    land_diff: float
-    sq_ft_diff: float
     sales: bool
+    floor_diff: Optional[float] = None
+    build_diff: Optional[float] = None
+    land_diff: Optional[float] = None
+    sq_ft_diff: Optional[float] = None
 
 
-# TODO: Get target in advance
 def find_comparables(
     region: str, target: ParcelType, multiplier: float = 4
 ) -> List[Tuple[ParcelType, float]]:
     model = model_from_region(region)
-    # target = find_parcel(region, pin)
-
     comparable_params = _region_parameters(region, multiplier, None)
 
     # Not using a query for the absolute value on the diff so that we can take advantage
@@ -60,7 +57,7 @@ def find_comparables(
                     target.total_floor_area,
                     comparable_params.floor_diff,
                 ),
-                model.exterior == target.exterior or 0,
+                model.exterior == (target.exterior or 0),
             ]
         )
     elif region == "cook":

@@ -7,8 +7,6 @@ from .constants import METERS_IN_MILE
 from .models import ParcelType
 
 
-# TODO: Any additional fields needed for document templates?
-# TODO: Might need to round floats somewhere
 class ParcelResponseBody(BaseModel):
     pin: str
     address: str
@@ -34,7 +32,6 @@ class ParcelResponseBody(BaseModel):
     condition: Optional[str]
     sale_validity: Optional[str]
     eligible: bool
-    # TODO: diff_score?
 
     @classmethod
     def from_parcel(
@@ -70,10 +67,6 @@ class ParcelResponseBody(BaseModel):
             sale_validity=getattr(parcel, "sale_validity", None),
             eligible=ParcelResponseBody.clean_eligible(parcel),
         )
-
-    # TODO: clean_float, {:,.0f}
-
-    # TODO: Load from utils clean_* parcel methods
 
     @classmethod
     def clean_currency(cls, value: Optional[float]) -> Optional[str]:
@@ -116,11 +109,12 @@ class ParcelResponseBody(BaseModel):
         )
 
     @classmethod
-    def clean_baths(cls, baths: Optional[int]) -> Optional[str]:
-        # TODO: Add half_baths if present
-        if baths is None:
+    def clean_baths(cls, parcel: ParcelType) -> Optional[str]:
+        if getattr(parcel, "baths", None) is None:
             return
-        return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(baths)
+        if hasattr(parcel, "half_baths"):
+            return f"{parcel.baths}.{parcel.half_baths}"
+        return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(parcel.baths)
 
     @classmethod
     def clean_garage(cls, garage: Optional[bool]) -> Optional[str]:
@@ -162,7 +156,7 @@ class UserFormBody(BaseModel):
     city: str
     state: str
     phone: str
-    phonetype: Optional[str]
+    phonetype: Optional[str] = None
     altcontact: str
     mailingsame: str
     heardabout: str
@@ -181,7 +175,6 @@ class RequestBody(BaseModel):
     pin: str
     uuid: str
     region: str
-    step: int  # TODO:
     eligibility: Optional[EligibilityBody]
     eligible: Optional[bool]
     resumed: bool = False
@@ -203,7 +196,6 @@ class ResponseBody(BaseModel):
     pin: str
     uuid: str
     region: str
-    step: Optional[int]
     target: Optional[ParcelResponseBody]
     # TODO: search_properties for initial loading?
     eligibility: Optional[EligibilityBody]

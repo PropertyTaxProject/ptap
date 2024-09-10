@@ -2,7 +2,7 @@ from typing import Union
 
 from geoalchemy2 import Geometry
 
-from .db import db
+from . import db
 
 
 class CookParcel(db.Model):

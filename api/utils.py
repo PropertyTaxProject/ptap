@@ -8,7 +8,7 @@ import gspread
 import pytz
 from google.oauth2 import service_account
 
-from .db import db
+from . import db
 from .models import CookParcel, DetroitParcel, MilwaukeeParcel
 
 

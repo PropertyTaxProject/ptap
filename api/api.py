@@ -1,77 +1,21 @@
 import os
 import uuid
-from logging.config import dictConfig
 
-import boto3
 import sentry_sdk
-from flask import Flask, abort, jsonify, request, send_file
-from flask_cors import CORS
-from flask_mail import Mail
+from flask import abort, jsonify, request, send_file
 from flask_pydantic import validate
 from jinja2 import Environment, FileSystemLoader
-from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.exceptions import HTTPException
 
+from . import STATIC_BUILD_DIR, create_app
 from .comparables import find_comparables
-from .db import db
 from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
 from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
 from .queries import find_address_candidates, find_parcel
 from .tasks import send_reminders
 from .utils import load_s3_json, log_step
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
-
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    environment=os.getenv("ENVIRONMENT", "dev"),
-    integrations=[AwsLambdaIntegration(), FlaskIntegration()],
-    traces_sample_rate=0.1,
-    profiles_sample_rate=0.1,
-)
-
-dictConfig(
-    {
-        "version": 1,
-        "formatters": {
-            "default": {
-                "format": "[%(asctime)s] %(levelname)s: %(message)s",
-            }
-        },
-        "handlers": {
-            "wsgi": {
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-                "formatter": "default",
-            }
-        },
-        "root": {"level": "INFO", "handlers": ["wsgi"]},
-    }
-)
-
-app = Flask(
-    __name__,
-    static_folder=os.path.join(STATIC_BUILD_DIR, "assets"),
-    template_folder="./templates/",
-)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
-app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
-app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
-app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["S3_CLIENT"] = boto3.client("s3")
-
-
-db.init_app(app)
-
-
-CORS(app)
-mail = Mail(app)
+app = create_app()
 
 
 @app.route("/")
@@ -87,9 +31,13 @@ def robots():
 @app.route("/api/search-pin/<region>/<address>", methods=["GET"])
 @validate()
 def search_pin(region: str, address: str):
-    candidates = find_address_candidates(region, address)
     uid = uuid.uuid4().urn[9:]
-    # TODO: Logging, implement as middleware? Include request and response
+    log_step(
+        app.logger,
+        {"region": region, "address": address, "uuid": uid, "step": "pin-lookup"},
+    )
+
+    candidates = find_address_candidates(region, address)
     return SearchResponseBody(
         uuid=uid,
         search_properties=[
@@ -101,12 +49,13 @@ def search_pin(region: str, address: str):
 @app.route("/api/user-form", methods=["POST"])
 @validate()
 def handle_user_form(body: RequestBody):
-    target = find_parcel(body.pin)
-    comparables = find_comparables(body.region, target)
+    log_step(app.logger, {**body.model_dump(), "step": "comparables"})
 
-    # TODO: Logging
+    target = find_parcel(body.region, body.pin)
+    comparables = find_comparables(body.region, target)
     return ResponseBody(
-        **body,
+        **body.model_dump(),
+        target=ParcelResponseBody.from_parcel(target),
         comparables=[
             ParcelResponseBody.from_parcel(comp, distance)
             for (comp, distance) in comparables
@@ -117,7 +66,8 @@ def handle_user_form(body: RequestBody):
 @app.route("/api/submit-appeal", methods=["POST"])
 @validate()
 def handle_submit_appeal(body: RequestBody):
-    # TODO: Logging
+    log_step(app.logger, {**body.model_dump(), "step": "submit"})
+
     if body.region == "cook":
         mailer = CookDocumentMailer(body)
     elif body.region == "detroit":
@@ -127,14 +77,16 @@ def handle_submit_appeal(body: RequestBody):
     else:
         raise ValueError("Invalid region supplied")
 
-    mailer.send_mail(mail)
+    mailer.send_mail(app.mail)
 
     return ("", 204)
 
 
 @app.route("/api/agreement", methods=["POST"])
+@validate()
 def handle_agreement(body: RequestBody):
     log_step(app.logger, {**request.json, "step": "agreement"})
+
     if body.region == "cook":
         mailer = CookDocumentMailer(body)
     elif body.region == "detroit":
@@ -144,7 +96,7 @@ def handle_agreement(body: RequestBody):
     else:
         raise ValueError("Invalid region supplied")
 
-    mailer.send_agreement_email(mail)
+    mailer.send_agreement_email(app.mail)
     return ("", 204)
 
 
@@ -160,7 +112,7 @@ def handle_upload():
 
 @app.route("/cron/reminders", methods=["GET"])
 def handle_reminder():
-    send_reminders(mail, app.logger)
+    send_reminders(app.mail, app.logger)
     return ("", 200)
 
 

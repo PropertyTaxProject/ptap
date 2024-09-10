@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { AppealContext, AppealDispatchContext } from "../context/appeal"
-import { getAppealType } from "../utils"
 
 const Resume = () => {
   const appealCtx = useContext(AppealContext)

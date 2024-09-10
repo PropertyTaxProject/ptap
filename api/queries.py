@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 from geoalchemy2.functions import ST_DistanceSphere
 from sqlalchemy import func
 
-from .db import db
+from . import db
 from .models import ParcelType
 from .utils import model_from_region
 
@@ -46,7 +46,6 @@ def find_parcels_from_ids_with_distance(
 
 def find_address_candidates(region: str, address: str) -> List[ParcelType]:
     model = model_from_region(region)
-    # TODO: To list
     return (
         model.query.filter(func.similarity(model.street_address, address) > 0.3)
         .order_by(func.similarity(model.street_address, address).desc())

@@ -84,18 +84,20 @@ class BaseDocumentMailer:
     document_template: Optional[str] = None
 
     def __init__(self, body: RequestBody):
-        # TODO: Initialize document inside
         self.body = body
         if self.document_template:
             self.document = DocxTemplate(self.document_template)
         self.region = body.region
         self.target = find_parcel(body.region, body.pin)
         self.comparables = find_parcels_from_ids_with_distance(
-            body.region, body.selected_comparables
+            body.region, self.target, body.selected_comparables
         )
-        self.comparables_avg_sale_price = sum(
-            [comp.sale_price or 0 for comp, _ in self.comparables]
-        ) / len(self.comparables)
+        if len(self.comparables) > 0:
+            self.comparables_avg_sale_price = sum(
+                [comp.sale_price or 0 for comp, _ in self.comparables]
+            ) / len(self.comparables)
+        else:
+            self.comparables_avg_sale_price = 0
         self.primary = None
         self.primary_distance = None
         if body.selected_primary:
@@ -112,7 +114,9 @@ class BaseDocumentMailer:
             "target": ParcelResponseBody.from_parcel(self.target),
             "primary": ParcelResponseBody.from_parcel(
                 self.primary, self.primary_distance
-            ),
+            )
+            if self.primary
+            else None,
             "has_primary": self.primary is not None,
             "has_comparables": len(
                 [c for c, _ in self.comparables if c.pin != body.selected_primary]
@@ -203,8 +207,10 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         }
 
     def send_mail(self, mail: Mail):
+        log_url = record_final_submission(self.body.model_dump())
+
         message = self.submission_email()
-        internal_message = self.internal_submission_email()
+        internal_message = self.internal_submission_email(log_url=log_url)
         if os.getenv("ATTACH_LETTERS"):
             letter = (
                 f"Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
@@ -222,8 +228,6 @@ class DetroitDocumentMailer(BaseDocumentMailer):
                 self.render_agreement(),
             )
 
-        # TODO: Figure this part out, ideally move off Google Sheets for mging data
-        record_final_submission()
         mail.send(message)
         mail.send(internal_message)
 
@@ -266,7 +270,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         msg.html = body
         return msg
 
-    def internal_submission_email(self) -> Message:
+    def internal_submission_email(self, **kwargs) -> Message:
         name = f"{self.body.user.first_name} {self.body.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
         msg = Message(subject, recipients=[os.getenv("PTAP_MAIL")])
@@ -274,13 +278,17 @@ class DetroitDocumentMailer(BaseDocumentMailer):
             "emails/submission_log.html",
             name=name,
             address=self.target.street_address,
-            # log_url # TODO:
+            **kwargs,
         )
 
         return msg
 
     def get_depreciation(
-        self, actual_age: int, effective_age: int, damage: str, damage_level: str
+        self,
+        actual_age: int,
+        effective_age: int,
+        damage: str,
+        damage_level: Optional[str],
     ) -> Mapping:
         condition = self.DAMAGE_TO_CONDITION.get(damage_level, [0, 0, 0])
         percent_good = 100 - effective_age
@@ -304,7 +312,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
             "assessor_damage_level": assessor_damage_level,
             "schedule_incorrect": schedule_incorrect,
             "damage": damage,
-            "damage_level": damage_level.title().replace("_", " "),
+            "damage_level": (damage_level or "").title().replace("_", " "),
             "damage_midpoint": condition[1],
             "damage_incorrect": damage_incorrect,
             "damage_correct": damage_correct,
@@ -352,6 +360,9 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
         }
 
     def send_mail(self, mail: Mail):
+        if not self.body.resumed:
+            record_final_submission(self.body.model_dump())
+
         message = self.submission_email()
         message.attach(
             f"Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",

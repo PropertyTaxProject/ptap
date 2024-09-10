@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
-import { getPageLabel, cleanParcel } from "../../utils"
+import { getPageLabel } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
@@ -108,23 +108,18 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      {appeal.region === "chicago" ||
-        (appeal.resumed && (
-          <>
-            <h2>Your Comparables</h2>
-            <Table
-              dataSource={appeal.selected_comparables}
-              columns={compCols}
-              pagination={false}
-              scroll={{ x: true }}
-            />
-            <Divider />
-          </>
-        ))}
+      <h2>Your Comparables</h2>
+      <Table
+        dataSource={appeal.selected_comparables}
+        columns={compCols}
+        pagination={false}
+        scroll={{ x: true }}
+      />
+      <Divider />
       <h2>Your Property Condition</h2>
       <p>
         <strong>Damage level</strong>
-        <span style={{ "text-transform": "capitalize" }}>
+        <span style={{ textTransform: "capitalize" }}>
           {" "}
           {(appeal.damage_level || "").replace(/_/g, " ")}
         </span>

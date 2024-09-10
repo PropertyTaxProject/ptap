@@ -2,7 +2,9 @@ import json
 
 import awsgi
 
-from api.api import app
+from api import create_app
+
+app = create_app()
 
 
 def cron_event(path):

@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import { Button, Row, Col, Space, Divider } from "antd"
 import PropertyInfo from "../../components/property-info"
-import { cleanParcel, getDisplayFields, getPageLabel } from "../../utils"
+import { getDisplayFields, getPageLabel } from "../../utils"
 import PinChooser from "../../components/pin-chooser"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
@@ -83,7 +83,7 @@ const ReviewComparables = () => {
       </Row>
       <PinChooser
         headers={displayFields}
-        propertyOptions={appeal.comparables.map(cleanParcel)}
+        propertyOptions={appeal.comparables}
         max={maxComparables}
         onChange={(pins) =>
           dispatch({ type: "select-comparables", pins: pins })
