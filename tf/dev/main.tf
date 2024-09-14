@@ -187,10 +187,6 @@ data "aws_ecr_repository" "app" {
   name = local.name
 }
 
-data "aws_db_instance" "app" {
-  db_instance_identifier = local.name
-}
-
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "6.0.1"
@@ -244,7 +240,7 @@ module "lambda" {
     MKE_GOOGLE_SHEET_SID   = data.aws_ssm_parameter.mke_google_sheet_sid.value
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
     S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
-    DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${data.aws_db_instance.app.endpoint}/${data.aws_db_instance.app.db_name}"
+    DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
@@ -336,6 +332,103 @@ module "apigw" {
   }
 
   tags = local.tags
+}
+
+# Reuse for multiple environments
+data "aws_availability_zones" "available" {}
+
+locals {
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+}
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = "${local.name}-${local.env}"
+  cidr = local.vpc_cidr
+
+  azs              = local.azs
+  public_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
+  private_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 3)]
+  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 6)]
+
+  create_database_subnet_group           = true
+  create_database_subnet_route_table     = true
+  create_database_internet_gateway_route = true
+
+  tags = local.tags
+}
+
+module "security_group" {
+  source  = "terraform-aws-modules/security-group/aws//modules/postgresql"
+  version = "~> 5.0"
+
+  name                = local.name
+  vpc_id              = module.vpc.vpc_id
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+
+  tags = local.tags
+}
+
+module "rds" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "6.1.1"
+
+  identifier = "${local.name}-${local.env}"
+
+  engine               = "postgres"
+  engine_version       = "14"
+  family               = "postgres14"
+  major_engine_version = "14"
+  instance_class       = "db.t4g.micro"
+
+  allocated_storage     = 5
+  max_allocated_storage = 20
+
+  db_name  = local.name
+  port     = 5432
+  username = data.aws_ssm_parameter.db_username.value
+  password = data.aws_ssm_parameter.db_password.value
+
+  manage_master_user_password = false
+
+  multi_az               = false
+  db_subnet_group_name   = module.vpc.database_subnet_group
+  vpc_security_group_ids = [module.security_group.security_group_id]
+  publicly_accessible    = true
+  ca_cert_identifier     = "rds-ca-rsa4096-g1"
+
+  maintenance_window              = "Mon:00:00-Mon:03:00"
+  backup_window                   = "03:00-06:00"
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  create_cloudwatch_log_group     = true
+
+  backup_retention_period = 1
+  skip_final_snapshot     = true
+  deletion_protection     = false
+
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  create_monitoring_role                = true
+  monitoring_interval                   = 60
+
+  apply_immediately = true
+
+  parameters = [
+    {
+      name  = "autovacuum"
+      value = 1
+    },
+    {
+      name  = "client_encoding"
+      value = "utf8"
+    }
+  ]
+
+  monitoring_role_name            = "${local.name}-${local.env}-rds-monitoring-role-name"
+  monitoring_role_use_name_prefix = true
 }
 
 module "logs_lambda" {
