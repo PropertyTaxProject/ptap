@@ -131,7 +131,7 @@ const initialAppeal = {
   eligibility: {},
   eligible: null,
   resumed: false,
-  search_properties: [],
+  search_properties: null,
   selected_comparables: [],
   selected_primary: null,
   agreement: true,

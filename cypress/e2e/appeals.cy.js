@@ -13,7 +13,6 @@ describe("Appeal flow", () => {
     cy.fixture("cook").then((f) => {
       cook = f
     })
-    // TODO: add milwaukee
   })
 
   it("Submits an appeal", () => {
@@ -21,14 +20,15 @@ describe("Appeal flow", () => {
     regions.forEach(
       ({ region, appealUrl, pin, street_number, street_name, comparables }) => {
         cy.visit(appealUrl)
-        cy.get("#Eligibility_residence [type=radio]").check("Yes")
-        cy.get("#Eligibility_owner [type=radio]").check("Yes")
+        cy.get("#Eligibility_residence [type='radio']").check("true")
+        cy.get("#Eligibility_owner [type=radio]").check("true")
         if (region === "detroit") {
-          cy.get("#Eligibility_hope [type=radio]").check("No")
+          cy.get("#Eligibility_hope [type=radio]").check("true")
         }
 
-        cy.get("input[placeholder=number]").type(street_number)
-        cy.get("input[placeholder=street]").type(street_name)
+        cy.get("input[name=street_address]").type(
+          `${street_number} ${street_name}`
+        )
         cy.get("button[type=submit]").click()
         cy.get(".ant-table-content").contains(pin).should("exist")
 

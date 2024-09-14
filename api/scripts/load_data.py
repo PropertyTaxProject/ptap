@@ -8,8 +8,8 @@ import pandas as pd
 import pyreadr
 from sqlalchemy import text
 
+from api import db
 from api.api import app
-from api.db import db
 from api.models import CookParcel, DetroitParcel
 
 DATA_DIR = os.path.join(
@@ -229,7 +229,6 @@ def load_milwaukee():
         ),
         axis=1,
     )
-    # TODO: Fix
     parcel_df["street_address"] = (
         parcel_df["street_number"].astype(str) + " " + parcel_df["street_name"]
     )

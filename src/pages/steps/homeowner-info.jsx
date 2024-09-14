@@ -64,12 +64,12 @@ const nameFieldsLayout = {
 const getInitialFormData = ({ user, target, region }) => {
   const regionMap = {
     detroit: "Detroit",
-    chicago: "Chicago",
+    cook: "Chicago",
     milwaukee: "Milwaukee",
   }
   const stateMap = {
     detroit: "MI",
-    chicago: "IL",
+    cook: "IL",
     milwaukee: "WI",
   }
   const state = stateMap[region]

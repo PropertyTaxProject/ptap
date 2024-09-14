@@ -13,7 +13,6 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_BUILD_DIR = os.path.join(os.path.dirname(BASE_DIR), "dist")
 
-
 db = SQLAlchemy()
 mail = Mail()
 

@@ -12,12 +12,12 @@ class ParcelResponseBody(BaseModel):
     address: str
     distance: Optional[str]
     neighborhood: Optional[str]
-    assessed_value: str
+    assessed_value: Optional[str]
     taxable_value: Optional[str]
     sale_price: Optional[str]
     sale_date: Optional[date]
     property_class: Optional[str]
-    year_built: int
+    year_built: Optional[int]
     total_sq_ft: Optional[float]
     building_sq_ft: Optional[float]
     land_sq_ft: Optional[float]
@@ -26,8 +26,8 @@ class ParcelResponseBody(BaseModel):
     baths: Optional[str]
     bedrooms: Optional[int]
     exterior: Optional[str]
-    basement: str
-    garage: str
+    basement: Optional[str]
+    garage: Optional[str]
     building_type: Optional[str]
     condition: Optional[str]
     sale_validity: Optional[str]
@@ -100,6 +100,8 @@ class ParcelResponseBody(BaseModel):
 
     @classmethod
     def clean_exterior(cls, parcel: ParcelType) -> str:
+        if not hasattr(parcel, "exterior"):
+            return
         if hasattr(parcel, "building_sq_ft"):
             return {1: "Wood", 2: "Masonry", 3: "Wood/Masonry", 4: "Stucco"}.get(
                 parcel.exterior
@@ -124,17 +126,22 @@ class ParcelResponseBody(BaseModel):
 
     @classmethod
     def clean_basement(cls, parcel: ParcelType) -> str:
+        if not hasattr(parcel, "basement"):
+            return
         if hasattr(parcel, "exterior"):
             return "Full" if parcel.basement else "Partial/None"
         return "Yes" if parcel.basement else "None"
 
     @classmethod
     def clean_eligible(cls, parcel: ParcelType) -> bool:
-        return parcel.assessed_value <= {
-            "detroit": 150000,
-            "cook": 225000,
-            "milwaukee": 150000,
-        }.get(parcel.__tablename__)
+        return (parcel.assessed_value is not None) and (
+            parcel.assessed_value
+            <= {
+                "detroit": 150000,
+                "cook": 225000,
+                "milwaukee": 150000,
+            }.get(parcel.__tablename__)
+        )
 
 
 class SearchResponseBody(BaseModel):
@@ -143,7 +150,7 @@ class SearchResponseBody(BaseModel):
 
 
 class EligibilityBody(BaseModel):
-    hope: bool
+    hope: Optional[bool] = None
     owner: bool
     residence: bool
 
@@ -164,7 +171,7 @@ class UserFormBody(BaseModel):
 
 class UserPropertyBody(BaseModel):
     validcharacteristics: Optional[str]
-    valueestimate: Optional[str]
+    valueestimate: Optional[str] = None
 
 
 class FileBody(BaseModel):

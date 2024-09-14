@@ -146,7 +146,7 @@ const Damage = () => {
           />
         </Form.Item>
 
-        {appeal.region !== "chicago" && (
+        {appeal.region !== "cook" && (
           <>
             <h2>Upload images</h2>
             <p>

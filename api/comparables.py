@@ -26,7 +26,7 @@ def find_comparables(
     region: str, target: ParcelType, multiplier: float = 4
 ) -> List[Tuple[ParcelType, float]]:
     model = model_from_region(region)
-    comparable_params = _region_parameters(region, multiplier, None)
+    comparable_params = _region_parameters(region, multiplier, target)
 
     # Not using a query for the absolute value on the diff so that we can take advantage
     # of the compound index scan, which isn't triggered for abs()
@@ -97,7 +97,7 @@ def find_comparables(
     elif region == "milwaukee":
         query_filters.extend(
             [
-                model.bedrooms == target.bedrooms or 0,
+                model.bedrooms == (target.bedrooms or 0),
                 model.building_type == target.building_type,
                 *_min_max_query(
                     model,

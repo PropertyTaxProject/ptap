@@ -214,7 +214,7 @@ export const DISPLAY_FIELDS_MKE = [
 ]
 
 export function getDisplayFields(region) {
-  if (["chicago", "cook"].includes(region)) {
+  if (region === "cook") {
     return DISPLAY_FIELDS_COOK
   } else if (region === "milwaukee") {
     return DISPLAY_FIELDS_MKE

@@ -104,7 +104,7 @@ const AppealIntro = ({ region }) => (
         </p>
       </>
     )}
-    {region === "chicago" && (
+    {region === "cook" && (
       <ul>
         <li>
           <b>Step 1</b>: Contact the Coalition for Property Tax Justice and work
@@ -177,7 +177,7 @@ const AppealIntro = ({ region }) => (
         <li>Your home is worth $200,000 or less.</li>
       </ul>
     )}
-    {region == "chicago" && (
+    {region == "cook" && (
       <ul>
         <li>You own a home in Cook County.</li>
         <li>

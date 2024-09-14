@@ -93,7 +93,7 @@ const router = createBrowserRouter([
       {
         path: "/cook/*",
         element: (
-          <AppealProvider region="chicago">
+          <AppealProvider region="cook">
             <Outlet />
           </AppealProvider>
         ),
