@@ -7,7 +7,7 @@ from flask_pydantic import validate
 from jinja2 import Environment, FileSystemLoader
 from werkzeug.exceptions import HTTPException
 
-from . import STATIC_BUILD_DIR, create_app
+from . import STATIC_BUILD_DIR, create_app, mail
 from .comparables import find_comparables
 from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
 from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
@@ -77,7 +77,7 @@ def handle_submit_appeal(body: RequestBody):
     else:
         raise ValueError("Invalid region supplied")
 
-    mailer.send_mail(app.mail)
+    mailer.send_mail(mail)
 
     return ("", 204)
 
@@ -96,7 +96,7 @@ def handle_agreement(body: RequestBody):
     else:
         raise ValueError("Invalid region supplied")
 
-    mailer.send_agreement_email(app.mail)
+    mailer.send_agreement_email(mail)
     return ("", 204)
 
 
@@ -112,7 +112,7 @@ def handle_upload():
 
 @app.route("/cron/reminders", methods=["GET"])
 def handle_reminder():
-    send_reminders(app.mail, app.logger)
+    send_reminders(mail, app.logger)
     return ("", 200)
 
 
