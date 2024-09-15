@@ -164,13 +164,13 @@ class UserFormBody(BaseModel):
     state: str
     phone: str
     phonetype: Optional[str] = None
-    altcontact: str
-    mailingsame: str
-    heardabout: str
+    altcontact: Optional[str] = None
+    mailingsame: Optional[str] = None
+    heardabout: Optional[str] = None
 
 
 class UserPropertyBody(BaseModel):
-    validcharacteristics: Optional[str]
+    validcharacteristics: Optional[str] = None
     valueestimate: Optional[str] = None
 
 
