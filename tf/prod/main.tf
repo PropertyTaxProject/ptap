@@ -167,7 +167,7 @@ resource "aws_iam_policy" "read_access" {
       {
         Action   = ["rds:ListTagsForResource"],
         Effect   = "Allow",
-        Resource = [module.rds.db_parameter_group_arn]
+        Resource = [module.db.db_parameter_group_arn]
       },
       {
         Action = [
@@ -427,7 +427,7 @@ module "lambda" {
     MKE_GOOGLE_SHEET_SID   = data.aws_ssm_parameter.mke_google_sheet_sid.value
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
     S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
-    DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.rds.db_instance_endpoint}/${module.rds.db_instance_name}"
+    DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.db.db_instance_endpoint}/${module.db.db_instance_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
@@ -611,11 +611,11 @@ module "security_group" {
   tags = local.tags
 }
 
-module "rds" {
+module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.1.1"
 
-  identifier = local.name
+  identifier = "db-${local.name}-${local.env}"
 
   engine               = "postgres"
   engine_version       = "14"
@@ -666,7 +666,7 @@ module "rds" {
     }
   ]
 
-  monitoring_role_name            = "${local.name}-rds-monitoring-role-name"
+  monitoring_role_name            = "${local.name}-${local.env}-rds-monitoring-role-name"
   monitoring_role_use_name_prefix = true
 }
 
