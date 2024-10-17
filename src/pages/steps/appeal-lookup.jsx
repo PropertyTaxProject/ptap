@@ -197,9 +197,10 @@ const AppealLookup = () => {
         size="large"
         disabled={
           !appeal.target ||
-          !appeal.eligibility?.owner ||
-          !appeal.eligibility?.residence ||
-          (!appeal.eligibility?.hope && appeal.region === "detroit")
+          [null, undefined].includes(appeal.eligibility?.owner) ||
+          [null, undefined].includes(appeal.eligibility?.residence) ||
+          ([null, undefined].includes(appeal.eligibility?.hope) &&
+            appeal.region === "detroit")
         }
         onClick={() => {
           // TODO: Turn into actual link
