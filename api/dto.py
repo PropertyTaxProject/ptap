@@ -186,16 +186,16 @@ class RequestBody(BaseModel):
     eligible: Optional[bool]
     resumed: bool = False
     selected_comparables: List[str] = list
-    selected_primary: Optional[str]
+    selected_primary: Optional[str] = None
     agreement: Optional[bool]
     agreement_date: Optional[date]
     agreement_name: Optional[str]
-    terms_name: Optional[str]
+    terms_name: Optional[str] = None
     user: Optional[UserFormBody]
     property: Optional[UserPropertyBody]
     damage: Optional[str]
     damage_level: Optional[str]
-    economic_obsolescence: Optional[bool]
+    economic_obsolescence: Optional[bool] = None
     files: List[FileBody] = []
 
 

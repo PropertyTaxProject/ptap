@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import date, datetime
 from typing import Type
 
 import boto3
@@ -51,11 +51,12 @@ def record_final_submission(submission):
 
     info = submission.get("user", {})
     eligibility = submission.get("eligibility", {})
+    user_property = submission.get("property", {})
     row_data = [
         submission.get("uuid"),
         key,
         timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        info.get("name", f'{submission["first_name"]} {submission["last_name"]}'),
+        info.get("name", f'{info["first_name"]} {info["last_name"]}'),
         info.get("email"),
         info.get("phone"),
         info.get("phonetype"),
@@ -71,10 +72,10 @@ def record_final_submission(submission):
         info.get("heardabout"),
         info.get("localinput"),
         info.get("socialmedia"),
-        submission.get("validcharacteristics"),
+        user_property.get("validcharacteristics"),
         submission.get("characteristicsinput"),
-        submission.get("valueestimate"),
-        len(submission.get("selectedComparables", [])),
+        user_property.get("valueestimate"),
+        len(submission.get("selected_comparables", [])),
         submission.get("damage_level"),
         submission.get("damage"),
         len(submission.get("files", [])),
@@ -97,7 +98,7 @@ def load_s3_json(s3, bucket, key):
 
 def log_step(logger, data):
     # TODO: Seems like some LOG_STEPs are getting ignored
-    logger.info(f"LOG_STEP: {json.dumps(data)}")
+    logger.info(f"LOG_STEP: {json.dumps(data, default=iso8601_serializer)}")
     # Only running for specific steps to reduce latency
     if data.get("step") in ["agreement", "submit"]:
         update_s3_submission(data)
@@ -112,7 +113,13 @@ def update_s3_submission(data):
 
     s3 = boto3.client("s3")
     s3.put_object(
-        Body=json.dumps(data),
+        Body=json.dumps(data, default=iso8601_serializer),
         Bucket=os.getenv("S3_SUBMISSIONS_BUCKET"),
         Key=f"submissions/{timestamp_path}/{data.get('uuid')}.json",
     )
+
+
+def iso8601_serializer(obj):
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")

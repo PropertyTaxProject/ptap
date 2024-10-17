@@ -85,6 +85,7 @@ const ReviewComparables = () => {
         headers={displayFields}
         propertyOptions={appeal.comparables}
         max={maxComparables}
+        pins={appeal.selected_comparables.map(({ pin }) => pin)}
         onChange={(pins) =>
           dispatch({ type: "select-comparables", pins: pins })
         }

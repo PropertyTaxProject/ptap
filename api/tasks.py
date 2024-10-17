@@ -8,6 +8,7 @@ import pytz
 import sentry_sdk
 
 from .email import detroit_reminder_email
+from .utils import iso8601_serializer
 
 
 def send_reminders(mail, logger):
@@ -58,7 +59,11 @@ def send_reminders(mail, logger):
         try:
             mail.send(detroit_reminder_email(data))
             data["reminder_sent"] = True
-            s3.put_object(Body=json.dumps(data), Bucket=bucket, Key=key)
+            s3.put_object(
+                Body=json.dumps(data, default=iso8601_serializer),
+                Bucket=bucket,
+                Key=key,
+            )
             logger.info(f"CRON: send_reminders: sent for {key}")
         except Exception as e:
             sentry_sdk.capture_exception(e)

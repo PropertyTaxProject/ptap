@@ -102,7 +102,7 @@ class BaseDocumentMailer:
         self.primary_distance = None
         if body.selected_primary:
             self.primary, self.primary_distance = find_parcel_with_distance(
-                body.region, body.pin
+                body.region, body.pin, self.target
             )
 
         owner_name = f"{body.user.first_name} {body.user.last_name}"
