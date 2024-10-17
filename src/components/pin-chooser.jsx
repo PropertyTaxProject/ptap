@@ -21,7 +21,15 @@ const PinChooser = ({
     : ["Add", "Remove"]
 
   useEffect(() => {
-    onChange(selectedPins)
+    if (JSON.stringify(pins) !== JSON.stringify(selectedPins)) {
+      setSelectedPins(pins)
+    }
+  }, [pins])
+
+  useEffect(() => {
+    if (JSON.stringify(pins) !== JSON.stringify(selectedPins)) {
+      onChange(selectedPins)
+    }
   }, [selectedPins])
 
   return (

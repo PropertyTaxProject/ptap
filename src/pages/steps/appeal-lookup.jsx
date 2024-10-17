@@ -38,7 +38,15 @@ const AppealLookup = () => {
 
   const setPin = (selectedProperties) => {
     const pin = selectedProperties.length === 0 ? null : selectedProperties[0]
-    if (!pin) return
+    if (!pin) {
+      dispatch({
+        type: "set-target",
+        pin: null,
+        target: null,
+        eligible: null,
+      })
+      return
+    }
 
     const target = appeal.search_properties.find((o) => pin === o.pin)
 
@@ -147,6 +155,24 @@ const AppealLookup = () => {
             onChange={setPin}
             pins={appeal.pin ? [appeal.pin] : []}
           />
+          {appeal.pin && (
+            <>
+              <br />
+              <Button
+                danger
+                onClick={() => {
+                  dispatch({
+                    type: "set-target",
+                    pin: null,
+                    target: null,
+                    eligible: null,
+                  })
+                }}
+              >
+                Reset chosen address
+              </Button>
+            </>
+          )}
         </>
       )}
       {appeal.search_properties && appeal.search_properties.length === 0 && (
