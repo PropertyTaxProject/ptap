@@ -9,7 +9,7 @@ import pytz
 from google.oauth2 import service_account
 
 from . import db
-from .models import CookParcel, DetroitParcel, MilwaukeeParcel
+from .models import CookParcel, DetroitParcel, MilwaukeeParcel, ParcelType
 
 
 def model_from_region(region: str) -> Type[db.Model]:
@@ -21,7 +21,7 @@ def model_from_region(region: str) -> Type[db.Model]:
         return MilwaukeeParcel
 
 
-def record_final_submission(submission):
+def record_final_submission(submission, parcel: ParcelType):
     # TODO:
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
         return
@@ -61,7 +61,7 @@ def record_final_submission(submission):
         info.get("phone"),
         info.get("phonetype"),
         submission.get("pin"),
-        submission.get("address"),
+        parcel.street_address,
         info.get("city"),
         info.get("state"),
         eligibility.get("residence"),

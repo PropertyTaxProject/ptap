@@ -207,7 +207,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         }
 
     def send_mail(self, mail: Mail):
-        log_url = record_final_submission(self.body.model_dump())
+        log_url = record_final_submission(self.body.model_dump(), self.target)
 
         message = self.submission_email()
         internal_message = self.internal_submission_email(log_url=log_url)
@@ -361,7 +361,7 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
 
     def send_mail(self, mail: Mail):
         if not self.body.resumed:
-            record_final_submission(self.body.model_dump())
+            record_final_submission(self.body.model_dump(), self.target)
 
         message = self.submission_email()
         message.attach(

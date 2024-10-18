@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Optional, Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .constants import METERS_IN_MILE
 from .models import ParcelType
@@ -146,7 +146,7 @@ class ParcelResponseBody(BaseModel):
 
 class SearchResponseBody(BaseModel):
     uuid: str
-    search_properties: List[ParcelResponseBody] = []
+    search_properties: List[ParcelResponseBody] = Field(default_factory=list)
 
 
 class EligibilityBody(BaseModel):
@@ -185,7 +185,7 @@ class RequestBody(BaseModel):
     eligibility: Optional[EligibilityBody]
     eligible: Optional[bool]
     resumed: bool = False
-    selected_comparables: List[str] = list
+    selected_comparables: List[str] = Field(default_factory=list)
     selected_primary: Optional[str] = None
     agreement: Optional[bool]
     agreement_date: Optional[date]
@@ -219,4 +219,4 @@ class ResponseBody(BaseModel):
     damage: Optional[str]
     damage_level: Optional[str]
     economic_obsolescence: Optional[bool]
-    files: List[FileBody] = []
+    files: List[FileBody] = Field(default_factory=list)
