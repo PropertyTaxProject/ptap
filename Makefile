@@ -52,3 +52,7 @@ install-js:
 install-py:
 	poetry self add poetry-dotenv-plugin
 	poetry install
+
+.PHONY: render-doc
+render-doc:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/render_doc.py
