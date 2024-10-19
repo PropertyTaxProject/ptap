@@ -3,18 +3,101 @@ import os
 import time
 from datetime import datetime, timedelta
 
-import boto3
+import gspread
 import pytz
 import sentry_sdk
+from google.oauth2 import service_account
 
+from . import db
 from .email import detroit_reminder_email
-from .utils import iso8601_serializer
+from .models import Submission
+from .queries import find_parcel
+from .utils import yes_no
+
+
+def get_submission_worksheet(region: str) -> gspread.Worksheet:
+    if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
+        return
+
+    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT"))
+    credentials = service_account.Credentials.from_service_account_info(
+        credentials_json,
+        scopes=[
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/drive",
+        ],
+    )
+
+    client = gspread.authorize(credentials)
+    sheet_name = os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")
+    if region == "milwaukee":
+        sheet_name = os.getenv("MKE_GOOGLE_SHEET_SUBMISSION_NAME")
+    return client.open(sheet_name).worksheet("submissions")
+
+
+def sync_submissions_spreadsheet(worksheet):
+    sheet_uuids = set(worksheet.col_values(1))
+    submitted_uuids = [
+        str(uuid[0])
+        for uuid in db.session.query(Submission.uuid)
+        .filter(Submission.data["step"].astext == "submit")
+        .all()
+    ]
+    uuids_to_add = set(submitted_uuids) - sheet_uuids
+    submissions_to_add = (
+        Submission.query.filter(Submission.uuid.in_(uuids_to_add))
+        .order_by(Submission.created_at)
+        .all()
+    )
+    rows = []
+    for rec in submissions_to_add:
+        submission = rec.data
+        info = submission.get("user", {})
+        eligibility = submission.get("eligibility", {})
+        user_property = submission.get("property", {})
+        street_address = ""
+        if submission.get("pin"):
+            parcel = find_parcel(submission.get("region"), submission["pin"])
+            street_address = parcel.street_address
+
+        rows.append(
+            [
+                rec.uuid,
+                rec.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                info.get("name", f'{info["first_name"]} {info["last_name"]}'),
+                info.get("email"),
+                info.get("phone"),
+                info.get("phonetype"),
+                submission.get("pin"),
+                street_address,
+                info.get("city"),
+                info.get("state"),
+                yes_no(eligibility.get("residence")),
+                yes_no(eligibility.get("owner")),
+                yes_no(eligibility.get("hope")),
+                info.get("mailingaddress"),
+                info.get("altcontactname"),
+                info.get("heardabout"),
+                info.get("localinput"),
+                info.get("socialmedia"),
+                user_property.get("validcharacteristics"),
+                submission.get("characteristicsinput"),
+                user_property.get("valueestimate"),
+                len(submission.get("selected_comparables", [])),
+                submission.get("damage_level"),
+                submission.get("damage"),
+                len(submission.get("files", [])),
+                yes_no(submission.get("resumed")),
+            ]
+        )
+
+    worksheet.append_rows(rows)
 
 
 def send_reminders(mail, logger):
     logger.info("CRON: send reminders")
-    s3 = boto3.client("s3")
-    bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
     today = datetime.now(pytz.timezone("America/Detroit"))
     # We should only send emails when someone hasn't been contacted already and doesn't
     # have a separate completed submission. This will ignore someone who submits two
@@ -24,47 +107,37 @@ def send_reminders(mail, logger):
     # Make sure we only send one email per email address
     email_map = {}
 
-    submission_keys = []
-    for day_diff in range(1, 3):
-        day = today - timedelta(day_diff)
-        res = s3.list_objects_v2(
-            Bucket=bucket, Prefix="submissions/" + day.strftime("%Y/%m/%d/")
+    for submission in (
+        Submission.query(
+            Submission.created_at >= (today - timedelta(2)),
+            Submission.data["region"].astext == "detroit",
         )
-        for obj in res.get("Contents", []):
-            submission_keys.append(obj["Key"])
-
-    for key in submission_keys:
+        .order_by(Submission.created_at)
+        .all()
+    ):
         try:
-            data = json.load(s3.get_object(Bucket=bucket, Key=key)["Body"])
-            step = data.get("step")
+            data = submission.data
             email = data.get("user", {}).get("email", "").lower()
-            if (
-                not step
-                or step == "submit"
-                or data.get("region") != "detroit"
-                or data.get("reminder_sent")
-                or email in emails_to_ignore
-            ):
+            # Ignore user email if they've submitted or been sent a reminder
+            if (data.get("step") == "submit") or data.get("reminder_sent"):
                 emails_to_ignore.add(email)
             else:
-                email_map[email] = {"key": key, "data": data}
+                submission.data["reminder_sent"] = True
+                db.session.add(submission)
+                email_map[email] = data
         except Exception as e:
             sentry_sdk.capture_exception(e)
 
-    for email_obj in email_map.values():
-        key = email_obj["key"]
-        data = email_obj["data"]
-        logger.info(f"CRON: send_reminders: {key}")
+    for email, data in email_map.items():
+        if email in emails_to_ignore:
+            continue
 
+        logger.info(f"CRON: send_reminders: {email}")
         try:
             mail.send(detroit_reminder_email(data))
-            data["reminder_sent"] = True
-            s3.put_object(
-                Body=json.dumps(data, default=iso8601_serializer),
-                Bucket=bucket,
-                Key=key,
-            )
-            logger.info(f"CRON: send_reminders: sent for {key}")
+            logger.info(f"CRON: send_reminders: sent for {email}")
         except Exception as e:
             sentry_sdk.capture_exception(e)
         time.sleep(3)
+
+    db.session.commit()

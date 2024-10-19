@@ -11,9 +11,13 @@ from . import STATIC_BUILD_DIR, create_app, mail
 from .comparables import find_comparables
 from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
 from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
-from .queries import find_address_candidates, find_parcel
-from .tasks import send_reminders
-from .utils import load_s3_json, log_step
+from .models import Submission
+from .queries import find_address_candidates, find_parcel, log_step
+from .tasks import (
+    get_submission_worksheet,
+    send_reminders,
+    sync_submissions_spreadsheet,
+)
 
 app = create_app()
 
@@ -116,26 +120,26 @@ def handle_reminder():
     return ("", 200)
 
 
-@app.route("/<region>/resume", methods=["GET"])
-def resume(region):
-    app.logger.info("STARTING")
-    bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
-    key = request.args.get("submission", "")
-    app.logger.info(f"RESUME: {key}")
+@app.route("/cron/submissions", methods=["GET"])
+def handle_submissions():
+    for region in ["detroit", "milwaukee"]:
+        app.logger.info(f"Syncing submissions to spreadsheet: {region}")
+        worksheet = get_submission_worksheet(region)
+        sync_submissions_spreadsheet(worksheet)
+    return ("", 200)
 
-    # Restrict access to submissions subpath, not ideal
-    if not key.startswith("submissions/"):
-        return abort(404)
 
-    try:
-        # TODO: Add prop so emails not all re-sent?
-        data = load_s3_json(app.config["S3_CLIENT"], bucket, key)
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+@app.route("/<region>/resume/<uuid>", methods=["GET"])
+def resume(region, uuid):
+    app.logger.info(f"RESUME: {uuid}")
+    submission = Submission.query.filter_by(uuid=uuid).first()
+    if submission is None:
         return abort(404)
+    if "agreement_date" not in submission.data:
+        submission.data["agreement_date"] = submission.data["timestamp"][:10]
 
     jinja_env = Environment(loader=FileSystemLoader(STATIC_BUILD_DIR))
-    return jinja_env.get_template("index.html").render(frontend_props=data)
+    return jinja_env.get_template("index.html").render(frontend_props=submission.data)
 
 
 @app.errorhandler(404)

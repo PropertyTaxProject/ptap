@@ -4,6 +4,7 @@ env:
   POETRY_VIRTUALENVS_IN_PROJECT: true
   VITE_PUBLIC_URL: ""
   VITE_BASE_URL: ""
+  ENVIRONMENT: local
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
 permissions:

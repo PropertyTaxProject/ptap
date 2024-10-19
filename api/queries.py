@@ -1,11 +1,19 @@
-from typing import List, Optional, Tuple
+import json
+from datetime import date, datetime
+from typing import List, Mapping, Optional, Tuple
 
 from geoalchemy2.functions import ST_DistanceSphere
 from sqlalchemy import func
 
 from . import db
-from .models import ParcelType
+from .models import ParcelType, Submission
 from .utils import model_from_region
+
+
+def iso8601_serializer(obj):
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 
 def address_candidates_query(region, st_num):
@@ -52,3 +60,20 @@ def find_address_candidates(region: str, address: str) -> List[ParcelType]:
         .limit(10)
         .all()
     )
+
+
+def log_step(logger, data):
+    logger.info(f"LOG_STEP: {json.dumps(data, default=iso8601_serializer)}")
+    create_or_update_submission(data.get("uuid"), data)
+
+
+def create_or_update_submission(uuid: str, data: Mapping) -> Submission:
+    submission = Submission.query.filter_by(uuid=uuid).first()
+    if submission:
+        submission.data = data
+    else:
+        json_data = json.loads(json.dumps(data, default=iso8601_serializer))
+        submission = Submission(uuid=uuid, data=json_data)
+        db.session.add(submission)
+    db.session.commit()
+    return submission
