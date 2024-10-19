@@ -1,6 +1,8 @@
+from datetime import datetime
 from typing import Union
 
 from geoalchemy2 import Geometry
+from sqlalchemy.dialects.postgresql import JSONB
 
 from . import db
 
@@ -138,3 +140,13 @@ class MilwaukeeParcel(db.Model):
 
 
 ParcelType = Union[CookParcel, DetroitParcel, MilwaukeeParcel]
+
+
+class Submission(db.Model):
+    __tablename__ = "submissions"
+    uuid = db.Column(db.String(64), primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+    data = db.Column(JSONB, default=dict)

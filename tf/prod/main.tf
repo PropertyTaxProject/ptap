@@ -450,6 +450,9 @@ resource "aws_cloudwatch_event_target" "keep_warm" {
   rule      = aws_cloudwatch_event_rule.keep_warm.name
   target_id = "${local.name}-${local.env}"
   arn       = module.lambda.lambda_function_arn
+  input = jsonencode({
+    cron = "/cron/submissions"
+  })
 }
 
 # resource "aws_cloudwatch_event_rule" "lambda_cron" {

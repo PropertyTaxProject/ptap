@@ -60,6 +60,7 @@ def create_app() -> Flask:
             "MAIL_USERNAME": os.getenv("MAIL_USERNAME"),
             "MAIL_PASSWORD": os.getenv("MAIL_PASSWORD"),
             "MAIL_DEFAULT_SENDER": os.getenv("MAIL_DEFAULT_SENDER"),
+            "MAIL_SUPPRESS_SEND": os.getenv("ENVIRONMENT") == "local",
             "SQLALCHEMY_DATABASE_URI": os.getenv("DATABASE_URL"),
             "S3_CLIENT": boto3.client("s3"),
         }

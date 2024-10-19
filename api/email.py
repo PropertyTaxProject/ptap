@@ -22,7 +22,6 @@ from .queries import (
     find_parcel_with_distance,
     find_parcels_from_ids_with_distance,
 )
-from .utils import record_final_submission
 
 gsheet_submission = None
 
@@ -207,10 +206,8 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         }
 
     def send_mail(self, mail: Mail):
-        log_url = record_final_submission(self.body.model_dump(), self.target)
-
         message = self.submission_email()
-        internal_message = self.internal_submission_email(log_url=log_url)
+        internal_message = self.internal_submission_email()
         if os.getenv("ATTACH_LETTERS"):
             letter = (
                 f"Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
@@ -278,6 +275,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
             "emails/submission_log.html",
             name=name,
             address=self.target.street_address,
+            sheet_sid=os.getenv("GOOGLE_SHEET_SID"),
             **kwargs,
         )
 
@@ -360,9 +358,6 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
         }
 
     def send_mail(self, mail: Mail):
-        if not self.body.resumed:
-            record_final_submission(self.body.model_dump(), self.target)
-
         message = self.submission_email()
         message.attach(
             f"Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
