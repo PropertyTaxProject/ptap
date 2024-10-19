@@ -59,7 +59,7 @@ class DocumentRenderer:
         MAX_HEIGHT = Inches(4)
         images = []
         for file in files:
-            res = requests.get(file["url"])
+            res = requests.get(file.url)
             if res.status_code != 200:
                 continue
             try:
