@@ -1,36 +1,22 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import PropTypes from "prop-types"
 import { Button, Table } from "antd"
 
 const PinChooser = ({
   propertyOptions,
+  pins,
   onChange,
   max,
   headers,
   onChangePrimary,
   primary = null,
-  pins = [],
   isSelectLabels = false,
   includePrimary = false,
 }) => {
-  const [selectedPins, setSelectedPins] = useState(pins)
-
   const maxOptions = max > 0 ? max : propertyOptions.length
   const [addLabel, removeLabel] = isSelectLabels
     ? ["Select", "Remove"]
     : ["Add", "Remove"]
-
-  useEffect(() => {
-    if (JSON.stringify(pins) !== JSON.stringify(selectedPins)) {
-      setSelectedPins(pins)
-    }
-  }, [pins])
-
-  useEffect(() => {
-    if (JSON.stringify(pins) !== JSON.stringify(selectedPins)) {
-      onChange(selectedPins)
-    }
-  }, [selectedPins])
 
   return (
     <Table
@@ -67,16 +53,16 @@ const PinChooser = ({
         title="Action"
         key="action"
         render={(record) => {
-          const isSelected = selectedPins.includes(record.pin)
+          const isSelected = pins.includes(record.pin)
           return (
             <Button
               danger={isSelected}
-              disabled={selectedPins.length >= maxOptions && !isSelected}
+              disabled={pins.length >= maxOptions && !isSelected}
               onClick={() => {
-                setSelectedPins(
+                onChange(
                   isSelected
-                    ? selectedPins.filter((pin) => record.pin != pin)
-                    : [...selectedPins, record.pin]
+                    ? pins.filter((pin) => record.pin != pin)
+                    : [...pins, record.pin]
                 )
               }}
             >

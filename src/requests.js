@@ -4,6 +4,11 @@ const BASE_URL = document.querySelector("meta[name=baseurl]").content || ""
 
 export const submitForm = async (info) => {
   try {
+    if (info.selected_comparables) {
+      info.selected_comparables = info.selected_comparables.map(
+        ({ pin }) => pin
+      )
+    }
     const resp = await axios.post(`${BASE_URL}/api/user-form`, info)
     return resp.data
   } catch (e) {
