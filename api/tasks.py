@@ -108,7 +108,7 @@ def send_reminders(mail, logger):
     email_map = {}
 
     for submission in (
-        Submission.query(
+        Submission.query.filter(
             Submission.created_at >= (today - timedelta(2)),
             Submission.data["region"].astext == "detroit",
         )
