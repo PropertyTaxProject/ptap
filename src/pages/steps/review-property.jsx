@@ -39,11 +39,6 @@ const ReviewProperty = () => {
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
     dispatch({ type: "set-user-property", userProperty: info })
-    // TODO: Temporary while not collecting data
-    dispatch({
-      type: "select-comparables",
-      pins: [],
-    })
     navigate(
       ["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed
         ? "../damage"

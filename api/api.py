@@ -18,6 +18,7 @@ from .tasks import (
     send_reminders,
     sync_submissions_spreadsheet,
 )
+from .utils import model_from_region
 
 app = create_app()
 
@@ -129,12 +130,24 @@ def handle_submissions():
     return ("", 200)
 
 
-@app.route("/<region>/resume/<uuid>", methods=["GET"])
-def resume(region, uuid):
+@app.route("/<region>/resume", methods=["GET"])
+def resume(region):
+    uuid = request.args.get("submission", "")
     app.logger.info(f"RESUME: {uuid}")
     submission = Submission.query.filter_by(uuid=uuid).first()
     if submission is None:
         return abort(404)
+    parcel = find_parcel(region, submission.data["pin"])
+    parcel_data = ParcelResponseBody.from_parcel(parcel).model_dump()
+    submission.data["target"] = parcel_data
+    submission.data["search_properties"] = [parcel_data]
+    model = model_from_region(region)
+    submission.data["selected_comparables"] = [
+        ParcelResponseBody.from_parcel(parcel).model_dump()
+        for parcel in model.query.filter(
+            model.pin.in_(submission.data["selected_comparables"])
+        )
+    ]
     if "agreement_date" not in submission.data:
         submission.data["agreement_date"] = submission.data["timestamp"][:10]
 
