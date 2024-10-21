@@ -3,7 +3,6 @@ from datetime import date, datetime
 from typing import List, Mapping, Optional, Tuple
 
 from geoalchemy2.functions import ST_DistanceSphere
-from sqlalchemy import func
 
 from . import db
 from .models import ParcelType, Submission
@@ -55,8 +54,8 @@ def find_parcels_from_ids_with_distance(
 def find_address_candidates(region: str, address: str) -> List[ParcelType]:
     model = model_from_region(region)
     return (
-        model.query.filter(func.similarity(model.street_address, address) > 0.3)
-        .order_by(func.similarity(model.street_address, address).desc())
+        model.query.filter(model.street_address.op("%")(address))
+        .order_by(model.street_address.op("<->")(address).desc())
         .limit(10)
         .all()
     )
