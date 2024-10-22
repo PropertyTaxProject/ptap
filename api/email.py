@@ -458,6 +458,8 @@ def detroit_reminder_email(data):
     user = data.get("user", {})
     name = user.get("name", f'{user.get("first_name")} {user.get("last_name")}')
     parcel = find_parcel("detroit", data.get("pin"))
+    if parcel is None:
+        return
 
     subject = f"Property Tax Appeal Project Reminder: {parcel.street_address}"
 
