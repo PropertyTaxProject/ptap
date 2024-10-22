@@ -21,7 +21,7 @@ const cleanAppeal = (appeal) => {
     selected_comparables:
       appeal?.selectedComparables || appeal?.selected_comparables,
     search_properties: appeal?.propertyOptions || appeal?.search_properties,
-    property: appeal?.property,
+    property: appeal?.userProperty || appeal?.property,
   }
 }
 

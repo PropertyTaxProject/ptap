@@ -18,7 +18,7 @@ from .tasks import (
     send_reminders,
     sync_submissions_spreadsheet,
 )
-from .utils import model_from_region
+from .utils import load_s3_json, model_from_region
 
 app = create_app()
 
@@ -135,24 +135,33 @@ def resume(region):
     uuid = request.args.get("submission", "")
     app.logger.info(f"RESUME: {uuid}")
     submission = Submission.query.filter_by(uuid=uuid).first()
-    if submission is None:
+
+    bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
+    s3_submission = load_s3_json(app.config["S3_CLIENT"], bucket, uuid)
+    data = {}
+    if submission:
+        data = submission.data
+        parcel = find_parcel(region, data["pin"])
+        parcel_data = ParcelResponseBody.from_parcel(parcel).model_dump()
+        submission.data["target"] = parcel_data
+        submission.data["search_properties"] = [parcel_data]
+        model = model_from_region(region)
+        data["selected_comparables"] = [
+            ParcelResponseBody.from_parcel(parcel).model_dump()
+            for parcel in model.query.filter(
+                model.pin.in_(data["selected_comparables"])
+            )
+        ]
+    elif s3_submission:
+        data = s3_submission
+    else:
         return abort(404)
-    parcel = find_parcel(region, submission.data["pin"])
-    parcel_data = ParcelResponseBody.from_parcel(parcel).model_dump()
-    submission.data["target"] = parcel_data
-    submission.data["search_properties"] = [parcel_data]
-    model = model_from_region(region)
-    submission.data["selected_comparables"] = [
-        ParcelResponseBody.from_parcel(parcel).model_dump()
-        for parcel in model.query.filter(
-            model.pin.in_(submission.data["selected_comparables"])
-        )
-    ]
-    if "agreement_date" not in submission.data:
-        submission.data["agreement_date"] = submission.data["timestamp"][:10]
+
+    if "agreement_date" not in data:
+        data["agreement_date"] = data["timestamp"][:10]
 
     jinja_env = Environment(loader=FileSystemLoader(STATIC_BUILD_DIR))
-    return jinja_env.get_template("index.html").render(frontend_props=submission.data)
+    return jinja_env.get_template("index.html").render(frontend_props=data)
 
 
 @app.errorhandler(404)
