@@ -135,8 +135,10 @@ def send_reminders(mail, logger):
 
         logger.info(f"CRON: send_reminders: {email}")
         try:
-            mail.send(detroit_reminder_email(data))
-            logger.info(f"CRON: send_reminders: sent for {email}")
+            reminder_email = detroit_reminder_email(data)
+            if reminder_email:
+                mail.send(detroit_reminder_email(data))
+                logger.info(f"CRON: send_reminders: sent for {email}")
         except Exception as e:
             sentry_sdk.capture_exception(e)
         time.sleep(3)
