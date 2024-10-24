@@ -108,14 +108,18 @@ const ReviewAppeal = () => {
         scroll={{ x: true }}
       />
       <Divider />
-      <h2>Your Comparables</h2>
-      <Table
-        dataSource={appeal.selected_comparables}
-        columns={compCols}
-        pagination={false}
-        scroll={{ x: true }}
-      />
-      <Divider />
+      {appeal.selected_comparables.length > 0 && (
+        <>
+          <h2>Your Comparables</h2>
+          <Table
+            dataSource={appeal.selected_comparables}
+            columns={compCols}
+            pagination={false}
+            scroll={{ x: true }}
+          />
+          <Divider />
+        </>
+      )}
       <h2>Your Property Condition</h2>
       <p>
         <strong>Damage level</strong>
