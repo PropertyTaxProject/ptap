@@ -193,7 +193,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
     def handle_region_data(self):
         self.context_data = {
             **self.context_data,
-            "current_faircash": f"${(self.target.assessed_value * 2):,.0f}",
+            "current_faircash": f"${((self.target.assessed_value or 0) * 2):,.0f}",
             "contention_faircash2": f"${self.comparables_avg_sale_price:,.0f}",
             "economic_obsolescence": self.body.economic_obsolescence,
             **self.get_depreciation(
@@ -351,7 +351,7 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
     def handle_region_data(self):
         self.context_data = {
             **self.context_data,
-            "current_faircash": f"${(self.target.assessed_value * 2):.0f}",
+            "current_faircash": f"${((self.target.assessed_value or 0) * 2):.0f}",
             "contention_faircash2": f"${self.comparables_avg_sale_price:,.0f}",
             "comparables_count": len(self.comparables),
             **self.primary_details(self.primary, self.primary_distance),
