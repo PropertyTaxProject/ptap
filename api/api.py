@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 
@@ -12,7 +13,7 @@ from .comparables import find_comparables
 from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
 from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
 from .models import Submission
-from .queries import find_address_candidates, find_parcel, log_step
+from .queries import find_address_candidates, find_parcel, iso8601_serializer, log_step
 from .tasks import (
     get_submission_worksheet,
     send_reminders,
@@ -159,6 +160,8 @@ def resume(region):
 
     if "agreement_date" not in data:
         data["agreement_date"] = data["timestamp"][:10]
+    # Hack to avoid adding a custom filter since it's only used here
+    data = json.loads(json.dumps(data, default=iso8601_serializer))
 
     jinja_env = Environment(loader=FileSystemLoader(STATIC_BUILD_DIR))
     return jinja_env.get_template("index.html").render(frontend_props=data)
