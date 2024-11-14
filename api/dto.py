@@ -57,7 +57,7 @@ class ParcelResponseBody(BaseModel):
             land_sq_ft=getattr(parcel, "land_sq_ft", None),
             stories=ParcelResponseBody.clean_stories(getattr(parcel, "stories", None)),
             rooms=getattr(parcel, "rooms", None),
-            baths=ParcelResponseBody.clean_baths(getattr(parcel, "baths", None)),
+            baths=ParcelResponseBody.clean_baths(parcel),
             bedrooms=getattr(parcel, "bedrooms", None),
             exterior=ParcelResponseBody.clean_exterior(parcel),
             basement=ParcelResponseBody.clean_basement(parcel),
