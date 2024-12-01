@@ -28,7 +28,7 @@ locals {
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
-  sheet_name      = "PTAP Submissions"
+  sheet_name      = "PTAP Submissions 2024"
   mke_sheet_name  = "MKE PTAP Submissions"
 
   tags = {
