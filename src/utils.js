@@ -40,7 +40,8 @@ export function getPageLabel(pageName, { region, resumed }) {
   return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
 }
 
-export const HELP_LINK = "https://calendly.com/stopforeclosuremke/appealhelp"
+export const HELP_LINK =
+  "https://calendly.com/d/cmr7-z3h-fn8/property-tax-appeal-assistance"
 
 export const CONTACT_EMAIL = "stoptaxforeclosure@communityadvocates.net"
 

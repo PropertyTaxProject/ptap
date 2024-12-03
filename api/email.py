@@ -325,7 +325,12 @@ class DetroitDocumentMailer(BaseDocumentMailer):
 
     def render_agreement(self) -> bytes:
         doc = DocxTemplate(
-            os.path.join(BASE_DIR, "templates", "docs", "representation_agreement.docx")
+            os.path.join(
+                BASE_DIR,
+                "templates",
+                "docs",
+                "detroit_representation_agreement_2025.docx",
+            )
         )
         timestamp = datetime.now(pytz.timezone("America/Detroit"))
         agreement_date = timestamp.strftime("%Y-%m-%d")

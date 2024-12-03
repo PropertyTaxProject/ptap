@@ -54,7 +54,7 @@ def load_cook():
             age = None
             if row["year_built"]:
                 year_built = int(row["year_built"])
-                age = 2024 - year_built
+                age = 2025 - year_built
             cook_parcels.append(
                 CookParcel(
                     id=idx,

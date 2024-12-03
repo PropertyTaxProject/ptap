@@ -7,7 +7,7 @@ class Region(StrEnum):
     MILWAUKEE = "milwaukee"
 
 
-CURRENT_YEAR = 2024
+CURRENT_YEAR = 2025
 
 METERS_IN_MILE = 1609.344
 

@@ -97,7 +97,7 @@ const AppealIntro = ({ region }) => (
         <ul>
           <li>
             <b>Step 1</b>: Complete our online application by{" "}
-            <b>March 1, 2024</b>.
+            <b>March 5, 2025</b>.
           </li>
           <li>
             <b>Step 2</b>: We will review your application, determine if the
@@ -106,10 +106,10 @@ const AppealIntro = ({ region }) => (
           </li>
           <li>
             <b>Step 3</b>: Our team will submit your documents to the March
-            Board of Review by its deadline, which is March 11, 2024.
+            Board of Review by its deadline, which is March 10, 2025.
           </li>
           <li>
-            <b>Step 4</b>: Before June 2024, the Board of Review will send you a
+            <b>Step 4</b>: Before June 2025, the Board of Review will send you a
             letter notifying you whether or not you won your appeal.
           </li>
         </ul>
