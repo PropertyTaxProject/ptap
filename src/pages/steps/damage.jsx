@@ -151,7 +151,7 @@ const Damage = () => {
             <h2>Upload images</h2>
             <p>
               We encourage you to upload photos showing damage to the inside and
-              outside of your home because appeals that include photos are more
+              outside of your home. Appeals that include photos are more
               effective. No neighborhood photos are necessary.
             </p>
             <FileUpload

@@ -5,6 +5,7 @@ import { HELP_LINK } from "../../utils"
 import coalition from "../../assets/coalition_logo.png"
 import ilo from "../../assets/ilo.png"
 import communityAdvocates from "../../assets/community-advocates.jpg"
+import udmLaw from "../../assets/udmlaw.png"
 import uwLaw from "../../assets/uw-law.png"
 
 const AppealIntro = ({ region }) => (
@@ -30,11 +31,14 @@ const AppealIntro = ({ region }) => (
       </>
     ) : (
       <p>
-        The Coalition for Property Tax Justice is the current campaign of the
-        Institute for Law and Organizing (ILO). We are a nonprofit community
-        organization. In addition to Detroit, ILO is working in Milwaukee,
-        Chicago, and nationally to end racialized property tax administration in
-        America.
+        The Institute for Law and Organizing and the Coalition for Property Tax
+        Justice are nonprofit community organizations, which have partnered with
+        the University of Detroit Mercy School of Law Housing Law Clinic to
+        create the Detroit Property Tax Appeal Program. This program helps
+        Detroit homeowners determine whether or not the City of Detroit has
+        illegally inflated their property taxes. If so, we partner with
+        homeowners to file a property tax assessment appeal to correct this,
+        FREE OF CHARGE.
       </p>
     )}
 
@@ -59,11 +63,18 @@ const AppealIntro = ({ region }) => (
           />
         </>
       ) : (
-        <img
-          src={coalition}
-          style={{ height: "80px" }}
-          alt="Coalition for Property Tax Justice logo"
-        />
+        <>
+          <img
+            src={udmLaw}
+            style={{ height: "80px" }}
+            alt="University of Detroit Mercy Law logo"
+          />
+          <img
+            src={coalition}
+            style={{ height: "80px" }}
+            alt="Coalition for Property Tax Justice logo"
+          />
+        </>
       )}
     </Space>
     <br />
@@ -75,14 +86,23 @@ const AppealIntro = ({ region }) => (
 
     {region === "detroit" && (
       <>
+        <p>
+          Thanks to the people who have been building power with the Coalition
+          for Property Tax Justice, the City of Detroit has complied with our
+          demands and made the Assessor Review optional and not mandatory,
+          giving Detroit homeowners the same amount of time to file an appeal as
+          every other homeowner in the state of Michigan. Homeowners can now
+          appeal directly to the March Board of Review.
+        </p>
         <ul>
           <li>
             <b>Step 1</b>: Complete our online application by{" "}
             <b>March 1, 2024</b>.
           </li>
           <li>
-            <b>Step 2</b>: We will review your application, determine if you are
-            eligible, and reach out for any further information we may need.
+            <b>Step 2</b>: We will review your application, determine if the
+            City has illegally inflated your property tax assessments, and reach
+            out for any further information we may need.
           </li>
           <li>
             <b>Step 3</b>: Our team will submit your documents to the March
@@ -174,7 +194,7 @@ const AppealIntro = ({ region }) => (
           You occupy that home as your permanent residence (we do not service
           landlords); and
         </li>
-        <li>Your home is worth $200,000 or less.</li>
+        <li>Your home is worth $150,000 or less.</li>
       </ul>
     )}
     {region == "cook" && (

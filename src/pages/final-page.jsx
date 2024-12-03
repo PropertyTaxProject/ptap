@@ -6,11 +6,9 @@ const FinalPage = () => (
 
     <h2>What to expect next</h2>
     <p>
-      Our team will contact you before our May 9th deadline. In the meantime, if
-      you have any questions, you can send us an email at:{" "}
-      <a href="mailto:stoptaxforeclosure@communityadvocates.net">
-        stoptaxforeclosure@communityadvocates.net
-      </a>
+      Our team will contact you before our March 1st deadline. In the meantime,
+      if you have any questions, you can send us an email at:{" "}
+      <a href="mailto:ptap@lawandorganizing.org">ptap@lawandorganizing.org</a>
     </p>
   </>
 )

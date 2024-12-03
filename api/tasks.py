@@ -65,7 +65,6 @@ def sync_submissions_spreadsheet(worksheet):
         rows.append(
             [
                 rec.uuid,
-                "",  # TODO: Remove over time
                 rec.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 info.get("name", f'{info["first_name"]} {info["last_name"]}'),
                 info.get("email"),
@@ -90,7 +89,7 @@ def sync_submissions_spreadsheet(worksheet):
                 submission.get("damage_level"),
                 submission.get("damage"),
                 len(submission.get("files", [])),
-                # yes_no(submission.get("resumed")),  # TODO: Re-add
+                yes_no(submission.get("resumed")),
             ]
         )
 

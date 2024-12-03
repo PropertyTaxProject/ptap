@@ -18,33 +18,43 @@ const Agreement = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>Representation Agreement</h1>
           <p>
-            The Institute for Law and Organizing (“ILO”) is a Detroit based
-            nonprofit. By typing your name below, you are signing a document
-            that allows ILO to represent you in appealing your property tax
-            assessment before the City of Detroit&apos;s March Board of Review,
-            if ILO determines you are eligible.
+            The Institute for Law and Organizing (“the Institute”) is a
+            nonprofit community organization that is working in Detroit,
+            Milwaukee, Chicago, and nationally to end racialized property tax
+            administration in America. The Coalition for Property Tax
+            Justice–the Institute&apos;s Detroit campaign–has partnered with
+            University of Detroit Mercy School of Law Housing Law Clinic (“the
+            Clinic”). By typing your name below, you are signing a document that
+            allows the Institute and the Clinic to represent you in appealing
+            your property tax assessment before the City of Detroit&apos;s March
+            Board of Review, if eligible for our services.
           </p>
           <ul>
-            <li>ILO agrees to represent you for FREE.</li>
             <li>
-              By signing this agreement, ILO is not agreeing to represent you on
-              any matters other than the appeal of your property tax assessment.
+              The Institute and the Clinic agree to represent you for FREE.
             </li>
             <li>
-              ILO&apos;s representatives are not Michigan-licensed attorneys, as
-              allowed by Section 44-4-6(b)-(c) of the Detroit City Code. State
-              law also permits non-attorney representatives to represent you
-              before the Michigan Tax Tribunal (MCL 205.735a(10)).
+              By signing this agreement, the Institute and the Clinic are not
+              agreeing to represent you on any matters other than the appeal of
+              your property tax assessment.
             </li>
             <li>
-              ILO will draft your appeal letter, with the assistance of this
-              application. If you complete this online application and respond
-              in a timely manner to any communications from ILO regarding the
-              letter, ILO will file your letter.
+              The Institute and the Clinic&apos;s representatives are not
+              Michigan-licensed attorneys, as allowed by Section 44-4-6(b)-(c)
+              of the Detroit City Code. State law also permits non-attorney
+              representatives to represent you before the Michigan Tax Tribunal
+              (MCL 205.735a(10)).
             </li>
             <li>
-              If ILO files your appeal letter, ILO will argue your appeal before
-              the March Board of Review.
+              The Institute and the Clinic will draft your appeal letter, with
+              the assistance of this application. If you complete this online
+              application and respond in a timely manner to any communications
+              from the Institute and the Clinic regarding the letter, the
+              Institute and the Clinic will file your letter.
+            </li>
+            <li>
+              If the Institute and the Clinic file your appeal letter, they will
+              argue your appeal before the March Board of Review.
             </li>
           </ul>
           <Form
