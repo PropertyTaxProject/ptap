@@ -37,12 +37,17 @@ def get_submission_worksheet(region: str) -> gspread.Worksheet:
     return client.open(sheet_name).worksheet("submissions")
 
 
-def sync_submissions_spreadsheet(worksheet):
+def sync_submissions_spreadsheet(worksheet, since=None):
+    if since is None:
+        since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
     sheet_uuids = set(worksheet.col_values(1))
     submitted_uuids = [
         str(uuid[0])
         for uuid in db.session.query(Submission.uuid)
-        .filter(Submission.data["step"].astext == "submit")
+        .filter(
+            Submission.data["step"].astext == "submit",
+            Submission.created_at >= since,
+        )
         .all()
     ]
     uuids_to_add = set(submitted_uuids) - sheet_uuids
@@ -67,11 +72,11 @@ def sync_submissions_spreadsheet(worksheet):
                 rec.uuid,
                 rec.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 info.get("name", f'{info["first_name"]} {info["last_name"]}'),
+                street_address,
                 info.get("email"),
                 info.get("phone"),
                 info.get("phonetype"),
                 submission.get("pin"),
-                street_address,
                 info.get("city"),
                 info.get("state"),
                 yes_no(eligibility.get("residence")),

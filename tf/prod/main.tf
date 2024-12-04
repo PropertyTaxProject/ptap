@@ -28,7 +28,7 @@ locals {
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
-  sheet_name      = "PTAP Submissions 2024"
+  sheet_name      = "PTAP Submissions 2025"
   mke_sheet_name  = "MKE PTAP Submissions"
 
   tags = {
@@ -432,7 +432,7 @@ module "lambda" {
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
-    ATTACH_LETTERS         = "true"
+    # ATTACH_LETTERS         = "true" # TODO: Change when these are ready to go out
 
     GOOGLE_SHEET_SUBMISSION_NAME     = local.sheet_name
     MKE_GOOGLE_SHEET_SUBMISSION_NAME = local.mke_sheet_name
