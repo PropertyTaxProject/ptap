@@ -137,7 +137,7 @@ class ParcelResponseBody(BaseModel):
         return (parcel.assessed_value is not None) and (
             parcel.assessed_value
             <= {
-                "detroit": 150000,
+                "detroit": 200000,
                 "cook": 225000,
                 "milwaukee": 150000,
             }.get(parcel.__tablename__)

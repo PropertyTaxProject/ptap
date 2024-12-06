@@ -119,7 +119,9 @@ const AppealIntro = ({ region }) => (
             please set up an appointment:{" "}
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
               Schedule an appointment
-            </a>
+            </a>{" "}
+           {" "}
+            or call us at 313-438-8698
           </em>
         </p>
       </>
@@ -194,7 +196,7 @@ const AppealIntro = ({ region }) => (
           You occupy that home as your permanent residence (we do not service
           landlords); and
         </li>
-        <li>Your home is worth $150,000 or less.</li>
+        <li>Your home is worth $200,000 or less.</li>
       </ul>
     )}
     {region == "cook" && (
