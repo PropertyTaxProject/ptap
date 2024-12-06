@@ -120,7 +120,6 @@ const AppealIntro = ({ region }) => (
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
               Schedule an appointment
             </a>{" "}
-           {" "}
             or call us at 313-438-8698
           </em>
         </p>
