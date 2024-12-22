@@ -123,6 +123,18 @@ const AppealIntro = ({ region }) => (
             or call us at 313-438-8698
           </em>
         </p>
+        <p>
+          <em>
+            Looking for an intro on how to use the app?{" "}
+            <a
+              href="https://drive.google.com/file/d/1C6bihayV8WG0-VAat7v6i4P4Ejea78A8/view"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Watch our video for more details
+            </a>
+          </em>
+        </p>
       </>
     )}
     {region === "cook" && (
