@@ -31,8 +31,7 @@ pillow-heif = "^0.13.1"
 pydantic = "^2.9.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
-ruff = "^0.0.292"
+ruff = "^0.8.4"
 pytest = "^8.0.0"
 
 # Only used for loading data script
@@ -43,34 +42,8 @@ geopandas = "^0.14.3"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 88
-target-version = ["py311"]
-exclude = '''
-(
-    \.git
-    | \.venv
-    | \.vscode
-    | \.pytest_cache
-    | __pycache__
-    | build
-    | coverage
-    | dist
-    | app/database
-    | app/templates
-    | src
-    | tf
-)
-'''
-
 [tool.ruff]
 line-length = 88
-select = [
-    "E",
-    "F",
-    "W",
-    "I"
-]
 exclude = [
     ".git",
     ".venv",
@@ -81,5 +54,16 @@ exclude = [
     "tf"
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I"
+]
+
+[tool.ruff.lint.isort]
 known-first-party = ["api"]
+
+[tool.ruff.format]
+indent-style = "space"

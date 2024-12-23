@@ -47,7 +47,7 @@ jobs:
 
       - run: poetry install --no-interaction
 
-      - run: poetry run black . --check
+      - run: poetry run ruff format . --check
 
       - run: poetry run ruff check .
 

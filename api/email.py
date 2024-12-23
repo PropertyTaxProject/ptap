@@ -127,10 +127,9 @@ class BaseDocumentMailer:
             "year": CURRENT_YEAR,
         }
         if os.getenv("GOOGLE_SHEET_SID"):
-            self.context_data[
-                "log_url"
-            ] = "https://docs.google.com/spreadsheets/d/" + os.getenv(
-                "GOOGLE_SHEET_SID"
+            self.context_data["log_url"] = (
+                "https://docs.google.com/spreadsheets/d/"
+                + os.getenv("GOOGLE_SHEET_SID")
             )
         self.handle_region_data()
 
@@ -197,8 +196,8 @@ class DetroitDocumentMailer(BaseDocumentMailer):
             "contention_faircash2": f"${self.comparables_avg_sale_price:,.0f}",
             "economic_obsolescence": self.body.economic_obsolescence,
             **self.get_depreciation(
-                self.target.age,
-                self.target.effective_age,
+                self.target.age or 0,
+                self.target.effective_age or 0,
                 self.body.damage,
                 self.body.damage_level,
             ),
