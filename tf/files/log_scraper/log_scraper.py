@@ -61,7 +61,7 @@ def update_google_spreadsheet(worksheet, log_data):
 
     if cell:
         col_range_end = string.ascii_uppercase[len(row)]
-        worksheet.update(f"A{cell.row}:{col_range_end}{cell.row}", [row])
+        worksheet.update([row], f"A{cell.row}:{col_range_end}{cell.row}")
     else:
         worksheet.append_row(row)
 
