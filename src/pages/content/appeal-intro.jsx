@@ -103,6 +103,19 @@ const AppealIntro = ({ region }) => (
             <b>Step 2</b>: We will review your application, determine if the
             City has illegally inflated your property tax assessments, and reach
             out for any further information we may need.
+            <ul>
+              <li>
+                <em>
+                  Please note that the application offers you the opportunity to
+                  upload photographs of any damage to your home to increase the
+                  likelihood that your appeal will be successful. This is
+                  recommended, but not required. If you choose to include
+                  pictures in your application, you should have them on your
+                  computer prior to beginning your application. Our community
+                  advocates can help you with this process, if necessary.
+                </em>
+              </li>
+            </ul>
           </li>
           <li>
             <b>Step 3</b>: Our team will submit your documents to the March
