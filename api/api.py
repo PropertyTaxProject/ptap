@@ -127,7 +127,7 @@ def handle_submissions():
     for region in ["detroit", "milwaukee"]:
         app.logger.info(f"Syncing submissions to spreadsheet: {region}")
         worksheet = get_submission_worksheet(region)
-        sync_submissions_spreadsheet(worksheet)
+        sync_submissions_spreadsheet(worksheet, region)
     return ("", 200)
 
 
