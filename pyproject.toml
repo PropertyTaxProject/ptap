@@ -27,6 +27,7 @@ boto3 = "^1.28.73"
 aws-wsgi = "^0.2.7"
 awslambdaric = "^3.0.0"
 sentry-sdk = {extras = ["flask"], version = "^2.19.2"}
+pytz = "^2024.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.4"
