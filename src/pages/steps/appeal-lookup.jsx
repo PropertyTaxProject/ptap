@@ -13,8 +13,12 @@ const AppealLookup = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const orgName = "Community Advocates"
-  const lawName = "University of Wisconsin Law School"
+  let orgName = "Institute for Law and Organizing"
+  let lawName = "University of Detroit Mercy School of Law"
+  if (appeal.region === "milwaukee") {
+    orgName = "Community Advocates"
+    lawName = "University of Wisconsin Law School"
+  }
 
   const checkEligibility = () => {
     let alertMessage = null
