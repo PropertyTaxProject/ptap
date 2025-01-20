@@ -69,10 +69,10 @@ def log_step(logger, data):
 
 def create_or_update_submission(uuid: str, data: Mapping) -> Submission:
     submission = Submission.query.filter_by(uuid=uuid).first()
+    json_data = json.loads(json.dumps(data, default=iso8601_serializer))
     if submission:
-        submission.data = data
+        submission.data = json_data
     else:
-        json_data = json.loads(json.dumps(data, default=iso8601_serializer))
         submission = Submission(uuid=uuid, data=json_data)
         db.session.add(submission)
     db.session.commit()
