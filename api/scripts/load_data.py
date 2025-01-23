@@ -90,7 +90,7 @@ def load_cook():
 
 
 def load_detroit():
-    with open(os.path.join(DATA_DIR, "detroit.csv"), "r") as f:
+    with open(os.path.join(DATA_DIR, "detroit-2025.csv"), "r") as f:
         detroit_parcels = []
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
@@ -98,28 +98,26 @@ def load_detroit():
             if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
             sale_price = (
-                float(row["Sale Price"])
-                if row["Sale Price"] not in ["", "NA"]
-                else None
+                float(row["SALEPRICE"]) if row["SALEPRICE"] not in ["", "NA"] else None
             )
             total_sq_ft = (
-                float(row["total_squa"])
-                if row["total_squa"] not in ["", "NA"]
-                else None
+                float(row["TOTALSQFT"]) if row["TOTALSQFT"] not in ["", "NA"] else None
             )
             price_per_sq_ft = None
             if sale_price and total_sq_ft and total_sq_ft > 0:
                 price_per_sq_ft = sale_price / total_sq_ft
             year_built = (
-                int(row["resb_yearbuilt"]) if row["resb_yearbuilt"] != "" else None
+                int(float(row["resb_yearbuilt"]))
+                if row["resb_yearbuilt"] != ""
+                else None
             )
             age = None
             if year_built:
                 age = current_year - year_built
             sale_date = None
             sale_year = None
-            if row["Sale Date"]:
-                sale_date = datetime.strptime(row["Sale Date"][:10], "%Y-%m-%d").date()
+            if row["SALEDATE"]:
+                sale_date = datetime.strptime(row["SALEDATE"][:10], "%Y-%m-%d").date()
                 sale_year = sale_date.year
             addr_split = row["PROPADDR"].split(" ")
 
@@ -131,18 +129,24 @@ def load_detroit():
                     street_name=" ".join(addr_split[1:]),
                     street_address=row["PROPADDR"],
                     neighborhood=row["ECF"],
-                    assessed_value=float(row["ASSESSEDVALUETENTATIVE"]),
-                    taxable_value=float(row["TAXABLEVALUETENTATIVE"]),
+                    assessed_value=float(row["ASSESSEDVALUETENTATIVE"])
+                    if row["ASSESSEDVALUETENTATIVE"]
+                    else None,
+                    taxable_value=float(row["TAXABLEVALUETENTATIVE"])
+                    if row["TAXABLEVALUETENTATIVE"]
+                    else None,
                     sale_price=sale_price,
                     sale_date=sale_date,
                     sale_year=sale_year,
                     year_built=year_built,
                     age=age,
-                    effective_age=int(row["resb_effage"])
+                    effective_age=int(float(row["resb_effage"]))
                     if row["resb_effage"]
                     else None,
                     total_sq_ft=total_sq_ft,
-                    total_acreage=float(row["TOTALACREAGE"]) or None,
+                    total_acreage=float(row["TOTALACREAGE"])
+                    if row["TOTALACREAGE"]
+                    else None,
                     total_floor_area=row["total_floor_area"]
                     if row["total_floor_area"] not in ["", "NA"]
                     else None,
@@ -159,7 +163,7 @@ def load_detroit():
                     basement="1" in row.get("has_basement", ""),
                     garage="1" in row.get("has_garage", ""),
                     taxpayer=row["TAXPAYER1"],
-                    homestead_exemption=row["TAXPAYER1"],
+                    homestead_exemption="",
                     geom=point,
                 )
             )
