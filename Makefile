@@ -24,10 +24,10 @@ deploy-data: data.dump
 
 .PHONY: restore
 restore: data.dump
-	pg_restore -d $(DATABASE_URL) -F c $<
+	pg_restore -d $(DATABASE_URL) --no-owner --no-privileges -F c $<
 
 data.dump:
-	pg_dump $(DATABASE_URL) -F c -f $@
+	pg_dump $(DATABASE_URL) --no-owner --no-privileges -F c -f $@
 
 .PHONY: start
 start:
