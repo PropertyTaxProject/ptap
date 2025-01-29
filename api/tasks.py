@@ -58,6 +58,11 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
         .all()
     )
     rows = []
+
+    app_subdomain = "app"
+    if not os.getenv("ENVIRONMENT") == "prod":
+        app_subdomain = "dev"
+
     for rec in submissions_to_add:
         submission = rec.data
         info = submission.get("user", {})
@@ -96,6 +101,7 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
                 submission.get("damage"),
                 len(submission.get("files", [])),
                 yes_no(submission.get("resumed")),
+                f"https://{app_subdomain}.propertytaxproject.com/{region}/resume?submission={rec.uuid}",  # noqa
             ]
         )
 

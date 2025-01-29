@@ -114,7 +114,7 @@ const HomeownerInfo = () => {
     dispatch({
       type: "set-homeowner-info",
       user: values,
-      comparables: res.comparables,
+      comparables: res.comparables || [],
       target: res.target,
     })
     if (appeal.region === "detroit") {
