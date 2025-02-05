@@ -432,7 +432,7 @@ module "lambda" {
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
-    # ATTACH_LETTERS         = "true" # TODO: Change when these are ready to go out
+    ATTACH_LETTERS         = "true"
 
     GOOGLE_SHEET_SUBMISSION_NAME     = local.sheet_name
     MKE_GOOGLE_SHEET_SUBMISSION_NAME = local.mke_sheet_name
