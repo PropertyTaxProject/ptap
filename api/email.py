@@ -231,8 +231,6 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         # TODO: A little mixed up but works
         subject = f"Property Tax Appeal Agreement: {self.body.agreement_name}"
         recipients = [os.getenv("PTAP_MAIL")]
-        if os.getenv("ENVIRONMENT") == "prod":
-            recipients.append("lysa.stein@lawandorganizing.org")
         message = Message(subject, recipients=recipients)
         message.html = render_template(
             "emails/agreement_log.html",
@@ -254,8 +252,6 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         recipients = (
             [os.getenv("PTAP_MAIL")] if self.body.resumed else [self.body.user.email]
         )
-        if self.body.resumed and os.getenv("ENVIRONMENT") == "prod":
-            recipients.append("lysa.stein@lawandorganizing.org")
 
         if self.body.eligibility and self.body.eligibility.hope:
             body = render_template("emails/submission_detroit_hope.html", name=name)
@@ -275,8 +271,6 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         name = f"{self.body.user.first_name} {self.body.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
         recipients = [os.getenv("PTAP_MAIL")]
-        if os.getenv("ENVIRONMENT") == "prod":
-            recipients.append("lysa.stein@lawandorganizing.org")
         msg = Message(subject, recipients=recipients)
         msg.html = render_template(
             "emails/submission_log.html",
