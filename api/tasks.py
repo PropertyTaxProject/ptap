@@ -7,7 +7,7 @@ import gspread
 import pytz
 import sentry_sdk
 from google.oauth2 import service_account
-from sqlalchemy import or_
+from sqlalchemy import Boolean, or_
 
 from . import db
 from .email import detroit_reminder_email
@@ -47,7 +47,7 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
         Submission.query.filter(
             or_(
                 Submission.data["step"].astext == "submit",
-                Submission.data["resumed"] is True,
+                Submission.data["resumed"].astext.cast(Boolean).is_(True),
             ),
             Submission.data["region"].astext == region,
             Submission.created_at >= since,
