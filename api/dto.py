@@ -171,6 +171,7 @@ class UserFormBody(BaseModel):
 
 class UserPropertyBody(BaseModel):
     validcharacteristics: Optional[str] = None
+    characteristicsinput: Optional[str] = None
     valueestimate: Optional[str] = None
 
 

@@ -77,7 +77,7 @@ function appealReducer(appeal, action) {
       return { ...appeal, user, comparables, target }
     }
     case "set-user-property": {
-      return { ...appeal, property: { ...action.userProperty } }
+      return { ...appeal, property: { ...action.property } }
     }
     case "select-comparables": {
       return {

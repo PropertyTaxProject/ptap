@@ -33,12 +33,13 @@ const ReviewProperty = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [showCharInput, updateCharInput] = useState(
-    appeal.userProperty?.validcharacteristics
+    appeal.userProperty?.validcharacteristics ||
+      appeal.property?.validcharacteristics
   )
 
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
-    dispatch({ type: "set-user-property", userProperty: info })
+    dispatch({ type: "set-user-property", property: info })
     navigate(
       ["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed
         ? "../damage"
@@ -54,7 +55,7 @@ const ReviewProperty = () => {
       <Divider />
       <Form
         form={form}
-        initialValues={appeal.userProperty}
+        initialValues={appeal.property}
         name="Housing_Information"
         onFinish={onFinish}
         labelAlign="left"
