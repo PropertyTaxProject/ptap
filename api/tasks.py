@@ -2,11 +2,12 @@ import json
 import os
 import time
 from datetime import datetime, timedelta
-from sqlalchemy import or_
+
 import gspread
 import pytz
 import sentry_sdk
 from google.oauth2 import service_account
+from sqlalchemy import or_
 
 from . import db
 from .email import detroit_reminder_email
