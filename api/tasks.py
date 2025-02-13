@@ -2,7 +2,7 @@ import json
 import os
 import time
 from datetime import datetime, timedelta
-
+from sqlalchemy import or_
 import gspread
 import pytz
 import sentry_sdk
@@ -44,7 +44,10 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
         # since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
     complete_submissions = (
         Submission.query.filter(
-            Submission.data["step"].astext == "submit",
+            or_(
+                Submission.data["step"].astext == "submit",
+                Submission.data["resumed"] is True,
+            ),
             Submission.data["region"].astext == region,
             Submission.created_at >= since,
         )
