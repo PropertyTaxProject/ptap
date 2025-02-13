@@ -39,21 +39,15 @@ def get_submission_worksheet(region: str) -> gspread.Worksheet:
 
 def sync_submissions_spreadsheet(worksheet, region, since=None):
     if since is None:
-        since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
-    sheet_uuids = set(worksheet.col_values(1))
-    submitted_uuids = [
-        str(uuid[0])
-        for uuid in db.session.query(Submission.uuid)
-        .filter(
+        # TODO: Come up with a better way of doing this
+        since = datetime(2024, 12, 1)
+        # since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
+    complete_submissions = (
+        Submission.query.filter(
             Submission.data["step"].astext == "submit",
             Submission.data["region"].astext == region,
             Submission.created_at >= since,
         )
-        .all()
-    ]
-    uuids_to_add = set(submitted_uuids) - sheet_uuids
-    submissions_to_add = (
-        Submission.query.filter(Submission.uuid.in_(uuids_to_add))
         .order_by(Submission.created_at)
         .all()
     )
@@ -63,13 +57,14 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
     if not os.getenv("ENVIRONMENT") == "prod":
         app_subdomain = "dev"
 
-    for rec in submissions_to_add:
+    for rec in complete_submissions:
         submission = rec.data
         info = submission.get("user", {})
         eligibility = submission.get("eligibility", {})
         user_property = submission.get("property", {})
         street_address = ""
         if submission.get("pin"):
+            # TODO: Do this in a smarter way
             parcel = find_parcel(submission.get("region"), submission["pin"])
             street_address = parcel.street_address
 
@@ -105,7 +100,7 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
             ]
         )
 
-    worksheet.append_rows(rows)
+    worksheet.update(rows, f"A2:AA{len(rows) + 2}")
 
 
 def send_reminders(mail, logger):
