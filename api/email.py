@@ -101,7 +101,7 @@ class BaseDocumentMailer:
         self.primary_distance = None
         if body.selected_primary:
             self.primary, self.primary_distance = find_parcel_with_distance(
-                body.region, body.pin, self.target
+                body.region, body.selected_primary, self.target
             )
 
         owner_name = f"{body.user.first_name} {body.user.last_name}"
@@ -175,7 +175,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
     """
 
     document_template = os.path.join(
-        BASE_DIR, "templates", "docs", "detroit_template_2024.docx"
+        BASE_DIR, "templates", "docs", "detroit_template_2025.docx"
     )
 
     DAMAGE_TO_CONDITION = {

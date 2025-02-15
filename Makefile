@@ -56,3 +56,7 @@ install-py:
 .PHONY: render-doc
 render-doc:
 	PYTHONPATH=$(CURDIR) poetry run python api/scripts/render_doc.py
+
+.PHONY: render-letters
+render-letters:
+	PYTHONPATH=$(CURDIR) poetry run python api/scripts/render_all_letters.py
