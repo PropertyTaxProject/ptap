@@ -39,6 +39,10 @@ class ParcelResponseBody(BaseModel):
         parcel: ParcelType,
         distance: Optional[float] = None,
     ) -> Self:
+        building_sq_ft = getattr(parcel, "building_sq_ft", None)
+        total_floor_area = getattr(parcel, "total_floor_area", None)
+        if total_floor_area:
+            building_sq_ft = total_floor_area
         return cls(
             pin=parcel.pin,
             address=f"{parcel.street_number} {parcel.street_name}",
@@ -53,7 +57,7 @@ class ParcelResponseBody(BaseModel):
             property_class=getattr(parcel, "property_class", None),
             year_built=parcel.year_built,
             total_sq_ft=getattr(parcel, "total_sq_ft", None),
-            building_sq_ft=getattr(parcel, "building_sq_ft", None),
+            building_sq_ft=building_sq_ft,
             land_sq_ft=getattr(parcel, "land_sq_ft", None),
             stories=ParcelResponseBody.clean_stories(getattr(parcel, "stories", None)),
             rooms=getattr(parcel, "rooms", None),

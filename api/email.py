@@ -121,6 +121,7 @@ class BaseDocumentMailer:
                 [c for c, _ in self.comparables if c.pin != body.selected_primary]
             )
             > 0,
+            "property": body.property,
             "comparables": [
                 ParcelResponseBody.from_parcel(p, d) for p, d in self.comparables
             ],

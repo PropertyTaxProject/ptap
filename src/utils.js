@@ -91,6 +91,10 @@ export const DISPLAY_FIELDS = [
     field: "total_sq_ft",
   },
   {
+    title: "Building Sq Ft.",
+    field: "building_sq_ft",
+  },
+  {
     title: "Assessed Value Tentative",
     field: "assessed_value",
   },
