@@ -1,11 +1,13 @@
+import json
 import os
+from datetime import datetime
+
+from sqlalchemy import Boolean, or_
 
 from api.api import app
 from api.dto import RequestBody
 from api.email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
 from api.models import Submission
-from sqlalchemy import Boolean, or_
-from datetime import datetime
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,15 +38,19 @@ if __name__ == "__main__":
             .all()
         )
         for submission in submissions:
-            body = RequestBody.parse_raw(submission.data)
+            body = RequestBody.parse_raw(json.dumps(submission.data))
+            output_filename = f"{submission.created_at.strftime('%Y-%m-%d')} {body.agreement_name} {body.pin} Letter.docx".replace(  # noqa
+                "/", ""
+            )
+            output_path = os.path.join(CURRENT_DIR, "letters", output_filename)
+            if os.path.exists(output_path):
+                continue
+
             mailer = get_mailer(body)
             doc = mailer.render_document()
             with open(
-                os.path.join(
-                    CURRENT_DIR,
-                    "letters",
-                    f"{submission.created_at.strftime('%Y-%m-%d')} {body.agreement_name} {body.pin} Letter.docx",  # noqa
-                ),
+                output_path,
                 "wb",
             ) as f:
+                print(output_filename)
                 f.write(doc)
