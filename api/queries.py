@@ -62,9 +62,9 @@ def find_address_candidates(region: str, address: str) -> List[ParcelType]:
     )
 
 
-def log_step(logger, data):
+def log_step(logger, data) -> Submission:
     logger.info(f"LOG_STEP: {json.dumps(data, default=iso8601_serializer)}")
-    create_or_update_submission(data.get("uuid"), data)
+    return create_or_update_submission(data.get("uuid"), data)
 
 
 def create_or_update_submission(uuid: str, data: Mapping) -> Submission:

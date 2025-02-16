@@ -72,14 +72,14 @@ def handle_user_form(body: RequestBody):
 @app.route("/api/submit-appeal", methods=["POST"])
 @validate()
 def handle_submit_appeal(body: RequestBody):
-    log_step(app.logger, {**body.model_dump(), "step": "submit"})
+    submission = log_step(app.logger, {**body.model_dump(), "step": "submit"})
 
     if body.region == "cook":
-        mailer = CookDocumentMailer(body)
+        mailer = CookDocumentMailer(body, submission)
     elif body.region == "detroit":
-        mailer = DetroitDocumentMailer(body)
+        mailer = DetroitDocumentMailer(body, submission)
     elif body.region == "milwaukee":
-        mailer = MilwaukeeDocumentMailer(body)
+        mailer = MilwaukeeDocumentMailer(body, submission)
     else:
         raise ValueError("Invalid region supplied")
 
@@ -91,14 +91,14 @@ def handle_submit_appeal(body: RequestBody):
 @app.route("/api/agreement", methods=["POST"])
 @validate()
 def handle_agreement(body: RequestBody):
-    log_step(app.logger, {**request.json, "step": "agreement"})
+    submission = log_step(app.logger, {**request.json, "step": "agreement"})
 
     if body.region == "cook":
-        mailer = CookDocumentMailer(body)
+        mailer = CookDocumentMailer(body, submission)
     elif body.region == "detroit":
-        mailer = DetroitDocumentMailer(body)
+        mailer = DetroitDocumentMailer(body, submission)
     elif body.region == "milwaukee":
-        mailer = MilwaukeeDocumentMailer(body)
+        mailer = MilwaukeeDocumentMailer(body, submission)
     else:
         raise ValueError("Invalid region supplied")
 

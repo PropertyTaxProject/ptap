@@ -16,7 +16,7 @@ from pillow_heif import register_heif_opener
 
 from .constants import CURRENT_YEAR, METERS_IN_MILE, WORD_MIMETYPE
 from .dto import FileBody, ParcelResponseBody, RequestBody
-from .models import ParcelType
+from .models import ParcelType, Submission
 from .queries import (
     find_parcel,
     find_parcel_with_distance,
@@ -82,8 +82,9 @@ class DocumentRenderer:
 class BaseDocumentMailer:
     document_template: Optional[str] = None
 
-    def __init__(self, body: RequestBody):
+    def __init__(self, body: RequestBody, submission: Optional[Submission] = None):
         self.body = body
+        self.submission = submission
         if self.document_template:
             self.document = DocxTemplate(self.document_template)
         self.region = body.region
@@ -209,8 +210,11 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         message = self.submission_email()
         internal_message = self.internal_submission_email()
         if os.getenv("ATTACH_LETTERS"):
+            letter_date = datetime.today()
+            if self.submission:
+                letter_date = self.submission.created_at
             letter = (
-                f"Protest Letter Updated {datetime.today().strftime('%m_%d_%y')}.docx",
+                f"{letter_date.strftime('%Y-%m-%d')} {self.body.agreement_name} {self.body.pin} Letter.docx",  # noqa
                 WORD_MIMETYPE,
                 self.render_document(),
             )

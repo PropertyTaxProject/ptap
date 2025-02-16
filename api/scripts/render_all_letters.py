@@ -12,13 +12,13 @@ from api.models import Submission
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
-def get_mailer(body: RequestBody):
+def get_mailer(body: RequestBody, submission: Submission):
     if body.region == "cook":
-        return CookDocumentMailer(body)
+        return CookDocumentMailer(body, submission)
     elif body.region == "detroit":
-        return DetroitDocumentMailer(body)
+        return DetroitDocumentMailer(body, submission)
     elif body.region == "milwaukee":
-        return MilwaukeeDocumentMailer(body)
+        return MilwaukeeDocumentMailer(body, submission)
 
 
 if __name__ == "__main__":
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             if os.path.exists(output_path):
                 continue
 
-            mailer = get_mailer(body)
+            mailer = get_mailer(body, submission)
             doc = mailer.render_document()
             with open(
                 output_path,
