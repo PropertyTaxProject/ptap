@@ -23,9 +23,19 @@ if __name__ == "__main__":
     with app.app_context():
         mailer = get_mailer(body)
         doc = mailer.render_document()
-        with open(os.path.join(CURRENT_DIR, "output.docx"), "wb") as f:
+        with open(
+            os.path.join(
+                CURRENT_DIR, f"{body.agreement_name} {body.user.address}.docx"
+            ),
+            "wb",
+        ) as f:
             f.write(doc)
         if hasattr(mailer, "render_agreement"):
             agreement = mailer.render_agreement()
-            with open(os.path.join(CURRENT_DIR, "agreement.docx"), "wb") as f:
+            with open(
+                os.path.join(
+                    CURRENT_DIR, f"{body.agreement_name} Representation Agreement.docx"
+                ),
+                "wb",
+            ) as f:
                 f.write(agreement)
