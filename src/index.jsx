@@ -91,15 +91,6 @@ const router = createBrowserRouter([
         children: appealRoutes,
       },
       {
-        path: "/cook/*",
-        element: (
-          <AppealProvider region="cook">
-            <Outlet />
-          </AppealProvider>
-        ),
-        children: appealRoutes,
-      },
-      {
         path: "/milwaukee/*",
         element: (
           <AppealProvider region="milwaukee">

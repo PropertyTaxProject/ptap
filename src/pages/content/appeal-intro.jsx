@@ -185,7 +185,7 @@ const AppealIntro = ({ region }) => (
       <ul>
         <li>
           <b>Step 1</b>: Complete our online application by{" "}
-          <strong>May 9, 2024</strong>. You can fill this out for yourself, have
+          <strong>May 1, 2025</strong>. You can fill this out for yourself, have
           someone help you fill it out for yourself, or help someone else fill
           it out for themselves.
         </li>
@@ -201,11 +201,12 @@ const AppealIntro = ({ region }) => (
           application to determine whether they can file your appeal. If they
           can file your appeal, you will receive free legal representation. Our
           team will submit your appeal, along with any important documents, to
-          the Board of Assessors by its deadline, which is May 20, 2024.
+          the Board of Assessors by its deadline, which is May 19, 2025.
         </li>
         <li>
-          <b>Step 4</b>: Before October 14, 2024, the Board of Assessors will
-          send you a letter notifying you whether or not you won your appeal.
+          <b>Step 4</b>: On or around October 13, 2025, the Board of Assessors
+          will send you a letter notifying you whether or not you won your
+          appeal.
         </li>
       </ul>
     )}
