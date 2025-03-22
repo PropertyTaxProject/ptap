@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Type
 
 from . import db
@@ -18,10 +17,3 @@ def yes_no(value: Optional[bool]) -> str:
     if value is None:
         return ""
     return "Yes" if value else "No"
-
-
-def load_s3_json(s3, bucket, key):
-    try:
-        return json.load(s3.get_object(Bucket=bucket, Key=key)["Body"])
-    except Exception:
-        return
