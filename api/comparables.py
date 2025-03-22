@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 from geoalchemy2.functions import ST_DistanceSphere
-from sqlalchemy import Integer, func, literal_column, case
+from sqlalchemy import Integer, case, func, literal_column
 from sqlalchemy.orm import aliased
 
 from . import db
