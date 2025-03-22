@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 from geoalchemy2.functions import ST_DistanceSphere
-from sqlalchemy import Integer, func, literal_column
+from sqlalchemy import Integer, func, literal_column, case
 from sqlalchemy.orm import aliased
 
 from . import db
@@ -97,8 +97,9 @@ def find_comparables(
     elif region == "milwaukee":
         query_filters.extend(
             [
-                model.bedrooms == (target.bedrooms or 0),
                 model.building_type == target.building_type,
+                # Bedroom can match +/- 1
+                *_min_max_query(model, "bedrooms", int, (target.bedrooms or 0), 1),
                 *_min_max_query(
                     model,
                     "total_sq_ft",
@@ -106,7 +107,7 @@ def find_comparables(
                     target.total_sq_ft,
                     comparable_params.sq_ft_diff,
                 ),
-                ((model.sale_year.is_(None)) | (model.sale_year >= 2021)),
+                ((model.sale_year.is_(None)) | (model.sale_year >= 2023)),
             ]
         )
     else:
@@ -152,7 +153,10 @@ def find_comparables(
                 func.abs(model_alias.total_sq_ft - (target.total_sq_ft or 0))
                 / ((target.total_sq_ft or 0) * 0.10)
             )
-            - ((model_alias.neighborhood == target.neighborhood).cast(Integer) * 5)
+            # Reduce diff score if sale year is 2024
+            - (case((model_alias.sale_year == 2024, 2), else_=0))
+            # Bumps weight of same neighborhood
+            - ((model_alias.neighborhood == target.neighborhood).cast(Integer) * 8)
         )
 
     query_limit = 30 if region == "cook" else 10
