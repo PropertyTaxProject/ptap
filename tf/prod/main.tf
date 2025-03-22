@@ -272,6 +272,15 @@ data "aws_iam_policy_document" "s3_uploads_public" {
     actions   = ["s3:GetObject"]
     resources = ["${module.s3_uploads.s3_bucket_arn}/*"]
   }
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    effect    = "Deny"
+    actions   = ["s3:ListBucket"]
+    resources = [module.s3_uploads.s3_bucket_arn]
+  }
 }
 
 module "s3_uploads" {
