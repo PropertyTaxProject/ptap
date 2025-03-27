@@ -356,7 +356,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
 
 class MilwaukeeDocumentMailer(BaseDocumentMailer):
     document_template = os.path.join(
-        BASE_DIR, "templates", "docs", "milwaukee_template_2024.docx"
+        BASE_DIR, "templates", "docs", "milwaukee_template_2025.docx"
     )
 
     def handle_region_data(self):
