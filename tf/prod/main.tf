@@ -280,6 +280,12 @@ data "aws_iam_policy_document" "s3_uploads_public" {
     effect    = "Deny"
     actions   = ["s3:ListBucket"]
     resources = [module.s3_uploads.s3_bucket_arn]
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:PrincipalAccount"
+      values   = ["${data.aws_caller_identity.current.account_id}"]
+    }
   }
 }
 
