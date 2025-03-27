@@ -7,7 +7,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom"
 import * as Sentry from "@sentry/react"
 import AppealLookup from "./pages/steps/appeal-lookup"
 import SelectRegion from "./pages/select-region"
-import FinalPage from "./pages/final-page"
+import FinalPage from "./pages/steps/final-page"
 import { AppealProvider } from "./context/appeal"
 import HomeownerInfo from "./pages/steps/homeowner-info"
 import ReviewProperty from "./pages/steps/review-property"
@@ -98,10 +98,6 @@ const router = createBrowserRouter([
           </AppealProvider>
         ),
         children: appealRoutes,
-      },
-      {
-        path: "/completedappeal",
-        element: <FinalPage />,
       },
     ],
   },

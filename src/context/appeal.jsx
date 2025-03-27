@@ -112,7 +112,7 @@ function appealReducer(appeal, action) {
       return { ...appeal, economic_obsolescence: action.economic_obsolescence }
     }
     case "complete": {
-      return { ...initialAppeal }
+      return { ...initialAppeal, region: appeal.region }
     }
     case "resume": {
       return { ...action.appeal, resumed: true }
@@ -124,6 +124,7 @@ function appealReducer(appeal, action) {
 }
 
 const initialAppeal = {
+  region: null,
   pin: null,
   uuid: null,
   step: 1,
