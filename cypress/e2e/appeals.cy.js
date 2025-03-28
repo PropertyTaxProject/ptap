@@ -1,5 +1,7 @@
 describe("Appeal flow", () => {
-  let contact, milwaukee, cook
+  let contact
+  // let detroit
+  let milwaukee
   before(() => {
     cy.fixture("contact").then((f) => {
       contact = f
@@ -10,13 +12,10 @@ describe("Appeal flow", () => {
     cy.fixture("milwaukee").then((f) => {
       milwaukee = f
     })
-    cy.fixture("cook").then((f) => {
-      cook = f
-    })
   })
 
   it("Submits an appeal", () => {
-    const regions = [milwaukee, cook]
+    const regions = [milwaukee]
     regions.forEach(
       ({ region, appealUrl, pin, street_number, street_name, comparables }) => {
         cy.visit(appealUrl)

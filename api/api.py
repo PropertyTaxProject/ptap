@@ -19,7 +19,7 @@ from .tasks import (
     send_reminders,
     sync_submissions_spreadsheet,
 )
-from .utils import load_s3_json, model_from_region
+from .utils import model_from_region
 
 app = create_app()
 
@@ -137,8 +137,6 @@ def resume(region):
     app.logger.info(f"RESUME: {uuid}")
     submission = Submission.query.filter_by(uuid=uuid).first()
 
-    bucket = os.getenv("S3_SUBMISSIONS_BUCKET")
-    s3_submission = load_s3_json(app.config["S3_CLIENT"], bucket, uuid)
     data = {}
     if submission:
         data = submission.data
@@ -153,8 +151,6 @@ def resume(region):
                 model.pin.in_(data["selected_comparables"])
             )
         ]
-    elif s3_submission:
-        data = s3_submission
     else:
         return abort(404)
 

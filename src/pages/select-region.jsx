@@ -14,9 +14,6 @@ const SelectRegion = () => (
         <Link to="/detroit">Detroit</Link>
       </Button>
       <Button size="large">
-        <Link to="/cook">Cook County</Link>
-      </Button>
-      <Button size="large">
         <Link to="/milwaukee">Milwaukee</Link>
       </Button>
     </Space>

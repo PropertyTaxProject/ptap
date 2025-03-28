@@ -15,13 +15,12 @@ const cleanAppeal = (appeal) => {
   return {
     ...appeal,
     step: 1,
-    pin: appeal?.target_pin?.pin || appeal?.pin,
-    target: appeal?.target_pin || appeal?.target,
+    pin: appeal?.pin,
+    target: appeal?.target,
     eligibility: cleanEligibility(appeal.eligibility || {}),
-    selected_comparables:
-      appeal?.selectedComparables || appeal?.selected_comparables,
-    search_properties: appeal?.propertyOptions || appeal?.search_properties,
-    property: appeal?.userProperty || appeal?.property,
+    selected_comparables: appeal?.selected_comparables,
+    search_properties: appeal?.search_properties,
+    property: appeal?.property,
   }
 }
 
