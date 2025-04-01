@@ -121,13 +121,15 @@ const ReviewAppeal = () => {
         </>
       )}
       <h2>Your Property Condition</h2>
-      <p>
-        <strong>Damage level</strong>
-        <span style={{ textTransform: "capitalize" }}>
-          {" "}
-          {(appeal.damage_level || "").replace(/_/g, " ")}
-        </span>
-      </p>
+      {appeal.region !== "milwaukee" && (
+        <p>
+          <strong>Damage level</strong>
+          <span style={{ textTransform: "capitalize" }}>
+            {" "}
+            {(appeal.damage_level || "").replace(/_/g, " ")}
+          </span>
+        </p>
+      )}
       <p>
         <strong>Damage description</strong>
         <br />

@@ -119,7 +119,7 @@ class ParcelResponseBody(BaseModel):
         if getattr(parcel, "baths", None) is None:
             return
         if hasattr(parcel, "half_baths"):
-            return f"{parcel.baths}.{parcel.half_baths}"
+            return f"{parcel.baths}.{parcel.half_baths or 0}"
         return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(parcel.baths)
 
     @classmethod

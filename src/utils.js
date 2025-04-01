@@ -180,7 +180,7 @@ export const DISPLAY_FIELDS_MKE = [
     field: "bedrooms",
   },
   {
-    title: "Building type",
+    title: "Building style",
     field: "building_type",
   },
   {
