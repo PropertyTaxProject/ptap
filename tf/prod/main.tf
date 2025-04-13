@@ -29,7 +29,7 @@ locals {
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
   sheet_name      = "PTAP Submissions 2025"
-  mke_sheet_name  = "MKE PTAP Submissions 2025"
+  mke_sheet_name  = "PTAP MKE Submissions 2025"
 
   tags = {
     project     = local.name
