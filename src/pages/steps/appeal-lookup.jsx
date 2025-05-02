@@ -58,7 +58,7 @@ const AppealLookup = () => {
     dispatch({ type: "set-target", pin, target, eligible })
   }
 
-  if (appeal.region === "detroit" && !appeal.resumed) {
+  if (["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed) {
     return (
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
