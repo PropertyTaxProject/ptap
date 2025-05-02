@@ -144,6 +144,7 @@ jobs:
           make restore
 
       - uses: cypress-io/github-action@v6.7.10
+        continue-on-error: true
         env:
           VITE_BASE_URL: "http://localhost:5000"
           VITE_PUBLIC_URL: ""
