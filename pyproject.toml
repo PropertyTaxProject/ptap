@@ -9,7 +9,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11.3,<3.13.0"
-flask = "^3.0.0"
+flask = "^3.1.1"
 flask-pydantic = "^0.12.0"
 flask-cors = "^5.0.0"
 flask-mail = "^0.10.0"
