@@ -1,21 +1,21 @@
 describe("Appeal flow", () => {
   let contact
-  // let detroit
+  let detroit
   let milwaukee
   before(() => {
     cy.fixture("contact").then((f) => {
       contact = f
     })
-    // cy.fixture("detroit").then((f) => {
-    //   detroit = f
-    // })
+    cy.fixture("detroit").then((f) => {
+      detroit = f
+    })
     cy.fixture("milwaukee").then((f) => {
       milwaukee = f
     })
   })
 
   it("Submits an appeal", () => {
-    const regions = [milwaukee]
+    const regions = [detroit, milwaukee]
     regions.forEach(
       ({ region, appealUrl, pin, street_number, street_name, comparables }) => {
         cy.visit(appealUrl)
@@ -70,19 +70,17 @@ describe("Appeal flow", () => {
         )
         cy.get("button[type=submit]").contains("Next Page").click()
 
-        if (region === "cook") {
-          comparables.forEach(({ street_number, street_name }) => {
-            cy.get(".ant-table-content")
-              .last()
-              .contains("td", `${street_number} ${street_name}`)
-              .should("exist")
-              .parent()
-              .find("button")
-              .click()
-          })
+        comparables.forEach(({ street_number, street_name }) => {
+          cy.get(".ant-table-content")
+            .last()
+            .contains("td", `${street_number} ${street_name}`)
+            .should("exist")
+            .parent()
+            .find("button")
+            .click()
+        })
 
-          cy.get("button").contains("Next Page").click()
-        }
+        cy.get("button").contains("Next Page").click()
 
         if (region !== "milwaukee") {
           cy.get("#damage_damage_level label").contains("Average").click()

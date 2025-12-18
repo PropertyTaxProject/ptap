@@ -3,7 +3,7 @@ import { Form, Button, Row, Col, Space, Divider, Input, Radio } from "antd"
 import PropertyInfo from "../../components/property-info"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
-import { getPageLabel } from "../../utils"
+import { getPageLabel, getProjectConfig } from "../../utils"
 
 const { TextArea } = Input
 
@@ -35,12 +35,13 @@ const ReviewProperty = () => {
   const [showCharInput, updateCharInput] = useState(
     appeal.property?.validcharacteristics
   )
+  const projectConfig = getProjectConfig(appeal.region)
 
   const onFinish = (info) => {
     console.log("Received values of form: ", info)
     dispatch({ type: "set-user-property", property: info })
     navigate(
-      ["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed
+      !projectConfig.showComparables && !appeal.resumed
         ? "../damage"
         : "../comparables"
     )

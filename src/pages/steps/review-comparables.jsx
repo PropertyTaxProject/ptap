@@ -89,7 +89,7 @@ const ReviewComparables = () => {
         onChange={(pins) =>
           dispatch({ type: "select-comparables", pins: pins })
         }
-        includePrimary={["detroit", "milwaukee"].includes(appeal.region)}
+        includePrimary
         primary={appeal.selected_primary}
         onChangePrimary={(pin) =>
           dispatch({ type: "select-primary-comparable", pin })

@@ -9,7 +9,7 @@ export function getMaxComparables(region) {
   return 5
 }
 
-export function getPageLabel(pageName, { region, resumed }) {
+export function getPageLabel(pageName, { region }) {
   let pages = []
   if (region === "cook") {
     pages = [
@@ -32,12 +32,33 @@ export function getPageLabel(pageName, { region, resumed }) {
       "homeowner-info",
       ...agreementPage,
       "review-property",
-      ...(resumed ? ["review-comparables"] : []),
+      "review-comparables",
       "damage",
       "review-appeal",
     ]
   }
   return `Page ${pages.indexOf(pageName) + 1} of ${pages.length}`
+}
+
+export function getProjectConfig(region) {
+  const defaultConfig = {
+    showComparables: true,
+    economicObsolescense: false,
+    hopeExemption: false,
+    includeDamageLevel: false,
+  }
+  if (region === "detroit") {
+    return {
+      ...defaultConfig,
+      includeDamageLevel: true,
+      economicObsolescense: true,
+      hopeExemption: true,
+    }
+  } else if (region === "milwaukee") {
+    return defaultConfig
+  } else {
+    return defaultConfig
+  }
 }
 
 export const HELP_LINK = "https://calendly.com/stopforeclosuremke/appealhelp"

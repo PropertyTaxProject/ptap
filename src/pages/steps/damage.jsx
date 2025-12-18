@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { getPageLabel } from "../../utils"
+import { getPageLabel, getProjectConfig } from "../../utils"
 import { Button, Divider, Form, Radio, Space, Input, Checkbox } from "antd"
 import { FileUpload } from "../../components/file-upload"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
@@ -44,9 +44,11 @@ const Damage = () => {
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
+  const projectConfig = getProjectConfig(appeal.region)
 
   const allowNext =
-    (appeal.damage_level || appeal.region === "milwaukee") && appeal.damage
+    (projectConfig.includeDamageLevel ? appeal.damage_level : true) &&
+    appeal.damage
 
   return (
     <>
@@ -162,7 +164,7 @@ const Damage = () => {
             />
           </>
         )}
-        {appeal.resumed && appeal.region === "detroit" && (
+        {appeal.resumed && projectConfig.economicObsolescense && (
           <p>
             <br />
             <Checkbox
@@ -187,8 +189,7 @@ const Damage = () => {
           type="danger"
           onClick={() =>
             navigate(
-              ["detroit", "milwaukee"].includes(appeal.region) &&
-                !appeal.resumed
+              !projectConfig.showComparables && !appeal.resumed
                 ? "../review-property"
                 : "../comparables"
             )

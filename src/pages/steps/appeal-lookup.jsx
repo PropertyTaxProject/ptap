@@ -2,17 +2,17 @@ import React, { useContext } from "react"
 import PinLookup from "../../components/pin-lookup"
 import PinChooser from "../../components/pin-chooser"
 import AppealIntro from "../content/appeal-intro"
-import AppealClosed from "../content/appeal-closed"
 import { Button, Divider, Form, Radio, Row, Col } from "antd"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
-import { getPageLabel } from "../../utils"
+import { getPageLabel, getProjectConfig } from "../../utils"
 
 const AppealLookup = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
+  const projectConfig = getProjectConfig(appeal.region)
 
   let orgName = "Institute for Law and Organizing"
   let lawName = "University of Detroit Mercy School of Law"
@@ -56,16 +56,6 @@ const AppealLookup = () => {
 
     const eligible = appeal.eligibility.residence && appeal.eligibility.owner
     dispatch({ type: "set-target", pin, target, eligible })
-  }
-
-  if (["detroit", "milwaukee"].includes(appeal.region) && !appeal.resumed) {
-    return (
-      <Row>
-        <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
-          <AppealClosed region={appeal.region} />
-        </Col>
-      </Row>
-    )
   }
 
   return (
@@ -114,7 +104,7 @@ const AppealLookup = () => {
             <Radio value={false}>No</Radio>
           </Radio.Group>
         </Form.Item>
-        {appeal.region === "detroit" && (
+        {projectConfig.hopeExemption && (
           <Form.Item
             name="hope"
             rules={[{ required: true, message: "Your response is required." }]}
@@ -204,7 +194,7 @@ const AppealLookup = () => {
           [null, undefined].includes(appeal.eligibility?.owner) ||
           [null, undefined].includes(appeal.eligibility?.residence) ||
           ([null, undefined].includes(appeal.eligibility?.hope) &&
-            appeal.region === "detroit")
+            projectConfig.hopeExemption)
         }
         onClick={() => {
           // TODO: Turn into actual link

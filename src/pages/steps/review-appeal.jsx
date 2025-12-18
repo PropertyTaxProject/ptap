@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
-import { getPageLabel } from "../../utils"
+import { getPageLabel, getProjectConfig } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
@@ -66,6 +66,7 @@ const ReviewAppeal = () => {
   const appeal = useContext(AppealContext)
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
+  const projectConfig = getProjectConfig(appeal.region)
 
   const confirmInfo = async () => {
     setLoading(true)
@@ -121,7 +122,7 @@ const ReviewAppeal = () => {
         </>
       )}
       <h2>Your Property Condition</h2>
-      {appeal.region !== "milwaukee" && (
+      {projectConfig.includeDamageLevel && (
         <p>
           <strong>Damage level</strong>
           <span style={{ textTransform: "capitalize" }}>
