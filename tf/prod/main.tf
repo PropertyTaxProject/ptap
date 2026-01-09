@@ -30,6 +30,10 @@ locals {
   github_subjects = ["PropertyTaxProject/ptap:*"]
   sheet_name      = "PTAP Submissions 2025"
   mke_sheet_name  = "PTAP MKE Submissions 2025"
+  forward_email   = "ptap@lawandorganizing.org"
+  sender_email    = "mail@${local.domain}"
+
+  forward_email_s3_prefix = "incoming/"
 
   tags = {
     project     = local.name
@@ -442,7 +446,7 @@ module "lambda" {
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
     S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
     DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.db.db_instance_endpoint}/${module.db.db_instance_name}"
-    MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
+    MAIL_DEFAULT_SENDER    = local.sender_email
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
     UOFM_MAIL              = data.aws_ssm_parameter.uofm_mail.value
@@ -499,6 +503,17 @@ resource "aws_route53_record" "api" {
 
     evaluate_target_health = false
   }
+}
+
+resource "aws_route53_record" "ses_mx" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = local.domain
+  type    = "MX"
+  ttl     = 300
+
+  records = [
+    "10 inbound-smtp.${data.aws_region.current.name}.amazonaws.com"
+  ]
 }
 
 module "acm" {
@@ -744,4 +759,136 @@ resource "aws_cloudwatch_log_subscription_filter" "logs_lambda" {
   log_group_name  = module.lambda.lambda_cloudwatch_log_group_name
   filter_pattern  = "%LOG_STEP%"
   destination_arn = module.logs_lambda.lambda_function_arn
+}
+
+resource "aws_sns_topic" "email_forward_failures" {
+  name = "${local.name}-forward-failures"
+}
+
+module "ses_email_forward_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.15.1"
+
+  bucket                  = "${local.name}-${local.env}-forwarded-emails"
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+data "aws_iam_policy_document" "ses_s3_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
+    resources = ["${module.ses_email_forward_bucket.s3_bucket_arn}/*"]
+    principals {
+      type        = "Service"
+      identifiers = ["ses.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "forward_bucket_policy" {
+  bucket = module.ses_email_forward_bucket.s3_bucket_id
+  policy = data.aws_iam_policy_document.ses_s3_policy.json
+}
+
+module "lambda_email_forwarder" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "6.0.1"
+
+  function_name = "${local.name}-${local.env}-email-forwarder"
+  handler       = "index.handler"
+  runtime       = "nodejs22.x"
+  publish       = true
+
+  source_path = "${path.module}/../files/email_forwarder"
+
+  timeout = 30
+
+  environment_variables = {
+    S3_BUCKET     = module.ses_email_forward_bucket.s3_bucket_id
+    S3_PREFIX     = local.forward_email_s3_prefix
+    SENDER_EMAIL  = local.sender_email
+    FORWARD_EMAIL = local.forward_email
+  }
+
+  attach_policy_statements = true
+  policy_statements = {
+    s3_read = {
+      effect    = "Allow"
+      actions   = ["s3:GetObject"]
+      resources = ["${module.ses_email_forward_bucket.s3_bucket_arn}/*"]
+    }
+
+    ses_send = {
+      effect    = "Allow"
+      actions   = ["ses:SendRawEmail"]
+      resources = ["*"]
+    }
+
+    sns_publish = {
+      effect    = "Allow"
+      actions   = ["sns:Publish"]
+      resources = [aws_sns_topic.email_forward_failures.arn]
+    }
+  }
+
+  allowed_triggers = {
+    SES = {
+      principal = "ses.amazonaws.com"
+    }
+  }
+
+  tags = local.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "forward_errors" {
+  alarm_name          = "${local.name}-email-forward-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "This metric monitors email forwarder errors"
+  alarm_actions       = [aws_sns_topic.email_forward_failures.arn]
+
+  dimensions = {
+    FunctionName = module.lambda_email_forwarder.lambda_function_name
+  }
+}
+
+resource "aws_ses_receipt_rule_set" "main" {
+  rule_set_name = "main"
+}
+
+resource "aws_ses_active_receipt_rule_set" "active" {
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
+}
+
+resource "aws_ses_receipt_rule" "forward_rule" {
+  name          = "forward-incoming"
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
+  enabled       = true
+  scan_enabled  = true
+
+  recipients = [
+    local.sender_email
+  ]
+
+  s3_action {
+    position          = 1
+    bucket_name       = module.ses_email_forward_bucket.s3_bucket_id
+    object_key_prefix = local.forward_email_s3_prefix
+  }
+
+  lambda_action {
+    position        = 2
+    function_arn    = module.lambda_email_forwarder.lambda_function_arn
+    invocation_type = "RequestResponse"
+  }
+
+  depends_on = [aws_s3_bucket_policy.forward_bucket_policy]
 }
