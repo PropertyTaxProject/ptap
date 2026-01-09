@@ -30,7 +30,6 @@ locals {
   github_subjects = ["PropertyTaxProject/ptap:*"]
   sheet_name      = "PTAP Submissions 2025"
   mke_sheet_name  = "PTAP MKE Submissions 2025"
-  forward_email   = "ptap@lawandorganizing.org"
   sender_email    = "mail@${local.domain}"
 
   forward_email_s3_prefix = "incoming/"
@@ -810,7 +809,7 @@ module "lambda_email_forwarder" {
     S3_BUCKET     = module.ses_email_forward_bucket.s3_bucket_id
     S3_PREFIX     = local.forward_email_s3_prefix
     SENDER_EMAIL  = local.sender_email
-    FORWARD_EMAIL = local.forward_email
+    FORWARD_EMAIL = data.aws_ssm_parameter.ptap_mail.value
   }
 
   attach_policy_statements = true
