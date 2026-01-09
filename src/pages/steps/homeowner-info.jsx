@@ -94,7 +94,9 @@ const HomeownerInfo = () => {
     appeal.user?.heardabout || null
   )
 
-  const onFinish = async (values) => {
+  const onFinish = async () => {
+    // Force it to re-check fields, hopefully addressing iOS autofill
+    const values = await form.validateFields()
     const info = {
       ...values,
       pin: appeal.pin,
