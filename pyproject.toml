@@ -25,6 +25,7 @@ dependencies = [
     'aws-wsgi (>=0.2.7,<0.3.0)',
     'awslambdaric (>=3.0.0,<4.0.0)',
     'sentry-sdk[flask] (>=2.19.2,<3.0.0)',
+    "pytz (>=2025.2,<2026.0)",
 ]
 
 [tool.poetry]
