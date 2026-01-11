@@ -1,6 +1,6 @@
 import json
 
-import awsgi
+import awsgi  # type: ignore
 
 from api.api import app
 

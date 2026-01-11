@@ -4,7 +4,7 @@ from typing import List, Optional, Self
 from pydantic import BaseModel, Field
 
 from .constants import METERS_IN_MILE
-from .models import ParcelType
+from .models import CookParcel, ParcelType
 
 
 class ParcelResponseBody(BaseModel):
@@ -53,7 +53,7 @@ class ParcelResponseBody(BaseModel):
                 getattr(parcel, "taxable_value", None)
             ),
             sale_price=ParcelResponseBody.clean_currency(parcel.sale_price),
-            sale_date=ParcelResponseBody.clean_date(getattr(parcel, "sale_date", None)),
+            sale_date=ParcelResponseBody.clean_date(getattr(parcel, "sale_date", None)),  # type: ignore[arg-type]
             property_class=getattr(parcel, "property_class", None),
             year_built=parcel.year_built,
             total_sq_ft=getattr(parcel, "total_sq_ft", None),
@@ -73,27 +73,27 @@ class ParcelResponseBody(BaseModel):
         )
 
     @classmethod
-    def clean_currency(cls, value: Optional[float]) -> Optional[str]:
+    def clean_currency(cls, value: float | None) -> str | None:
         if value is None:
-            return
+            return None
         return f"${value:,.0f}"
 
     @classmethod
-    def clean_date(cls, value: Optional[date]) -> Optional[str]:
+    def clean_date(cls, value: date | None) -> str | None:
         if value is None:
-            return
+            return None
         return value.strftime("%Y-%m-%d")
 
     @classmethod
-    def clean_distance(cls, value: Optional[float]) -> Optional[str]:
+    def clean_distance(cls, value: float | None) -> str | None:
         if value is None:
-            return
+            return None
         return f"{(value / METERS_IN_MILE):.2f} mi"
 
     @classmethod
-    def clean_stories(cls, value: Optional[int]) -> Optional[str]:
+    def clean_stories(cls, value: int | None) -> str | None:
         if value is None:
-            return
+            return None
         return str(
             {
                 1: "1 to 1.5",
@@ -103,9 +103,9 @@ class ParcelResponseBody(BaseModel):
         )
 
     @classmethod
-    def clean_exterior(cls, parcel: ParcelType) -> str:
+    def clean_exterior(cls, parcel: ParcelType) -> str | None:
         if not hasattr(parcel, "exterior"):
-            return
+            return None
         if hasattr(parcel, "building_sq_ft"):
             return {1: "Wood", 2: "Masonry", 3: "Wood/Masonry", 4: "Stucco"}.get(
                 parcel.exterior
@@ -115,23 +115,23 @@ class ParcelResponseBody(BaseModel):
         )
 
     @classmethod
-    def clean_baths(cls, parcel: ParcelType) -> Optional[str]:
-        if getattr(parcel, "baths", None) is None:
-            return
+    def clean_baths(cls, parcel: ParcelType) -> str | None:
+        if isinstance(parcel, CookParcel):
+            return None
         if hasattr(parcel, "half_baths"):
             return f"{parcel.baths}.{parcel.half_baths or 0}"
         return {1: "1", 2: "1.5", 3: "2 to 3", 4: "3+"}.get(parcel.baths)
 
     @classmethod
-    def clean_garage(cls, garage: Optional[bool]) -> Optional[str]:
+    def clean_garage(cls, garage: bool | None) -> str | None:
         if garage is None:
-            return
+            return None
         return "Yes" if garage else "None"
 
     @classmethod
-    def clean_basement(cls, parcel: ParcelType) -> str:
+    def clean_basement(cls, parcel: ParcelType) -> str | None:
         if not hasattr(parcel, "basement"):
-            return
+            return None
         if hasattr(parcel, "exterior"):
             return "Full" if parcel.basement else "Partial/None"
         return "Yes" if parcel.basement else "None"

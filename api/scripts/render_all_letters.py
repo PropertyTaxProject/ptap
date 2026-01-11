@@ -25,6 +25,7 @@ if __name__ == "__main__":
     since = datetime(2024, 12, 1)
 
     with app.app_context():
+        assert Submission.query is not None
         submissions = (
             Submission.query.filter(
                 or_(

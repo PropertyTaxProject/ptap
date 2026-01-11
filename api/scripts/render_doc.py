@@ -16,9 +16,9 @@ def get_mailer(body: RequestBody):
         return MilwaukeeDocumentMailer(body)
 
 
-if __name__ == "__main__":
-    with open(os.path.join(CURRENT_DIR, "input.json"), "r") as f:
-        body = RequestBody.parse_raw(f.read())
+def main(body: RequestBody):
+    if body.user is None:
+        return
 
     with app.app_context():
         mailer = get_mailer(body)
@@ -39,3 +39,9 @@ if __name__ == "__main__":
                 "wb",
             ) as f:
                 f.write(agreement)
+
+
+if __name__ == "__main__":
+    with open(os.path.join(CURRENT_DIR, "input.json"), "r") as f:
+        body = RequestBody.parse_raw(f.read())
+    main(body)

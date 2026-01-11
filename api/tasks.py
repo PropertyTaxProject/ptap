@@ -18,9 +18,9 @@ from .utils import yes_no
 
 def get_submission_worksheet(region: str) -> gspread.Worksheet:
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
-        return
+        raise ValueError("Environment variable GOOGLE_SERVICE_ACCOUNT not set")
 
-    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT"))
+    credentials_json = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT", ""))
     credentials = service_account.Credentials.from_service_account_info(
         credentials_json,
         scopes=[
@@ -32,9 +32,9 @@ def get_submission_worksheet(region: str) -> gspread.Worksheet:
     )
 
     client = gspread.authorize(credentials)
-    sheet_name = os.getenv("GOOGLE_SHEET_SUBMISSION_NAME")
+    sheet_name = os.getenv("GOOGLE_SHEET_SUBMISSION_NAME", "")
     if region == "milwaukee":
-        sheet_name = os.getenv("MKE_GOOGLE_SHEET_SUBMISSION_NAME")
+        sheet_name = os.getenv("MKE_GOOGLE_SHEET_SUBMISSION_NAME", "")
     return client.open(sheet_name).worksheet("submissions")
 
 

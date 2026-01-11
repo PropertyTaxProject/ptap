@@ -4,14 +4,19 @@ import uuid
 
 import sentry_sdk
 from flask import abort, jsonify, request, send_file
-from flask_pydantic import validate
+from flask_pydantic import validate  # type: ignore
 from jinja2 import Environment, FileSystemLoader
 from werkzeug.exceptions import HTTPException
 
 from . import STATIC_BUILD_DIR, create_app, mail
 from .comparables import find_comparables
 from .dto import ParcelResponseBody, RequestBody, ResponseBody, SearchResponseBody
-from .email import CookDocumentMailer, DetroitDocumentMailer, MilwaukeeDocumentMailer
+from .email import (
+    BaseMailer,
+    CookDocumentMailer,
+    DetroitDocumentMailer,
+    MilwaukeeDocumentMailer,
+)
 from .models import Submission
 from .queries import find_address_candidates, find_parcel, iso8601_serializer, log_step
 from .tasks import (
@@ -58,10 +63,15 @@ def handle_user_form(body: RequestBody):
     log_step(app.logger, {**body.model_dump(), "step": "comparables"})
 
     target = find_parcel(body.region, body.pin)
+    if target is None:
+        raise ValueError("Parcel not found")
     comparables = find_comparables(body.region, target)
+    parcel_body = ParcelResponseBody.from_parcel(target)
+    if parcel_body is None:
+        raise ValueError("Parcel not able to be parsed")
     return ResponseBody(
         **body.model_dump(),
-        target=ParcelResponseBody.from_parcel(target),
+        target=parcel_body,
         comparables=[
             ParcelResponseBody.from_parcel(comp, distance)
             for (comp, distance) in comparables
@@ -74,6 +84,7 @@ def handle_user_form(body: RequestBody):
 def handle_submit_appeal(body: RequestBody):
     submission = log_step(app.logger, {**body.model_dump(), "step": "submit"})
 
+    mailer: BaseMailer
     if body.region == "cook":
         mailer = CookDocumentMailer(body, submission)
     elif body.region == "detroit":
@@ -93,17 +104,12 @@ def handle_submit_appeal(body: RequestBody):
 def handle_agreement(body: RequestBody):
     submission = log_step(app.logger, {**request.json, "step": "agreement"})
 
-    if body.region == "cook":
-        mailer = CookDocumentMailer(body, submission)
-    elif body.region == "detroit":
+    if body.region == "detroit":
         mailer = DetroitDocumentMailer(body, submission)
-    elif body.region == "milwaukee":
-        mailer = MilwaukeeDocumentMailer(body, submission)
-    else:
-        raise ValueError("Invalid region supplied")
+        mailer.send_agreement_email(mail)
+        return ("", 204)
 
-    mailer.send_agreement_email(mail)
-    return ("", 204)
+    raise ValueError("Invalid region supplied")
 
 
 @app.route("/api/upload", methods=["POST"])

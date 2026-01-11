@@ -1,6 +1,7 @@
 import io
 import os
-from datetime import datetime
+from abc import ABC, abstractmethod
+from datetime import date, datetime
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import List, Mapping, Optional
 
@@ -15,8 +16,8 @@ from PIL import Image
 from pillow_heif import register_heif_opener
 
 from .constants import CURRENT_YEAR, METERS_IN_MILE, WORD_MIMETYPE
-from .dto import FileBody, ParcelResponseBody, RequestBody
-from .models import ParcelType, Submission
+from .dto import FileBody, ParcelResponseBody, RequestBody, UserFormBody
+from .models import DetroitParcel, MilwaukeeParcel, ParcelType, Submission
 from .queries import (
     find_parcel,
     find_parcel_with_distance,
@@ -79,16 +80,28 @@ class DocumentRenderer:
         return images
 
 
-class BaseDocumentMailer:
-    document_template: Optional[str] = None
+class BaseMailer(ABC):
+    body: RequestBody
+    user: UserFormBody
+    target: ParcelType
+    region: str
+    comparables: list[tuple[ParcelType, float]]
+    primary: tuple[ParcelType, float] | None
 
-    def __init__(self, body: RequestBody, submission: Optional[Submission] = None):
+    def __init__(self, body: RequestBody, submission: Submission | None = None):
+        if body.user is None:
+            raise ValueError("Body does not have a user form")
+
         self.body = body
+        self.user = body.user
         self.submission = submission
-        if self.document_template:
-            self.document = DocxTemplate(self.document_template)
         self.region = body.region
-        self.target = find_parcel(body.region, body.pin)
+        target = find_parcel(body.region, body.pin)
+        if self.target is None:
+            raise ValueError("Parcel not found for region and PIN")
+        assert target is not None
+        self.target: ParcelType = target
+
         self.comparables = find_parcels_from_ids_with_distance(
             body.region, self.target, body.selected_comparables
         )
@@ -98,10 +111,8 @@ class BaseDocumentMailer:
             ) / len(self.comparables)
         else:
             self.comparables_avg_sale_price = 0
-        self.primary = None
-        self.primary_distance = None
         if body.selected_primary:
-            self.primary, self.primary_distance = find_parcel_with_distance(
+            self.primary = find_parcel_with_distance(
                 body.region, body.selected_primary, self.target
             )
 
@@ -112,9 +123,7 @@ class BaseDocumentMailer:
             "address": f"{body.user.address}",
             "formal_owner": owner_name,
             "target": ParcelResponseBody.from_parcel(self.target),
-            "primary": ParcelResponseBody.from_parcel(
-                self.primary, self.primary_distance
-            )
+            "primary": ParcelResponseBody.from_parcel(*self.primary)
             if self.primary
             else None,
             "has_primary": self.primary is not None,
@@ -131,9 +140,23 @@ class BaseDocumentMailer:
         if os.getenv("GOOGLE_SHEET_SID"):
             self.context_data["log_url"] = (
                 "https://docs.google.com/spreadsheets/d/"
-                + os.getenv("GOOGLE_SHEET_SID")
+                + os.getenv("GOOGLE_SHEET_SID", "")
             )
         self.handle_region_data()
+
+    @abstractmethod
+    def handle_region_data(self): ...
+
+    @abstractmethod
+    def send_mail(self, mail: Mail): ...
+
+
+class BaseDocumentMailer(BaseMailer):
+    document_template: str | None = None
+
+    def __init__(self, body: RequestBody, submission: Optional[Submission] = None):
+        if self.document_template:
+            self.document = DocxTemplate(self.document_template)
 
     def render_document(self) -> bytes:
         renderer = DocumentRenderer(
@@ -146,9 +169,15 @@ class BaseDocumentMailer:
         if not primary:
             return {}
         if primary_distance:
-            primary_distance = "{:0.2f}mi".format(primary_distance / METERS_IN_MILE)
+            primary_distance_display = "{:0.2f}mi".format(
+                primary_distance / METERS_IN_MILE
+            )
+        sale_date: date | None = None
+        if isinstance(primary, DetroitParcel) or isinstance(primary, MilwaukeeParcel):
+            sale_date = primary.sale_date
+
         return {
-            "primary_distance": primary_distance or "",
+            "primary_distance": primary_distance_display or "",
             "contention_faircash": "${:,.0f}".format(primary.sale_price)
             if primary.sale_price
             else "",
@@ -158,16 +187,8 @@ class BaseDocumentMailer:
             "primary_sale_price": "${:,.0f}".format(primary.sale_price)
             if primary.sale_price
             else "",
-            "primary_sale_date": primary.sale_date.strftime("%Y-%m-%d")
-            if primary.sale_date
-            else "",
+            "primary_sale_date": sale_date.strftime("%Y-%m-%d") if sale_date else "",
         }
-
-    def handle_region_data(self):
-        raise NotImplementedError()
-
-    def send_mail(self, mail: Mail):
-        raise NotImplementedError()
 
 
 class DetroitDocumentMailer(BaseDocumentMailer):
@@ -235,7 +256,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
     def send_agreement_email(self, mail: Mail):
         # TODO: A little mixed up but works
         subject = f"Property Tax Appeal Agreement: {self.body.agreement_name}"
-        recipients = [os.getenv("PTAP_MAIL")]
+        recipients: list[str | tuple[str, str]] = [os.getenv("PTAP_MAIL", "")]
         message = Message(subject, recipients=recipients)
         message.html = render_template(
             "emails/agreement_log.html",
@@ -252,10 +273,10 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         mail.send(message)
 
     def submission_email(self) -> Message:
-        name = f"{self.body.user.first_name} {self.body.user.last_name}"
+        name = f"{self.user.first_name} {self.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
-        recipients = (
-            [os.getenv("PTAP_MAIL")] if self.body.resumed else [self.body.user.email]
+        recipients: list[str | tuple[str, str]] = (
+            [os.getenv("PTAP_MAIL", "")] if self.body.resumed else [self.user.email]
         )
 
         if self.body.eligibility and self.body.eligibility.hope:
@@ -273,9 +294,9 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         return msg
 
     def internal_submission_email(self, **kwargs) -> Message:
-        name = f"{self.body.user.first_name} {self.body.user.last_name}"
+        name = f"{self.user.first_name} {self.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
-        recipients = [os.getenv("PTAP_MAIL")]
+        recipients: list[str | tuple[str, str]] = [os.getenv("PTAP_MAIL", "")]
         msg = Message(subject, recipients=recipients)
         msg.html = render_template(
             "emails/submission_log.html",
@@ -292,7 +313,7 @@ class DetroitDocumentMailer(BaseDocumentMailer):
         actual_age: int,
         effective_age: int,
         damage: str,
-        damage_level: Optional[str],
+        damage_level: str,
     ) -> Mapping:
         condition = self.DAMAGE_TO_CONDITION.get(damage_level, [0, 0, 0])
         percent_good = 100 - effective_age
@@ -378,12 +399,12 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
         mail.send(message)
 
     def submission_email(self) -> Message:
-        name = f"{self.body.user.first_name} {self.body.user.last_name}"
+        name = f"{self.user.first_name} {self.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
-        recipients = (
-            [os.getenv("MILWAUKEE_MAIL")]
+        recipients: list[str | tuple[str, str]] = (
+            [os.getenv("MILWAUKEE_MAIL", "")]
             if self.body.resumed
-            else [self.body.user.email]
+            else [self.user.email]
         )
 
         body = render_template(
@@ -427,7 +448,7 @@ class CookDocumentMailer(BaseDocumentMailer):
         mail.send(internal_message)
 
     def submission_email(self) -> Message:
-        name = f"{self.body.user.first_name} {self.body.user.last_name}"
+        name = f"{self.user.first_name} {self.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
 
         body = render_template(
@@ -439,19 +460,22 @@ class CookDocumentMailer(BaseDocumentMailer):
 
         msg = Message(
             subject,
-            recipients=[os.getenv("PTAP_MAIL")],
+            recipients=[os.getenv("PTAP_MAIL", "")],
             cc=[os.getenv("CHICAGO_MAIL", "")],
-            reply_to=os.getenv("PTAP_MAIL"),
+            reply_to=os.getenv("PTAP_MAIL", ""),
         )
         msg.html = body
         return msg
 
+    def send_agreement_email(self, mail: Mail) -> None:
+        pass
+
     def internal_submission_email(self) -> Message:
-        name = f"{self.body.user.first_name} {self.body.user.last_name}"
+        name = f"{self.user.first_name} {self.user.last_name}"
         subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
         msg = Message(
             subject,
-            recipients=[os.getenv("PTAP_MAIL")],
+            recipients=[os.getenv("PTAP_MAIL", "")],
             cc=[os.getenv("CHICAGO_MAIL", "")],
         )
         msg.html = render_template(

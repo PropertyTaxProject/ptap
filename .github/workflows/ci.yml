@@ -51,6 +51,8 @@ jobs:
 
       - run: poetry run ruff check .
 
+      - run: poetry run mypy .
+
       - name: Download and restore database
         env:
           S3_BUCKET: ptap-dev-assets

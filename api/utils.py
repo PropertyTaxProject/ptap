@@ -1,19 +1,33 @@
-from typing import Optional, Type
+from typing import Literal, assert_never, overload
 
-from . import db
-from .models import CookParcel, DetroitParcel, MilwaukeeParcel
-
-
-def model_from_region(region: str) -> Type[db.Model]:
-    if region == "cook":
-        return CookParcel
-    elif region == "detroit":
-        return DetroitParcel
-    elif region == "milwaukee":
-        return MilwaukeeParcel
+from .models import CookParcel, DetroitParcel, MilwaukeeParcel, ParcelType, Region
 
 
-def yes_no(value: Optional[bool]) -> str:
+@overload
+def model_from_region(region: Literal["cook"]) -> type[CookParcel]: ...
+
+
+@overload
+def model_from_region(region: Literal["detroit"]) -> type[DetroitParcel]: ...
+
+
+@overload
+def model_from_region(region: Literal["milwaukee"]) -> type[MilwaukeeParcel]: ...
+
+
+def model_from_region(region: Region) -> type[ParcelType]:
+    match region:
+        case "cook":
+            return CookParcel
+        case "detroit":
+            return DetroitParcel
+        case "milwaukee":
+            return MilwaukeeParcel
+        case _:
+            assert_never(region)
+
+
+def yes_no(value: bool | None) -> str:
     if value is None:
         return ""
     return "Yes" if value else "No"

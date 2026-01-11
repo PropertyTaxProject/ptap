@@ -1,13 +1,20 @@
 from datetime import datetime
-from typing import Union
+from typing import TYPE_CHECKING, Literal, Union
 
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import JSONB
 
 from . import db
 
+if TYPE_CHECKING:
+    from flask_sqlalchemy.model import Model
+else:
+    Model = db.Model
 
-class CookParcel(db.Model):
+Region = Literal["cook", "detroit", "milwaukee"]
+
+
+class CookParcel(Model):
     __tablename__ = "cook"
     id = db.Column(db.Integer, primary_key=True)
     pin = db.Column(db.String(64), index=True)
@@ -50,7 +57,7 @@ class CookParcel(db.Model):
     )
 
 
-class DetroitParcel(db.Model):
+class DetroitParcel(Model):
     __tablename__ = "detroit"
     id = db.Column(db.Integer, primary_key=True)
     pin = db.Column(db.String(64), index=True)
@@ -97,7 +104,7 @@ class DetroitParcel(db.Model):
     )
 
 
-class MilwaukeeParcel(db.Model):
+class MilwaukeeParcel(Model):
     __tablename__ = "milwaukee"
     id = db.Column(db.Integer, primary_key=True)
     pin = db.Column(db.String(64), index=True)
@@ -142,7 +149,7 @@ class MilwaukeeParcel(db.Model):
 ParcelType = Union[CookParcel, DetroitParcel, MilwaukeeParcel]
 
 
-class Submission(db.Model):
+class Submission(Model):
     __tablename__ = "submissions"
     uuid = db.Column(db.String(64), primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
