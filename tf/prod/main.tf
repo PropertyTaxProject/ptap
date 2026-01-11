@@ -199,6 +199,11 @@ resource "aws_iam_policy" "read_access" {
           "cloudfront:Get*",
           "cloudfront:Describe*",
           "cloudfront:List*",
+          "cloudwatch:List*",
+          "cloudwatch:Describe*",
+          "sns:List*",
+          "sns:Describe*",
+          "ses:Get*",
         ]
         Effect   = "Allow"
         Resource = "*"
