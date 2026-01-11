@@ -76,7 +76,7 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
             [
                 rec.uuid,
                 rec.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                info.get("name", f'{info["first_name"]} {info["last_name"]}'),
+                info.get("name", f"{info['first_name']} {info['last_name']}"),
                 street_address,
                 info.get("email"),
                 info.get("phone"),
