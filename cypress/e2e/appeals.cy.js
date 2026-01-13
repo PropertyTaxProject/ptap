@@ -43,17 +43,6 @@ describe("Appeal flow", () => {
         cy.get("#Housing_Information_address").type(contact.address)
         cy.get("#Housing_Information_city").type(contact.city)
         cy.get("#Housing_Information_state").type(contact.state)
-        cy.get("#Housing_Information_mailingsame [type=radio]").check("Yes")
-        cy.get("#Housing_Information_altcontact [type=radio]").check("No")
-        cy.get("#Housing_Information_heardabout").click()
-        cy.get(".ant-select-dropdown").contains("Local Organization").click()
-        cy.get("#Housing_Information_localinput").type("Organization")
-        cy.get("button[type=submit]").contains("Next Page").click()
-
-        if (region === "detroit") {
-          cy.get("#Agreement_agreement_name").type(contact.name)
-          cy.get("button").contains("Next Page").click()
-        }
 
         if (region === "milwaukee") {
           cy.get("#Agreement_release_name").type(contact.name)

@@ -6,7 +6,7 @@ import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 
 const damageLabel =
-  "Please describe the condition of your home and neighborhood below. Be sure to include: (1) any damage to your property, both inside and out; and (2) any neighborhood characteristics that may lower your property’s value (for example, lots of vacant homes, nearby polluting factory, dumping, etc.)."
+  "Please describe the condition of your home and neighborhood. Be sure to include: (1) any damage to your property, both inside and out; and (2) anything in your neighborhood that may lower your home's value (for example, lots of vacant homes, nearby polluting factory, trash dumping, etc.)."
 const mkeLabel = (
   <p>
     <span>
@@ -82,7 +82,7 @@ const Damage = () => {
                   message: "You must select one of the options",
                 },
               ]}
-              label="To the best of your abilities, please pick a category that best describes the condition of your home. The Assessor uses these categories and criteria to rate the condition."
+              label="To the best of your abilities, please pick a category that best describes the condition of your home."
             >
               <Radio.Group
                 name="damage_level"
@@ -122,10 +122,6 @@ const Damage = () => {
                     <strong>Very poor</strong>: Condition approaches
                     unsoundness, extremely undesirable and barely usable
                   </Radio>
-                  <Radio value="unsound">
-                    <strong>Unsound</strong>: Building is definitely unsound and
-                    practically unfit for use
-                  </Radio>
                 </Space>
               </Radio.Group>
             </Form.Item>
@@ -152,9 +148,10 @@ const Damage = () => {
           <>
             <h2>Upload images</h2>
             <p>
-              We encourage you to upload photos showing damage to the inside and
-              outside of your home. Appeals that include photos are more
-              effective. No neighborhood photos are necessary.
+              We encourage you to upload photos showing damage to your home and
+              any neighborhood conditions that impact your home&apos;s value. If
+              you are unable to upload photos, you can call us for help or you
+              can bring copies of these photos with you to your hearing.
             </p>
             <FileUpload
               label="Click to upload images of the damage (optional)"

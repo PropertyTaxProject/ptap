@@ -86,13 +86,9 @@ const ReviewAppeal = () => {
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <h1>Your Appeal</h1>
           <p>
-            Below is the information you submitted as part of your application.
-            If the information is correct, please click the blue button at the
-            bottom of this page to finalize your application.
-          </p>
-          <p>
-            If you need to make changes to any of this information, please use
-            the “back button” to make those changes.
+            Below is the information you submitted. If the information is
+            correct, please click the blue button at the bottom of this page to
+            finalize your appeal letter.
           </p>
         </Col>
       </Row>

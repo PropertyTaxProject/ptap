@@ -1,17 +1,22 @@
-// TODO: Constant for now, may change
 // eslint-disable-next-line
 export function getMinComparables(region) {
-  return ["detroit", "milwaukee"].includes(region) ? 0 : 3
+  if (region === "detroit") {
+    return 1
+  } else if (region === "milwaukee") {
+    return 3
+  } else {
+    return 5
+  }
 }
-// TODO: Constant for now, may change
+
 // eslint-disable-next-line
 export function getMaxComparables(region) {
-  return 5
+  return region === "detroit" ? 1 : 5
 }
 
 export function getPageLabel(pageName, { region }) {
   let pages = []
-  if (region === "cook") {
+  if (["cook", "detroit"].includes(region)) {
     pages = [
       "appeal-lookup",
       "homeowner-info",
@@ -22,9 +27,7 @@ export function getPageLabel(pageName, { region }) {
     ]
   } else {
     let agreementPage = []
-    if (region === "detroit") {
-      agreementPage = ["agreement"]
-    } else if (region === "milwaukee") {
+    if (region === "milwaukee") {
       agreementPage = ["mke-agreement"]
     }
     pages = [
@@ -75,17 +78,13 @@ export const DISPLAY_FIELDS = [
     field: "year_built",
   },
   {
-    title: "Stories (Not Including Basement)",
+    title: "Stories",
     field: "stories",
   },
   {
     title: "Exterior",
     field: "exterior",
   },
-  // {
-  //   title: "Beds",
-  //   field: "bedrooms",
-  // },
   {
     title: "Baths",
     field: "baths",
@@ -95,28 +94,8 @@ export const DISPLAY_FIELDS = [
     field: "garage",
   },
   {
-    title: "Basement",
-    field: "basement",
-  },
-  {
-    title: "Distance",
-    field: "distance",
-  },
-  {
-    title: "Neighborhood",
-    field: "neighborhood",
-  },
-  {
-    title: "Total Sq Ft.",
-    field: "total_sq_ft",
-  },
-  {
     title: "Building Sq Ft.",
     field: "building_sq_ft",
-  },
-  {
-    title: "Assessed Value Tentative",
-    field: "assessed_value",
   },
   {
     title: "Sale Price",
@@ -246,3 +225,5 @@ export function getDisplayFields(region) {
   }
   return DISPLAY_FIELDS
 }
+
+export const DETROIT_PHONE = "313-438-8698"

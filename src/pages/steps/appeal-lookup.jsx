@@ -14,13 +14,6 @@ const AppealLookup = () => {
   const [form] = Form.useForm()
   const projectConfig = getProjectConfig(appeal.region)
 
-  let orgName = "Institute for Law and Organizing"
-  let lawName = "University of Detroit Mercy School of Law"
-  if (appeal.region === "milwaukee") {
-    orgName = "Community Advocates"
-    lawName = "University of Wisconsin Law School"
-  }
-
   const checkEligibility = () => {
     let alertMessage = null
     if (!appeal.eligibility.residence || !appeal.eligibility.owner) {
@@ -28,7 +21,7 @@ const AppealLookup = () => {
         "We do not service landlords. You must be the owner-occupant of the listed property to be eligible for ILO’s services."
     } else if (appeal.eligibility.hope) {
       alertMessage =
-        "If you qualify for HOPE, instead of filing an appeal, we will send you to our partners at Wayne Metro, who will help you complete a HOPE application."
+        "If your income qualifies you for HOPE, please reach out to Wayne Metro to complete a HOPE application, which will likely result in more property tax savings than filing an appeal. Contact Wayne Metro at [PHONE NUMBER] or Schedule an Appointment with Wayne Metro."
     } else if (!appeal.target.eligible) {
       // alertMessage =
       //   "You may not be eligible to receive our services. We only serve homes assessed below a certain threshold."
@@ -119,9 +112,8 @@ const AppealLookup = () => {
       </Form>
       <h2>Find Your Home</h2>
       <p>
-        Below, enter your street number, then your street name, and then hit
-        search. After searching for your home, hit the <strong>“Select”</strong>{" "}
-        button next to your address.
+        Enter your address and then hit the &quot;Select&quot; button next to
+        your address.
       </p>
       <PinLookup
         region={appeal.region}
@@ -176,12 +168,10 @@ const AppealLookup = () => {
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
           <p>
-            <b>Disclaimer:</b> The information you provide will help {orgName}{" "}
-            determine if we can assist you. Therefore, we cannot guarantee that{" "}
-            {lawName} will be able to represent you. After completing this
-            application, {orgName} will try to contact you three times. If we
-            don&apos;t hear from you after three attempts, we will not be able
-            to submit your appeal.
+            <b>Disclaimer:</b> The Institute for Law & Organizing and the
+            Coalition for Property Tax Justice are not providing you with legal
+            advice or representation. This is a self-help tool and you are
+            responsible for your own appeal.
           </p>
         </Col>
       </Row>

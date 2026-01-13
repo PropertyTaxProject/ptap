@@ -5,8 +5,8 @@ import { HELP_LINK } from "../../utils"
 import coalition from "../../assets/coalition_logo.png"
 import ilo from "../../assets/ilo.png"
 import communityAdvocates from "../../assets/community-advocates.jpg"
-import udmLaw from "../../assets/udmlaw.png"
 import uwLaw from "../../assets/uw-law.png"
+import { DETROIT_PHONE } from "../../utils"
 
 const AppealIntro = ({ region }) => (
   <>
@@ -30,16 +30,23 @@ const AppealIntro = ({ region }) => (
         </p>
       </>
     ) : (
-      <p>
-        The Institute for Law and Organizing and the Coalition for Property Tax
-        Justice are nonprofit community organizations, which have partnered with
-        the University of Detroit Mercy School of Law Housing Law Clinic to
-        create the Detroit Property Tax Appeal Program. This program helps
-        Detroit homeowners determine whether or not the City of Detroit has
-        illegally inflated their property taxes. If so, we partner with
-        homeowners to file a property tax assessment appeal to correct this,
-        FREE OF CHARGE.
-      </p>
+      <>
+        <p>
+          The Detroit Property Tax Appeal Project helps Detroit homeowners
+          determine whether the City of Detroit has illegally inflated their
+          property taxes. You can use this application to help you create and
+          file your own property tax assessment appeal.
+        </p>
+        <p>
+          <strong>
+            Please note that this application helps you draft and file your own
+            appeal. The Institute for Law & Organizing and the Coalition for
+            Property Tax Justice are not providing you with legal advice or
+            representation.
+          </strong>
+        </p>
+        <p>Call {DETROIT_PHONE} with any questions.</p>
+      </>
     )}
 
     <Space wrap direction="horizontal">
@@ -63,89 +70,66 @@ const AppealIntro = ({ region }) => (
           />
         </>
       ) : (
-        <>
-          <img
-            src={udmLaw}
-            style={{ height: "80px" }}
-            alt="University of Detroit Mercy Law logo"
-          />
-          <img
-            src={coalition}
-            style={{ height: "80px" }}
-            alt="Coalition for Property Tax Justice logo"
-          />
-        </>
+        <img
+          src={coalition}
+          style={{ height: "80px" }}
+          alt="Coalition for Property Tax Justice logo"
+        />
       )}
     </Space>
     <br />
     <br />
     <h1>The Appeal Process</h1>
-    <p>
-      Here is a general overview of the property tax assessment appeal process:
-    </p>
-
     {region === "detroit" && (
       <>
         <p>
           Thanks to the people who have been building power with the Coalition
-          for Property Tax Justice, the City of Detroit has complied with our
-          demands and made the Assessor Review optional and not mandatory,
-          giving Detroit homeowners the same amount of time to file an appeal as
-          every other homeowner in the state of Michigan. Homeowners can now
-          appeal directly to the March Board of Review.
+          for Property Tax Justice, the City of Detroit simplified the property
+          tax appeals process. You can now appeal your property taxes to the
+          March Board of Review.
         </p>
         <ul>
           <li>
-            <b>Step 1</b>: Complete our online application by{" "}
-            <b>March 5, 2025</b>.
-          </li>
-          <li>
-            <b>Step 2</b>: We will review your application, determine if the
-            City has illegally inflated your property tax assessments, and reach
-            out for any further information we may need.
+            <b>Step 1</b>: Complete this online application.
             <ul>
               <li>
-                <em>
-                  Please note that the application offers you the opportunity to
-                  upload photographs of any damage to your home to increase the
-                  likelihood that your appeal will be successful. This is
-                  recommended, but not required. If you choose to include
-                  pictures in your application, you should have them on your
-                  computer prior to beginning your application. Our community
-                  advocates can help you with this process, if necessary.
-                </em>
+                To strengthen your appeal, you can submit photos of any home
+                damage through this application. To include photos, please have
+                them saved on your computer or cell phone before starting.
               </li>
             </ul>
           </li>
           <li>
-            <b>Step 3</b>: Our team will submit your documents to the March
-            Board of Review by its deadline, which is March 10, 2025.
+            <b>Step 2</b>: File your appeal with the March Board of Review.
+            <ul>
+              <li>
+                Option 1: Download your appeal letter and email it to the March
+                Board of Review.
+              </li>
+              <li>
+                Option 2: Complete this application and click &quot;Submit&quot;
+                to automatically file your appeal with the March Board of
+                Review.
+              </li>
+            </ul>
           </li>
           <li>
-            <b>Step 4</b>: Before June 2025, the Board of Review will send you a
-            letter notifying you whether or not you won your appeal.
+            <b>Step 3</b>: Attend your March Board of Review Hearing. You will
+            receive an email and/or notice via mail with information about when
+            your appeal is scheduled for a hearing.
+          </li>
+          <li>
+            <b>Step 4</b>: Before June 2026, the Board of Review will send you a
+            letter notifying you of the results of your appeal.
           </li>
         </ul>
         <p>
           <em>
-            If you are unable to complete the application or have questions,
-            please set up an appointment:{" "}
+            Call {DETROIT_PHONE} with any questions or
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
-              Schedule an appointment
-            </a>{" "}
-            or call us at 313-438-8698
-          </em>
-        </p>
-        <p>
-          <em>
-            Looking for an intro on how to use the app?{" "}
-            <a
-              href="https://drive.google.com/file/d/1C6bihayV8WG0-VAat7v6i4P4Ejea78A8/view"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Watch our video for more details
+              schedule an appointment
             </a>
+            .
           </em>
         </p>
       </>
@@ -211,18 +195,17 @@ const AppealIntro = ({ region }) => (
       </ul>
     )}
 
-    <h2>Who is Eligible for ILO&apos;s Services?</h2>
-    <p>You are eligible for services if you meet all of these criteria:</p>
+    <h2>Who can use this application?</h2>
 
     {region == "detroit" && (
-      <ul>
+      <ol>
         <li>You own a home in the City of Detroit;</li>
         <li>
-          You occupy that home as your permanent residence (we do not service
-          landlords); and
+          You occupy that home as your permanent residence (this tool is not for
+          landlords!); and
         </li>
         <li>Your home is worth $200,000 or less.</li>
-      </ul>
+      </ol>
     )}
     {region == "cook" && (
       <ul>

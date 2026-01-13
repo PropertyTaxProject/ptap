@@ -1,7 +1,6 @@
-import React, { useState, useContext } from "react"
-import { Form, Input, Button, Radio, Space, Select, Divider } from "antd"
+import React, { useContext } from "react"
+import { Form, Input, Button, Radio, Space, Divider } from "antd"
 import { getPageLabel } from "../../utils"
-const { Option } = Select
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitForm } from "../../requests"
@@ -86,13 +85,6 @@ const HomeownerInfo = () => {
   const dispatch = useContext(AppealDispatchContext)
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [showMailingAddr, updateMailingAddr] = useState(
-    appeal.user?.mailingsame
-  )
-  const [showAltContact, updateAltContact] = useState(appeal.user?.altcontact)
-  const [heardAbout, updateHeardAbout] = useState(
-    appeal.user?.heardabout || null
-  )
 
   const onFinish = async () => {
     // Force it to re-check fields, hopefully addressing iOS autofill
@@ -119,9 +111,7 @@ const HomeownerInfo = () => {
       comparables: res.comparables || [],
       target: res.target,
     })
-    if (appeal.region === "detroit") {
-      navigate("../agreement")
-    } else if (appeal.region === "milwaukee") {
+    if (appeal.region === "milwaukee") {
       navigate("../mke-agreement")
     } else {
       navigate("../review-property")
@@ -251,241 +241,6 @@ const HomeownerInfo = () => {
         >
           <Input name="state" />
         </Form.Item>
-
-        <Form.Item
-          name="mailingsame"
-          label="Is your mailing address the same as your home address?"
-          rules={[
-            {
-              required: true,
-              message: "Please respond",
-            },
-          ]}
-        >
-          <Radio.Group
-            name="mailingsame"
-            onChange={(e) => updateMailingAddr(e.target.value)}
-          >
-            <Radio value={"Yes"}>Yes</Radio>
-            <Radio value={"No"}>No</Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item
-          name="mailingaddress"
-          label="Enter your Mailing Address"
-          style={
-            showMailingAddr === "No" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showMailingAddr === "No" && (
-            <Input
-              name="mailingaddress"
-              placeholder="Please enter your mailing address"
-            />
-          )}
-        </Form.Item>
-
-        <Form.Item
-          name="altcontact"
-          label="Did someone help you fill out this form?"
-          rules={[
-            {
-              required: true,
-              message: "Please respond",
-            },
-          ]}
-        >
-          <Radio.Group
-            name="altcontact"
-            onChange={(e) => updateAltContact(e.target.value)}
-          >
-            <Radio value={"Yes"}>Yes</Radio>
-            <Radio value={"No"}>No</Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item
-          name="altcontactname"
-          label={
-            <p>
-              Enter{" "}
-              <strong>
-                <i>their</i>
-              </strong>{" "}
-              name
-            </p>
-          }
-          style={
-            showAltContact === "Yes" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showAltContact === "Yes" && (
-            <Input
-              name="altcontactname"
-              placeholder="Please enter their name"
-            />
-          )}
-        </Form.Item>
-
-        <Form.Item
-          name="altcontactrelationship"
-          label={
-            <p>
-              What is your relationship with{" "}
-              <strong>
-                <i>them</i>
-              </strong>
-              ?
-            </p>
-          }
-          style={
-            showAltContact === "Yes" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showAltContact === "Yes" && (
-            <Input
-              name="altcontactrelationship"
-              placeholder="Please enter your relationship"
-            />
-          )}
-        </Form.Item>
-
-        <Form.Item
-          name="altcontactemail"
-          label={
-            <p>
-              What is{" "}
-              <strong>
-                <i>their</i>
-              </strong>{" "}
-              email address?
-            </p>
-          }
-          style={
-            showAltContact === "Yes" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showAltContact === "Yes" && (
-            <Input
-              name="altcontactemail"
-              placeholder="Please enter their email"
-            />
-          )}
-        </Form.Item>
-
-        <Form.Item
-          name="altcontactphone"
-          label={
-            <p>
-              What is{" "}
-              <strong>
-                <i>their</i>
-              </strong>{" "}
-              phone number?
-            </p>
-          }
-          style={
-            showAltContact === "Yes" ? { display: "" } : { display: "none" }
-          }
-        >
-          {showAltContact === "Yes" && (
-            <Input
-              name="altcontactphone"
-              placeholder="Please enter their phone number"
-            />
-          )}
-        </Form.Item>
-
-        <Form.Item
-          name="heardabout"
-          label="How did you hear about us?"
-          rules={[
-            {
-              required: true,
-              message: "Please select from the dropdown options",
-            },
-          ]}
-        >
-          <Select name="heardabout" onChange={(v) => updateHeardAbout(v)}>
-            <Option value="local">Local Organization</Option>
-            <Option value="social media">
-              Social Media (Facebook, Instagram, or Twitter)
-            </Option>
-            <Option value="text">Text Message</Option>
-            <Option value="newspaper">From the news</Option>
-            <Option value="referral">
-              From a friend, neighbor, or family member
-            </Option>
-            <Option value="phone">Phone call</Option>
-            <Option value="other">Other</Option>
-          </Select>
-        </Form.Item>
-
-        {heardAbout === "social media" && (
-          <>
-            <Form.Item
-              name="socialmedia"
-              label="Social media platform"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select name="socialmedia">
-                <Option value="facebook">Facebook</Option>
-                <Option value="instagram">Instagram</Option>
-                <Option value="twitter">Twitter</Option>
-                <Option value="other">Other</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              name="socialmediainput"
-              label="Whose social media account did you learn about us from?"
-              rules={[{ required: true }]}
-            >
-              <Input name="socialmediainput" placeholder="Organization" />
-            </Form.Item>
-          </>
-        )}
-
-        {heardAbout === "local" && (
-          <Form.Item
-            name="localinput"
-            label="What organization told you about us?"
-            rules={[{ required: true }]}
-          >
-            <Input name="localinput" placeholder="Organization" />
-          </Form.Item>
-        )}
-
-        {heardAbout === "referral" && (
-          <Form.Item
-            name="referralinput"
-            label="Who referred you?"
-            rules={[{ required: true }]}
-          >
-            <Input
-              name="referralinput"
-              placeholder="Please enter who referred you"
-            />
-          </Form.Item>
-        )}
-
-        {heardAbout === "other" && (
-          <Form.Item
-            name="otherheardaboutinput"
-            label="Please enter how you heard about us"
-            rules={[{ required: true }]}
-          >
-            <Input
-              name="otherheardaboutinput"
-              placeholder="Please enter how you heard about us"
-            />
-          </Form.Item>
-        )}
 
         <Form.Item {...tailFormItemLayout}>
           <Space>

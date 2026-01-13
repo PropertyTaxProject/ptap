@@ -39,26 +39,11 @@ const ReviewComparables = () => {
     <>
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
-          <h1>
-            Pick the 3-5 properties that are the most similar to your property.
-          </h1>
+          <h1>Pick the properties that is most similar to your property</h1>
           <p>
-            These are called “comparable properties” and they are the most
-            important part of our appeal. Please pick the 3 to 5 properties that
-            are most similar to your own based on the information provided. We
-            would strongly recommend that the properties you select have:
+            This application looks at the sales of similar homes in your area to
+            help you estimate the value of your home.
           </p>
-          <ul>
-            <li>A total square footage similar to your home</li>
-            <li>A total number of bedrooms similar to your home</li>
-            <li>A total number of bathrooms similar to your home</li>
-            <li>
-              An assessed value lower than your home. If you are having trouble
-              finding comparable homes that have an assessed value lower than
-              your home then it is possible that your home has NOT been
-              overassessed.
-            </li>
-          </ul>
           <p>
             If you are unsure about how best to select properties please{" "}
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
@@ -76,8 +61,8 @@ const ReviewComparables = () => {
           <h2>Potential comparable properties near you</h2>
           <p>
             Below is a list of homes in your area that we have identified as
-            possibly similar to your home. Select properties by clicking the
-            &apos;Add&apos; on the far right.
+            possibly similar to your home. Select the property that you believe
+            is most similar to your home.
           </p>
         </Col>
       </Row>
@@ -85,14 +70,10 @@ const ReviewComparables = () => {
         headers={displayFields}
         propertyOptions={appeal.comparables}
         max={maxComparables}
+        isSelectLabels
         pins={appeal.selected_comparables.map(({ pin }) => pin)}
         onChange={(pins) =>
           dispatch({ type: "select-comparables", pins: pins })
-        }
-        includePrimary
-        primary={appeal.selected_primary}
-        onChangePrimary={(pin) =>
-          dispatch({ type: "select-primary-comparable", pin })
         }
       />
 

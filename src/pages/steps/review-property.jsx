@@ -95,26 +95,9 @@ const ReviewProperty = () => {
           )}
         </Form.Item>
 
-        <Form.Item
-          name="valueestimate"
-          label="How much do you think your house would sell for right now, as is? (If you are not sure, that's okay! Go ahead and provide a best guess)"
-        >
-          <Input name="valueestimate" placeholder="Your best estimate." />
-        </Form.Item>
-
         <Form.Item>
           <Space>
-            <Button
-              type="danger"
-              onClick={() =>
-                // TODO: Abstract out navigation
-                navigate(
-                  appeal.region === "detroit"
-                    ? "../agreement"
-                    : "../homeowner-info"
-                )
-              }
-            >
+            <Button type="danger" onClick={() => navigate("../homeowner-info")}>
               Back
             </Button>
             <Button type="primary" htmlType="submit">
