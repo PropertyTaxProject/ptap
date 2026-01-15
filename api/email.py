@@ -3,9 +3,8 @@ import os
 from abc import ABC, abstractmethod
 from datetime import date, datetime
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import List, Mapping, Optional
+from typing import Mapping, Optional
 
-import pytz
 import requests
 import sentry_sdk
 from docx.shared import Inches
@@ -33,7 +32,7 @@ class DocumentRenderer:
     document_template = None
 
     def __init__(
-        self, document: DocxTemplate, context: Mapping, images: List[FileBody] = []
+        self, document: DocxTemplate, context: Mapping, images: list[FileBody] = []
     ):
         self.document = document
         self.context = context
@@ -51,8 +50,8 @@ class DocumentRenderer:
         return file_stream.getvalue()
 
     def process_images(
-        self, document: DocxTemplate, files: List[FileBody], temp_dir: str
-    ) -> List[InlineImage]:
+        self, document: DocxTemplate, files: list[FileBody], temp_dir: str
+    ) -> list[InlineImage]:
         """Process images individually after upload"""
         register_heif_opener()
 
@@ -78,6 +77,34 @@ class DocumentRenderer:
             )
             images.append(InlineImage(document, temp_file.name, **img_kwargs))
         return images
+
+
+class PrimaryMixin:
+    def primary_details(self, primary: ParcelType, primary_distance: float) -> Mapping:
+        # TODO: clean up
+        if not primary:
+            return {}
+        if primary_distance:
+            primary_distance_display = "{:0.2f}mi".format(
+                primary_distance / METERS_IN_MILE
+            )
+        sale_date: date | None = None
+        if isinstance(primary, DetroitParcel) or isinstance(primary, MilwaukeeParcel):
+            sale_date = primary.sale_date
+
+        return {
+            "primary_distance": primary_distance_display or "",
+            "contention_faircash": "${:,.0f}".format(primary.sale_price)
+            if primary.sale_price
+            else "",
+            "contention_sev": "{:,.0f}".format(primary.sale_price / 2)
+            if primary.sale_price
+            else "",
+            "primary_sale_price": "${:,.0f}".format(primary.sale_price)
+            if primary.sale_price
+            else "",
+            "primary_sale_date": sale_date.strftime("%Y-%m-%d") if sale_date else "",
+        }
 
 
 class BaseMailer(ABC):
@@ -137,11 +164,6 @@ class BaseMailer(ABC):
             ],
             "year": CURRENT_YEAR,
         }
-        if os.getenv("GOOGLE_SHEET_SID"):
-            self.context_data["log_url"] = (
-                "https://docs.google.com/spreadsheets/d/"
-                + os.getenv("GOOGLE_SHEET_SID", "")
-            )
         self.handle_region_data()
 
     @abstractmethod
@@ -151,7 +173,7 @@ class BaseMailer(ABC):
     def send_mail(self, mail: Mail): ...
 
 
-class BaseDocumentMailer(BaseMailer):
+class BaseDocumentMailer(PrimaryMixin, BaseMailer):
     document_template: str | None = None
 
     def __init__(self, body: RequestBody, submission: Optional[Submission] = None):
@@ -164,42 +186,12 @@ class BaseDocumentMailer(BaseMailer):
         )
         return renderer.render_as_bytes()
 
-    def primary_details(self, primary: ParcelType, primary_distance: float) -> Mapping:
-        # TODO: clean up
-        if not primary:
-            return {}
-        if primary_distance:
-            primary_distance_display = "{:0.2f}mi".format(
-                primary_distance / METERS_IN_MILE
-            )
-        sale_date: date | None = None
-        if isinstance(primary, DetroitParcel) or isinstance(primary, MilwaukeeParcel):
-            sale_date = primary.sale_date
 
-        return {
-            "primary_distance": primary_distance_display or "",
-            "contention_faircash": "${:,.0f}".format(primary.sale_price)
-            if primary.sale_price
-            else "",
-            "contention_sev": "{:,.0f}".format(primary.sale_price / 2)
-            if primary.sale_price
-            else "",
-            "primary_sale_price": "${:,.0f}".format(primary.sale_price)
-            if primary.sale_price
-            else "",
-            "primary_sale_date": sale_date.strftime("%Y-%m-%d") if sale_date else "",
-        }
-
-
-class DetroitDocumentMailer(BaseDocumentMailer):
+class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
     """
     mailer = DetroitDocumentMailer(body, DocxTemplate(os.path.join(..)))
     mailer.send_mail(mail)
     """
-
-    document_template = os.path.join(
-        BASE_DIR, "templates", "docs", "detroit_template_2025.docx"
-    )
 
     DAMAGE_TO_CONDITION = {
         "excellent": [95, 98, 100],
@@ -229,48 +221,16 @@ class DetroitDocumentMailer(BaseDocumentMailer):
 
     def send_mail(self, mail: Mail):
         message = self.submission_email()
-        internal_message = self.internal_submission_email()
-        if os.getenv("ATTACH_LETTERS"):
-            letter_date = datetime.today()
-            if self.submission:
-                letter_date = self.submission.created_at
-            letter = (
-                f"{letter_date.strftime('%Y-%m-%d')} {self.body.agreement_name} {self.body.pin} Letter.docx",  # noqa
-                WORD_MIMETYPE,
-                self.render_document(),
-            )
-            message.attach(*letter)
-            if not self.body.resumed:
-                internal_message.attach(*letter)
+        appeal_message = self.appeal_email()
 
-        if self.body.agreement_name:
-            message.attach(
-                f"Property Tax Appeal Project Representation Agreement {self.body.agreement_name}.docx",  # noqa
-                WORD_MIMETYPE,
-                self.render_agreement(),
+        images = self.download_images(self.body.files)
+        for idx, image in enumerate(images):
+            appeal_message.attach(
+                filename=f"appeal-{idx}.jpg", content_type="image/jpeg", data=image
             )
 
         mail.send(message)
-        mail.send(internal_message)
-
-    def send_agreement_email(self, mail: Mail):
-        # TODO: A little mixed up but works
-        subject = f"Property Tax Appeal Agreement: {self.body.agreement_name}"
-        recipients: list[str | tuple[str, str]] = [os.getenv("PTAP_MAIL", "")]
-        message = Message(subject, recipients=recipients)
-        message.html = render_template(
-            "emails/agreement_log.html",
-            uuid=self.body.uuid,
-            agreement=self.body.agreement,
-            name=self.context_data["owner"],
-            street_address=self.target.street_address,
-        )
-        message.attach(
-            f"Property Tax Appeal Project Representation Agreement {self.body.agreement_name}.docx",  # noqa
-            WORD_MIMETYPE,
-            self.render_agreement(),
-        )
-        mail.send(message)
+        mail.send(appeal_message)
 
     def submission_email(self) -> Message:
         name = f"{self.user.first_name} {self.user.last_name}"
@@ -279,33 +239,30 @@ class DetroitDocumentMailer(BaseDocumentMailer):
             [os.getenv("PTAP_MAIL", "")] if self.body.resumed else [self.user.email]
         )
 
-        if self.body.eligibility and self.body.eligibility.hope:
-            body = render_template("emails/submission_detroit_hope.html", name=name)
-        else:
-            body = render_template(
-                "emails/submission_detroit.html",
-                name=name,
-                address=self.target.street_address,
-                has_images=len(self.body.files) > 0,
-            )
-
         msg = Message(subject, recipients=recipients, reply_to=os.getenv("PTAP_MAIL"))
-        msg.html = body
-        return msg
-
-    def internal_submission_email(self, **kwargs) -> Message:
-        name = f"{self.user.first_name} {self.user.last_name}"
-        subject = f"Property Tax Appeal Project Submission: {name} ({self.target.street_address})"  # noqa
-        recipients: list[str | tuple[str, str]] = [os.getenv("PTAP_MAIL", "")]
-        msg = Message(subject, recipients=recipients)
         msg.html = render_template(
-            "emails/submission_log.html",
+            "emails/submission_detroit.html",
             name=name,
             address=self.target.street_address,
-            sheet_sid=os.getenv("GOOGLE_SHEET_SID"),
-            **kwargs,
+            has_images=len(self.body.files) > 0,
         )
+        return msg
 
+    def appeal_email(self) -> Message:
+        """
+        Generate appeal email to go to the city that CCs the user and PTAP and also
+        sets the user's email as the reply-to address for them to get any follow up
+        """
+        msg = Message(
+            f"Property Tax Appeal: {self.target.street_address}",
+            recipients=[
+                os.getenv("DETROIT_APPEAL_MAIL", ""),
+                os.getenv("PTAP_MAIL", ""),
+                self.user.email,
+            ],
+            reply_to=self.user.email,
+        )
+        msg.html = render_template("emails/appeal_detroit.html", **self.context_data)
         return msg
 
     def get_depreciation(
@@ -350,29 +307,24 @@ class DetroitDocumentMailer(BaseDocumentMailer):
                 return level
         return ""
 
-    def render_agreement(self) -> bytes:
-        doc = DocxTemplate(
-            os.path.join(
-                BASE_DIR,
-                "templates",
-                "docs",
-                "detroit_representation_agreement_2025.docx",
-            )
-        )
-        timestamp = datetime.now(pytz.timezone("America/Detroit"))
-        agreement_date = timestamp.strftime("%Y-%m-%d")
-        renderer = DocumentRenderer(
-            doc,
-            {
-                "agreement_date": self.body.agreement_date or agreement_date,
-                "partner_name": self.body.agreement_name,
-                "parcel_num": self.target.pin,
-                "street_address": self.target.street_address,
-                "city": "Detroit",
-                "state": "MI",
-            },
-        )
-        return renderer.render_as_bytes()
+    def download_images(self, files: list[FileBody]) -> list[bytes]:
+        """Process images individually after upload"""
+        register_heif_opener()
+
+        images = []
+        for file in files:
+            res = requests.get(file.url)
+            if res.status_code != 200:
+                continue
+            try:
+                img = Image.open(io.BytesIO(res.content)).convert("RGB")
+            except Exception as e:
+                sentry_sdk.capture_exception(e)
+                continue
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG")
+            images.append(buf.getvalue())
+        return images
 
 
 class MilwaukeeDocumentMailer(BaseDocumentMailer):
@@ -466,9 +418,6 @@ class CookDocumentMailer(BaseDocumentMailer):
         )
         msg.html = body
         return msg
-
-    def send_agreement_email(self, mail: Mail) -> None:
-        pass
 
     def internal_submission_email(self) -> Message:
         name = f"{self.user.first_name} {self.user.last_name}"

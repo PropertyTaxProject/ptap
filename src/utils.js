@@ -74,12 +74,20 @@ export const DISPLAY_FIELDS = [
     field: "address",
   },
   {
+    title: "Sale Price",
+    field: "sale_price",
+  },
+  {
+    title: "Sale Date",
+    field: "sale_date",
+  },
+  {
     title: "Year built",
     field: "year_built",
   },
   {
-    title: "Stories",
-    field: "stories",
+    title: "Building Sq Ft.",
+    field: "building_sq_ft",
   },
   {
     title: "Exterior",
@@ -90,20 +98,12 @@ export const DISPLAY_FIELDS = [
     field: "baths",
   },
   {
+    title: "Stories",
+    field: "stories",
+  },
+  {
     title: "Garage",
     field: "garage",
-  },
-  {
-    title: "Building Sq Ft.",
-    field: "building_sq_ft",
-  },
-  {
-    title: "Sale Price",
-    field: "sale_price",
-  },
-  {
-    title: "Sale Date",
-    field: "sale_date",
   },
 ]
 

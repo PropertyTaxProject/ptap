@@ -125,7 +125,7 @@ const AppealIntro = ({ region }) => (
         </ul>
         <p>
           <em>
-            Call {DETROIT_PHONE} with any questions or
+            Call {DETROIT_PHONE} with any questions or{" "}
             <a target="_blank" rel="noopener noreferrer" href={HELP_LINK}>
               schedule an appointment
             </a>

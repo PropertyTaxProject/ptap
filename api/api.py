@@ -99,19 +99,6 @@ def handle_submit_appeal(body: RequestBody):
     return ("", 204)
 
 
-@app.route("/api/agreement", methods=["POST"])
-@validate()
-def handle_agreement(body: RequestBody):
-    submission = log_step(app.logger, {**request.json, "step": "agreement"})
-
-    if body.region == "detroit":
-        mailer = DetroitDocumentMailer(body, submission)
-        mailer.send_agreement_email(mail)
-        return ("", 204)
-
-    raise ValueError("Invalid region supplied")
-
-
 @app.route("/api/upload", methods=["POST"])
 def handle_upload():
     s3_key = f"{uuid.uuid4()}/{request.json['filename']}"

@@ -28,7 +28,7 @@ locals {
   state_bucket    = "ptap-terraform-state"
   domain          = "propertytaxproject.com"
   github_subjects = ["PropertyTaxProject/ptap:*"]
-  sheet_name      = "Dev PTAP Submissions 2025"
+  sheet_name      = "Dev PTAP Submissions 2026"
   mke_sheet_name  = "Dev MKE PTAP Submissions 2025"
 
   tags = {
@@ -65,16 +65,12 @@ data "aws_ssm_parameter" "db_password" {
   name = "/${local.name}/${local.env}/db_password"
 }
 
-data "aws_ssm_parameter" "google_sheet_sid" {
-  name = "/${local.name}/${local.env}/google_sheet_sid"
-}
-
-data "aws_ssm_parameter" "mke_google_sheet_sid" {
-  name = "/${local.name}/${local.env}/mke_google_sheet_sid"
-}
-
 data "aws_ssm_parameter" "ptap_mail" {
   name = "/${local.name}/${local.env}/ptap_mail"
+}
+
+data "aws_ssm_parameter" "detroit_appeal_mail" {
+  name = "/${local.name}/${local.env}/detroit_appeal_mail"
 }
 
 data "aws_ssm_parameter" "milwaukee_mail" {
@@ -251,12 +247,12 @@ module "lambda" {
     MAIL_PASSWORD          = data.aws_ssm_parameter.mail_password.value
     SENTRY_DSN             = data.aws_ssm_parameter.sentry_dsn.value
     GOOGLE_SERVICE_ACCOUNT = data.aws_ssm_parameter.google_service_account.value
-    GOOGLE_SHEET_SID       = data.aws_ssm_parameter.google_sheet_sid.value
     S3_UPLOADS_BUCKET      = module.s3_uploads.s3_bucket_id
     S3_SUBMISSIONS_BUCKET  = module.s3_submissions.s3_bucket_id
     DATABASE_URL           = "postgresql+psycopg2://${data.aws_ssm_parameter.db_username.value}:${data.aws_ssm_parameter.db_password.value}@${module.db.db_instance_endpoint}/${module.db.db_instance_name}"
     MAIL_DEFAULT_SENDER    = "mail@${local.domain}"
     PTAP_MAIL              = data.aws_ssm_parameter.ptap_mail.value
+    DETROIT_APPEAL_MAIL    = data.aws_ssm_parameter.detroit_appeal_mail.value
     MILWAUKEE_MAIL         = data.aws_ssm_parameter.milwaukee_mail.value
     ATTACH_LETTERS         = "true"
 
