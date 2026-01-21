@@ -150,6 +150,8 @@ class BaseMailer(ABC):
             "owner": owner_name,
             "address": f"{body.user.address}",
             "formal_owner": owner_name,
+            "email": body.user.email,
+            "phone": body.user.phone,
             "target": ParcelResponseBody.from_parcel(self.target),
             "primary": ParcelResponseBody.from_parcel(*self.primary)
             if self.primary
@@ -258,7 +260,7 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
             f"PROPERTY TAX APPEAL LETTER SUBMISSION {name} [{self.target.street_address}]",  # noqa
             sender=(
                 f"{name} via PTAP",
-                os.getenv("MAIL_DEFAULT_SENDER"),
+                os.getenv("MAIL_DEFAULT_SENDER", ""),
             ),
             recipients=[
                 os.getenv("DETROIT_APPEAL_MAIL", ""),
