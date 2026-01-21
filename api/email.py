@@ -253,8 +253,13 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
         Generate appeal email to go to the city that CCs the user and PTAP and also
         sets the user's email as the reply-to address for them to get any follow up
         """
+        name = f"{self.user.first_name} {self.user.last_name}"
         msg = Message(
-            f"PROPERTY TAX APPEAL LETTER SUBMISSION {self.user.first_name} {self.user.last_name} [{self.target.street_address}]",  # noqa
+            f"PROPERTY TAX APPEAL LETTER SUBMISSION {name} [{self.target.street_address}]",  # noqa
+            sender=(
+                f"{name} via PTAP",
+                os.getenv("MAIL_DEFAULT_SENDER"),
+            ),
             recipients=[
                 os.getenv("DETROIT_APPEAL_MAIL", ""),
                 os.getenv("PTAP_MAIL", ""),
