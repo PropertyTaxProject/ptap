@@ -138,6 +138,7 @@ class BaseMailer(ABC):
             ) / len(self.comparables)
         else:
             self.comparables_avg_sale_price = 0
+        self.primary = None
         if body.selected_primary:
             self.primary = find_parcel_with_distance(
                 body.region, body.selected_primary, self.target
@@ -216,7 +217,7 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
                 self.body.damage,
                 self.body.damage_level,
             ),
-            **self.primary_details(*self.primary),
+            **(self.primary_details(*self.primary) if self.primary else {}),
         }
 
     def send_mail(self, mail: Mail):

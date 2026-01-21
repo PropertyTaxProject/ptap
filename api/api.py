@@ -64,10 +64,14 @@ def search_comparables(region: str, pin: str):
     if target is None:
         raise ValueError("Parcel not found")
     comparables = find_comparables(region, target)
-    return jsonify({"comparables": [
-        ParcelResponseBody.from_parcel(comp, distance).model_dump(mode="json")
-        for (comp, distance) in comparables
-    ]})
+    return jsonify(
+        {
+            "comparables": [
+                ParcelResponseBody.from_parcel(comp, distance).model_dump(mode="json")
+                for (comp, distance) in comparables
+            ]
+        }
+    )
 
 
 @app.route("/api/user-form", methods=["POST"])
