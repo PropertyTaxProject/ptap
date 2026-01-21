@@ -47,6 +47,15 @@ export const lookupPin = async (region, address) => {
   }
 }
 
+export const lookupComparables = async (region, pin) => {
+  try {
+    const resp = await axios.get(`${BASE_URL}/api/comparables/${region}/${pin}`)
+    return resp.data
+  } catch (err) {
+    return []
+  }
+}
+
 export const createDirectUpload = async (filename) => {
   return (await axios.post(`${BASE_URL}/api/upload`, { filename })).data
 }

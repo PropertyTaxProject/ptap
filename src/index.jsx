@@ -8,6 +8,7 @@ import * as Sentry from "@sentry/react"
 import AppealLookup from "./pages/steps/appeal-lookup"
 import SelectRegion from "./pages/select-region"
 import FinalPage from "./pages/steps/final-page"
+import DetroitLookup from "./pages/detroit-lookup"
 import { AppealProvider } from "./context/appeal"
 import HomeownerInfo from "./pages/steps/homeowner-info"
 import ReviewProperty from "./pages/steps/review-property"
@@ -89,6 +90,10 @@ const router = createBrowserRouter([
           </AppealProvider>
         ),
         children: appealRoutes,
+      },
+      {
+        path: "/detroit-lookup/",
+        element: <DetroitLookup />,
       },
       {
         path: "/milwaukee/*",
