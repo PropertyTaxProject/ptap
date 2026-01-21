@@ -15,7 +15,8 @@ const ReviewComparables = () => {
   const maxComparables = getMaxComparables(appeal.region)
 
   const advancePage = () => {
-    // add up to exactly five on advance, update on submit
+    // If someone doesn't select comparables, add up to the minimum
+    // number from the ordered list of available comparables
     const selectedPins = appeal.selected_comparables.map(({ pin }) => pin)
     const availablePins = appeal.comparables
       .map(({ pin }) => pin)
@@ -86,12 +87,7 @@ const ReviewComparables = () => {
         >
           Back
         </Button>
-        <Button
-          size="large"
-          type="primary"
-          disabled={appeal.selected_comparables.length < minComparables}
-          onClick={advancePage}
-        >
+        <Button size="large" type="primary" onClick={advancePage}>
           Next Page
         </Button>
       </Space>
