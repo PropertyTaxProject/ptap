@@ -6,14 +6,12 @@ const FinalPage = () => {
   return (
     <>
       <h1>Your appeal has now been submitted.</h1>
-
-      <h2>What to expect next</h2>
       {appeal.region === "detroit" && (
         <>
           <p>Your appeal letter has now been submitted.</p>
-          <p>What to expect next</p>
+          <h2>What to expect next</h2>
           <p>
-            You will receieve an email with your appeal letter and verification
+            You will receive an email with your appeal letter and verification
             that your appeal letter was submitted to the March Board of Review.
             Be on the lookout for the Board of Review’s scheduling date for your
             hearing.
