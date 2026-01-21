@@ -77,10 +77,10 @@ describe("Appeal flow", () => {
         cy.get("#damage_damage").type("Damage description")
         cy.get("button").contains("Next Page").click()
 
-        cy.get("button").contains("Finalize Application").click()
+        cy.get("button").contains("Submit Appeal").click()
 
         cy.get("h1")
-          .contains("Your application has now been submitted")
+          .contains("Your appeal has now been submitted")
           .should("be.visible")
       }
     )

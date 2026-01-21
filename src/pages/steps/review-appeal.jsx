@@ -88,7 +88,7 @@ const ReviewAppeal = () => {
           <p>
             Below is the information you submitted. If the information is
             correct, please click the blue button at the bottom of this page to
-            finalize your appeal letter.
+            submit your appeal letter.
           </p>
         </Col>
       </Row>
@@ -156,7 +156,7 @@ const ReviewAppeal = () => {
           type="primary"
           onClick={confirmInfo}
         >
-          Finalize Application
+          Submit Appeal
         </Button>
       </Space>
       <Divider />

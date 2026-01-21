@@ -64,9 +64,10 @@ export function getProjectConfig(region) {
   }
 }
 
-export const HELP_LINK = "https://calendly.com/stopforeclosuremke/appealhelp"
+export const HELP_LINK =
+  "https://calendly.com/d/cmr7-z3h-fn8/property-tax-appeal-assistance"
 
-export const CONTACT_EMAIL = "stoptaxforeclosure@communityadvocates.net"
+export const CONTACT_EMAIL = "ptap@lawandorganizing.org"
 
 export const DISPLAY_FIELDS = [
   {

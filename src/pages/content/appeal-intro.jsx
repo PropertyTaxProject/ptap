@@ -199,12 +199,11 @@ const AppealIntro = ({ region }) => (
 
     {region == "detroit" && (
       <ol>
-        <li>You own a home in the City of Detroit;</li>
+        <li>You own a home in the City of Detroit</li>
         <li>
           You occupy that home as your permanent residence (this tool is not for
-          landlords!); and
+          landlords!)
         </li>
-        <li>Your home is worth $200,000 or less.</li>
       </ol>
     )}
     {region == "cook" && (

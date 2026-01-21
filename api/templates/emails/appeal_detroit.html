@@ -1,0 +1,107 @@
+<p>
+  <span>Protest of Property Tax Assessment</span>
+  <br />
+  <span>Homeowner: {{ owner }}</span>
+  <br />
+  <span>Parcel Identification: {{ pin }}</span>
+  <br />
+  <span>{{ address }}</span>
+</p>
+<p>Board of Review:</p>
+<p>
+  This appeal is submitted to challenge the property tax assessment for {{
+  address }}.
+</p>
+<p>
+  <strong>Summary of the Argument</strong>
+</p>
+<ul>
+  <li>
+    The assessed value of {{ address }} (the “Property”), incorrectly determined
+    by the City to be {{ target.assessed_value }}, should be no more than {{
+    contention_sev }}, based on the most similar comparable property: {{
+    primary.address }}.
+  </li>
+  <li>
+    The City of Detroit incorrectly applied the cost to construct approach to
+    calculate the Property&apos;s value.
+    <ul>
+      <li>
+        The Property should be treated as {{ capped_percent_good }}% good, but
+        Detroit&apos;s assessor treated the Property as {{ percent_good }}%
+        good.
+      </li>
+      <li>
+        The March Board of Review should correct the City of Detroit&apos;s
+        failure to follow the State Tax Commission&apos;s guidelines on
+        depreciation.
+      </li>
+    </ul>
+  </li>
+  <li>
+    The assessed value of Property should be further reduced as a result of
+    impairment in its utility and/or desirability caused by factors outside the
+    Property&apos;s boundaries.
+  </li>
+</ul>
+
+<p>Here is the relevant data on {{ owner }}'s property:</p>
+<ul>
+  <li>Address: {{ address }}</li>
+  <li>Baths: {{ target.baths }}</li>
+  <li>Square Footage: {{ target.building_sq_ft }}</li>
+  <li>Year Built: {{ target.year_built }}</li>
+  <li>Neighborhood: {{ target.neighborhood }}</li>
+  <li>Garage: {{ "Yes" if target.garage else "No" }}</li>
+</ul>
+
+<p>
+  A very similar property was recently sold at {{ primary.address }} for {{
+  primary_sale_price }} (the “Comparable Sale”). This Comparable Sale was marked
+  as an arms-length by the Detroit Assessment Division and used in the
+  City&apos;s ECF Sales Study, which looks at sales between April 1, 2023 and
+  March 31, 2025.
+</p>
+
+<p>Here is the relevant data on the Comparable Sale:</p>
+<ul>
+  <li>Address: {{ primary.address }}</li>
+  <li>Distance from home: {{ primary_distance }}</li>
+  <li>Baths: {{ primary.baths }}</li>
+  <li>Square Footage: {{ primary.building_sq_ft }}</li>
+  <li>Year Built: {{ primary.year_built }}</li>
+  <li>Neighborhood: {{ primary.neighborhood }}</li>
+  <li>Garage: {{ "Yes" if primary.garage else "No" }}</li>
+</ul>
+
+<p><strong>Incorrect Depreciation of {{ address }}</strong></p>
+<p>
+  Even if the March Board of Review (the “Board”) uses the Assessor&apos;s cost
+  to construct approach to value the Property, the Board would still need to
+  lower the Property&apos;s assessment. The City of Detroit has incorrectly
+  depreciated {{ address }}. State law requires that the City depreciate the
+  property based on the depreciation standards outlined in Volume I of the 2014
+  Assessor&apos;s Manual. Property is {{ age }} years old, but the City treats
+  the property as only {{ effective_age }} years old. Therefore, the City only
+  depreciated the cost to construct the Property by {{ percent_good }}%, when
+  they should have depreciated the cost to construct the Property by {{
+  capped_percent_good }}%. The City is only allowed to deviate from State
+  law-mandated depreciation schedule for “exceptional maintenance, remodeling,
+  replacements and additions,” including exceptionally poor maintenance. The
+  Property was not improved in any way that would warrant a deviation from the
+  State law-mandated depreciation schedule. As a result, the City incorrectly
+  depreciated and assessed the property. Therefore, the Board should also update
+  the assessment roll and the Property&apos;s record card to reflect that is has
+  an effective age of {{ capped_age }}.
+</p>
+
+<p>
+  Sincerely,
+  <br />
+  {{ owner }}
+</p>
+
+<p><strong>Appendix 1</strong></p>
+<p>The damage to {{ address }} is described as the following:</p>
+<p>{{ damage }}</p>
+<p>Photos of the damage described are attached to this email.</p>

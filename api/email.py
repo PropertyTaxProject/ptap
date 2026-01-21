@@ -124,7 +124,7 @@ class BaseMailer(ABC):
         self.submission = submission
         self.region = body.region
         target = find_parcel(body.region, body.pin)
-        if self.target is None:
+        if target is None:
             raise ValueError("Parcel not found for region and PIN")
         assert target is not None
         self.target: ParcelType = target
@@ -216,7 +216,7 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
                 self.body.damage,
                 self.body.damage_level,
             ),
-            **self.primary_details(self.primary, self.primary_distance),
+            **self.primary_details(*self.primary),
         }
 
     def send_mail(self, mail: Mail):
@@ -244,7 +244,6 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
             "emails/submission_detroit.html",
             name=name,
             address=self.target.street_address,
-            has_images=len(self.body.files) > 0,
         )
         return msg
 
@@ -254,7 +253,7 @@ class DetroitDocumentMailer(PrimaryMixin, BaseMailer):
         sets the user's email as the reply-to address for them to get any follow up
         """
         msg = Message(
-            f"Property Tax Appeal: {self.target.street_address}",
+            f"PROPERTY TAX APPEAL LETTER SUBMISSION {self.user.first_name} {self.user.last_name} [{self.target.street_address}]",  # noqa
             recipients=[
                 os.getenv("DETROIT_APPEAL_MAIL", ""),
                 os.getenv("PTAP_MAIL", ""),
@@ -338,7 +337,7 @@ class MilwaukeeDocumentMailer(BaseDocumentMailer):
             "current_faircash": f"${((self.target.assessed_value or 0) * 2):.0f}",
             "contention_faircash2": f"${self.comparables_avg_sale_price:,.0f}",
             "comparables_count": len(self.comparables),
-            **self.primary_details(self.primary, self.primary_distance),
+            **self.primary_details(*self.primary),
         }
 
     def send_mail(self, mail: Mail):

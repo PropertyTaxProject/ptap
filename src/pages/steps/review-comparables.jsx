@@ -21,16 +21,26 @@ const ReviewComparables = () => {
     const availablePins = appeal.comparables
       .map(({ pin }) => pin)
       .filter((pin) => !selectedPins.includes(pin))
-    dispatch({
-      type: "select-comparables",
-      pins: [
-        ...selectedPins,
-        ...availablePins.slice(
-          0,
-          Math.max(0, minComparables - selectedPins.length)
-        ),
-      ],
-    })
+    const selectedComparables = [
+      ...selectedPins,
+      ...availablePins.slice(
+        0,
+        Math.max(0, minComparables - selectedPins.length)
+      ),
+    ]
+    // Hacky workaround to handling primary
+    if (selectedComparables.length === 1) {
+      dispatch({
+        type: "select-primary-comparable",
+        pin: selectedComparables[0],
+      })
+    } else {
+      dispatch({
+        type: "select-comparables",
+        pins: selectedComparables,
+      })
+    }
+
     navigate("../damage")
   }
 

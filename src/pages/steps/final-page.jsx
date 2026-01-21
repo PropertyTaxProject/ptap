@@ -5,18 +5,31 @@ const FinalPage = () => {
   const appeal = useContext(AppealContext)
   return (
     <>
-      <h1>Your application has now been submitted.</h1>
+      <h1>Your appeal has now been submitted.</h1>
 
       <h2>What to expect next</h2>
       {appeal.region === "detroit" && (
-        <p>
-          Our team will contact you before our March 5th deadline. In the
-          meantime, if you have any questions, you can send us an email at:{" "}
-          <a href="mailto:ptap@lawandorganizing.org">
-            ptap@lawandorganizing.org
-          </a>{" "}
-          or 313-438-8698.
-        </p>
+        <>
+          <p>Your appeal letter has now been submitted.</p>
+          <p>What to expect next</p>
+          <p>
+            You will receieve an email with your appeal letter and verification
+            that your appeal letter was submitted to the March Board of Review.
+            Be on the lookout for the Board of Review’s scheduling date for your
+            hearing.
+          </p>
+          <p>
+            In the meantime, if you have any questions, you can send us an email
+            at: ptap@lawandorganizing.org or 313-438-8698.
+          </p>
+          <p>
+            We do not represent you and you are responsible for any further
+            action related to your appeal, including attending the hearing and
+            providing the City of Detroit with any other information that they
+            may request. You can always contact us with questions, although we
+            cannot provide you with legal advice or representation.
+          </p>
+        </>
       )}
       {appeal.region === "milwaukee" && (
         <p>
