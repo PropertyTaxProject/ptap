@@ -60,7 +60,7 @@ def find_address_candidates(region: str, address: str) -> List[ParcelType]:
     return (
         model.query.filter(model.street_address.op("%")(address))
         .order_by(func.similarity(model.street_address, address).desc())
-        .limit(10)
+        .limit(5)
         .all()
     )
 

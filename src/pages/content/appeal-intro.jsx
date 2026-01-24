@@ -32,10 +32,10 @@ const AppealIntro = ({ region }) => (
     ) : (
       <>
         <p>
-          The Detroit Property Tax Appeal Project helps Detroit homeowners
-          determine whether the City of Detroit has illegally inflated their
-          property taxes. You can use this application to help you create and
-          file your own property tax assessment appeal.
+          The Angela B. Wilson Property Tax Appeal Project helps Detroit
+          homeowners determine whether the City of Detroit has illegally
+          inflated their property taxes. You can use this application to help
+          you create and file your own property tax assessment appeal.
         </p>
         <p>
           <strong>

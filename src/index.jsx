@@ -3,10 +3,14 @@ import "./index.css"
 import React from "react"
 import { createRoot } from "react-dom/client"
 import App from "./app"
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom"
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+  Outlet,
+} from "react-router-dom"
 import * as Sentry from "@sentry/react"
 import AppealLookup from "./pages/steps/appeal-lookup"
-import SelectRegion from "./pages/select-region"
 import FinalPage from "./pages/steps/final-page"
 import DetroitLookup from "./pages/detroit-lookup"
 import { AppealProvider } from "./context/appeal"
@@ -80,7 +84,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <SelectRegion />,
+        element: <Navigate to="/detroit" replace />,
       },
       {
         path: "/detroit/*",

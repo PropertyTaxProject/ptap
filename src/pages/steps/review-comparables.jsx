@@ -50,7 +50,7 @@ const ReviewComparables = () => {
     <>
       <Row>
         <Col xs={{ span: 24, offset: 0 }} md={{ span: 16, offset: 0 }}>
-          <h1>Pick the properties that is most similar to your property</h1>
+          <h1>Pick the property that is most similar to your home</h1>
           <p>
             This application looks at the sales of similar homes in your area to
             help you estimate the value of your home.
