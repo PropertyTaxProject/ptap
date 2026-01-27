@@ -23,8 +23,12 @@ code {
   background-color: #ffde52;
 }
 
-.ant-form-large .ant-form-item-label > label {
+.ant-form-large .ant-form-item-label > label,
+.ant-form-large .ant-form-item-label > label.ant-form-item-required {
   height: auto;
+  overflow: visible;
+  white-space: normal;
+  overflow-y: visible;
 }
 
 .ant-form-item-explain,
