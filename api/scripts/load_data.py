@@ -99,7 +99,9 @@ def load_detroit():
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
             try:
                 sale_price = (
-                    float(row["SALEPRICE"]) if row["SALEPRICE"] not in ["", "NA"] else None
+                    float(row["SALEPRICE"])
+                    if row["SALEPRICE"] not in ["", "NA"]
+                    else None
                 )
             except Exception:
                 sale_price = None
