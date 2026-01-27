@@ -41,10 +41,11 @@ def find_comparables(
                 model.sale_price is not None,
                 model.sale_price
                 <= (target.assessed_value or 0) * 3 + 1000 * multiplier,
-                model.sale_date >= "2023-03-31",
                 model.sale_price > 500,
             ]
         )
+        if not issubclass(model, CookParcel):
+            query_filters.append(model.sale_date >= "2023-03-31")
 
     # TODO: Clean up this chunk
     if region == "detroit" and isinstance(target, DetroitParcel):
