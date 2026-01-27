@@ -41,7 +41,7 @@ def get_submission_worksheet(region: str) -> gspread.Worksheet:
 def sync_submissions_spreadsheet(worksheet, region, since=None):
     if since is None:
         # TODO: Come up with a better way of doing this
-        since = datetime(2024, 12, 1)
+        since = datetime(2026, 1, 26)
         # since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
     complete_submissions = (
         Submission.query.filter(
