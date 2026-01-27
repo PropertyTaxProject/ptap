@@ -166,6 +166,7 @@ class BaseMailer(ABC):
                 ParcelResponseBody.from_parcel(p, d) for p, d in self.comparables
             ],
             "year": CURRENT_YEAR,
+            "has_images": len(body.files) > 0,
         }
         self.handle_region_data()
 
