@@ -90,16 +90,19 @@ def load_cook():
 
 
 def load_detroit():
-    with open(os.path.join(DATA_DIR, "detroit-2025.csv"), "r") as f:
+    with open(os.path.join(DATA_DIR, "detroit-2026.csv"), "r") as f:
         detroit_parcels = []
         reader = csv.DictReader(f)
         for idx, row in enumerate(reader):
             point = None
             if row["Longitude"] not in ["", "NA"]:
                 point = f"POINT({row['Longitude']} {row['Latitude']})"
-            sale_price = (
-                float(row["SALEPRICE"]) if row["SALEPRICE"] not in ["", "NA"] else None
-            )
+            try:
+                sale_price = (
+                    float(row["SALEPRICE"]) if row["SALEPRICE"] not in ["", "NA"] else None
+                )
+            except Exception:
+                sale_price = None
             total_sq_ft = (
                 float(row["TOTALSQFT"]) if row["TOTALSQFT"] not in ["", "NA"] else None
             )
@@ -117,6 +120,8 @@ def load_detroit():
             sale_date = None
             sale_year = None
             if row["SALEDATE"]:
+                if len(row["SALEDATE"]) < 10:
+                    continue
                 sale_date = datetime.strptime(row["SALEDATE"][:10], "%Y-%m-%d").date()
                 sale_year = sale_date.year
             addr_split = row["PROPADDR"].split(" ")

@@ -97,7 +97,12 @@ const ReviewComparables = () => {
         >
           Back
         </Button>
-        <Button size="large" type="primary" onClick={advancePage}>
+        <Button
+          size="large"
+          type="primary"
+          disabled={appeal.comparables.length === 0}
+          onClick={advancePage}
+        >
           Next Page
         </Button>
       </Space>

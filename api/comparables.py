@@ -41,7 +41,7 @@ def find_comparables(
                 model.sale_price is not None,
                 model.sale_price
                 <= (target.assessed_value or 0) * 3 + 1000 * multiplier,
-                model.sale_year >= 2019,
+                model.sale_date >= "2023-03-31",
                 model.sale_price > 500,
             ]
         )
