@@ -197,9 +197,11 @@ resource "aws_iam_policy" "read_access" {
           "cloudfront:List*",
           "cloudwatch:List*",
           "cloudwatch:Describe*",
+          "sns:Get*",
           "sns:List*",
           "sns:Describe*",
           "ses:Get*",
+          "ses:Describe*",
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -731,7 +733,7 @@ module "logs_lambda" {
 
   function_name = "${local.name}-logs-${local.env}"
   handler       = "log_scraper.lambda_handler"
-  runtime       = "python3.11"
+  runtime       = "python3.13"
   memory_size   = 128
   timeout       = 10
   publish       = true

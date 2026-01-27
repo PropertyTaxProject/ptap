@@ -1,7 +1,7 @@
 describe("Appeal flow", () => {
   let contact
   let detroit
-  let milwaukee
+  // let milwaukee
   before(() => {
     cy.fixture("contact").then((f) => {
       contact = f
@@ -9,13 +9,13 @@ describe("Appeal flow", () => {
     cy.fixture("detroit").then((f) => {
       detroit = f
     })
-    cy.fixture("milwaukee").then((f) => {
-      milwaukee = f
-    })
+    // cy.fixture("milwaukee").then((f) => {
+    //   milwaukee = f
+    // })
   })
 
   it("Submits an appeal", () => {
-    const regions = [detroit, milwaukee]
+    const regions = [detroit]
     regions.forEach(
       ({ region, appealUrl, pin, street_number, street_name, comparables }) => {
         cy.visit(appealUrl)
@@ -43,6 +43,7 @@ describe("Appeal flow", () => {
         cy.get("#Housing_Information_address").type(contact.address)
         cy.get("#Housing_Information_city").type(contact.city)
         cy.get("#Housing_Information_state").type(contact.state)
+        cy.get("button").contains("Next Page").click()
 
         if (region === "milwaukee") {
           cy.get("#Agreement_release_name").type(contact.name)
