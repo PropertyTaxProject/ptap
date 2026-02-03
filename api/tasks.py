@@ -57,20 +57,24 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
     )
     rows = []
 
-    app_subdomain = "app"
-    if not os.getenv("ENVIRONMENT") == "prod":
-        app_subdomain = "dev"
-
     for rec in complete_submissions:
         submission = rec.data
         info = submission.get("user", {})
         eligibility = submission.get("eligibility", {})
         user_property = submission.get("property", {})
         street_address = ""
+        assessed_value = ""
+        primary_sale_price = ""
+        # TODO: Do this in a smarter way
         if submission.get("pin"):
-            # TODO: Do this in a smarter way
             parcel = find_parcel(submission.get("region"), submission["pin"])
             street_address = parcel.street_address
+            assessed_value = parcel.assessed_value
+        if submission.get("selected_primary"):
+            primary = find_parcel(
+                submission.get("region"), submission["selected_primary"]
+            )
+            primary_sale_price = primary.sale_price
 
         rows.append(
             [
@@ -99,8 +103,8 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
                 submission.get("damage_level"),
                 submission.get("damage"),
                 len(submission.get("files", [])),
-                yes_no(submission.get("resumed")),
-                f"https://{app_subdomain}.propertytaxproject.com/{region}/resume?submission={rec.uuid}",  # noqa
+                assessed_value,
+                primary_sale_price,
             ]
         )
 
