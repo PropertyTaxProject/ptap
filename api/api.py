@@ -1,11 +1,13 @@
 import json
 import os
 import uuid
+from datetime import datetime
 
 import sentry_sdk
 from flask import abort, jsonify, request, send_file
 from flask_pydantic import validate  # type: ignore
 from jinja2 import Environment, FileSystemLoader
+from sqlalchemy import Boolean, or_
 from werkzeug.exceptions import HTTPException
 
 from . import STATIC_BUILD_DIR, create_app, mail
@@ -134,10 +136,39 @@ def handle_reminder():
 
 @app.route("/cron/submissions", methods=["GET"])
 def handle_submissions():
+    # TODO: Come up with a better way of doing this
+    since = datetime(2026, 1, 26)
     for region in ["detroit", "milwaukee"]:
         app.logger.info(f"Syncing submissions to spreadsheet: {region}")
-        worksheet = get_submission_worksheet(region)
-        sync_submissions_spreadsheet(worksheet, region)
+        sheet = get_submission_worksheet(region)
+        complete_submissions = (
+            Submission.query.filter(
+                or_(
+                    Submission.data["step"].astext == "submit",
+                    Submission.data["resumed"].astext.cast(Boolean).is_(True),
+                ),
+                Submission.data["region"].astext == region,
+                Submission.created_at >= since,
+            )
+            .order_by(Submission.created_at)
+            .all()
+        )
+        sync_submissions_spreadsheet(
+            complete_submissions, sheet.worksheet("submissions"), region
+        )
+
+        incomplete_submissions = (
+            Submission.query.filter(
+                Submission.data["step"].astext != "submit",
+                Submission.data["region"].astext == region,
+                Submission.created_at >= since,
+            )
+            .order_by(Submission.created_at)
+            .all()
+        )
+        sync_submissions_spreadsheet(
+            incomplete_submissions, sheet.worksheet("incomplete"), region
+        )
     return ("", 200)
 
 

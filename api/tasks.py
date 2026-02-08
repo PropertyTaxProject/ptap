@@ -7,7 +7,6 @@ import gspread
 import pytz
 import sentry_sdk
 from google.oauth2 import service_account
-from sqlalchemy import Boolean, or_
 
 from . import db
 from .email import detroit_reminder_email
@@ -16,7 +15,7 @@ from .queries import find_parcel
 from .utils import yes_no
 
 
-def get_submission_worksheet(region: str) -> gspread.Worksheet:
+def get_submission_worksheet(region: str) -> gspread.Spreadsheet:
     if not os.getenv("GOOGLE_SERVICE_ACCOUNT"):
         raise ValueError("Environment variable GOOGLE_SERVICE_ACCOUNT not set")
 
@@ -35,29 +34,12 @@ def get_submission_worksheet(region: str) -> gspread.Worksheet:
     sheet_name = os.getenv("GOOGLE_SHEET_SUBMISSION_NAME", "")
     if region == "milwaukee":
         sheet_name = os.getenv("MKE_GOOGLE_SHEET_SUBMISSION_NAME", "")
-    return client.open(sheet_name).worksheet("submissions")
+    return client.open(sheet_name)
 
 
-def sync_submissions_spreadsheet(worksheet, region, since=None):
-    if since is None:
-        # TODO: Come up with a better way of doing this
-        since = datetime(2026, 1, 26)
-        # since = datetime.now(pytz.timezone("America/Detroit")) - timedelta(days=3)
-    complete_submissions = (
-        Submission.query.filter(
-            or_(
-                Submission.data["step"].astext == "submit",
-                Submission.data["resumed"].astext.cast(Boolean).is_(True),
-            ),
-            Submission.data["region"].astext == region,
-            Submission.created_at >= since,
-        )
-        .order_by(Submission.created_at)
-        .all()
-    )
+def sync_submissions_spreadsheet(submissions, worksheet, region, since=None):
     rows = []
-
-    for rec in complete_submissions:
+    for rec in submissions:
         submission = rec.data
         info = submission.get("user", {})
         eligibility = submission.get("eligibility", {})
@@ -108,7 +90,7 @@ def sync_submissions_spreadsheet(worksheet, region, since=None):
             ]
         )
 
-    worksheet.update(rows, f"A2:AA{len(rows) + 2}")
+    worksheet.update(rows, f"A2:AB{len(rows) + 2}")
 
 
 def send_reminders(mail, logger):

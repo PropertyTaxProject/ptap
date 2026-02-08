@@ -60,6 +60,7 @@ def find_comparables(
                     comparable_params.floor_diff,
                 ),
                 detroit_model.exterior == (target.exterior or 0),
+                detroit_model.neighborhood == target.neighborhood,
             ]
         )
     elif region == "cook" and isinstance(target, CookParcel):
@@ -139,7 +140,6 @@ def find_comparables(
                 detroit_model_alias.total_floor_area - (target.total_floor_area or 0)
             )
             / 100
-            - (detroit_model_alias.neighborhood == target.neighborhood).cast(Integer)
         )
     elif region == "cook" and isinstance(target, CookParcel):
         cook_model_alias = cast("CookParcel", model_alias)
