@@ -160,6 +160,7 @@ def handle_submissions():
         incomplete_submissions = (
             Submission.query.filter(
                 Submission.data["step"].astext != "submit",
+                Submission.data["step"].astext != "pin-lookup",
                 Submission.data["region"].astext == region,
                 Submission.created_at >= since,
             )

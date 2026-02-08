@@ -228,3 +228,6 @@ export function getDisplayFields(region) {
 }
 
 export const DETROIT_PHONE = "313-438-8698"
+
+export const parseCurrency = (currencyStr) =>
+  Number(currencyStr.replace(/[^\d]/g, ""))

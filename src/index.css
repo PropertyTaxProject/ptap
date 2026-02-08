@@ -46,3 +46,12 @@ ul a {
 .ant-layout-header ul a {
   text-decoration: none;
 }
+
+.ant-table-row.valid-comparable,
+.ant-table-row.valid-comparable:hover > td {
+  background-color: #dff3e3;
+}
+.ant-table-row.invalid-comparable,
+.ant-table-row.invalid-comparable:hover > td {
+  background-color: #f6dada;
+}

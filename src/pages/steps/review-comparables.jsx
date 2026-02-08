@@ -5,7 +5,12 @@ import { getDisplayFields, getPageLabel } from "../../utils"
 import PinChooser from "../../components/pin-chooser"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
-import { getMinComparables, getMaxComparables, HELP_LINK } from "../../utils"
+import {
+  getMinComparables,
+  getMaxComparables,
+  parseCurrency,
+  HELP_LINK,
+} from "../../utils"
 
 const ReviewComparables = () => {
   const appeal = useContext(AppealContext)
@@ -75,6 +80,14 @@ const ReviewComparables = () => {
             possibly similar to your home. Select the property that you believe
             is most similar to your home.
           </p>
+          <p>
+            If the comparable is green that means the City overassessed your
+            home.
+          </p>
+          <p>
+            If the comparable is red that means the City did NOT overassess your
+            home.
+          </p>
         </Col>
       </Row>
       <PinChooser
@@ -85,6 +98,12 @@ const ReviewComparables = () => {
         pins={appeal.selected_comparables.map(({ pin }) => pin)}
         onChange={(pins) =>
           dispatch({ type: "select-comparables", pins: pins })
+        }
+        rowClassName={(row) =>
+          parseCurrency(row.sale_price) >=
+          parseCurrency(appeal.target.assessed_value) * 2
+            ? "invalid-comparable"
+            : "valid-comparable"
         }
       />
 

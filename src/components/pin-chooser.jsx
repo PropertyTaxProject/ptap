@@ -9,6 +9,7 @@ const PinChooser = ({
   max,
   headers,
   onChangePrimary,
+  rowClassName,
   primary = null,
   isSelectLabels = false,
   includePrimary = false,
@@ -25,6 +26,7 @@ const PinChooser = ({
         pin,
         key: pin,
       }))}
+      rowClassName={rowClassName}
       scroll={{ x: true }}
       pagination={false}
     >
@@ -83,6 +85,7 @@ PinChooser.propTypes = {
   pins: PropTypes.arrayOf(PropTypes.string),
   isSelectLabels: PropTypes.bool,
   onChangePrimary: PropTypes.func,
+  rowClassName: PropTypes.func,
   primary: PropTypes.string,
   includePrimary: PropTypes.bool,
 }

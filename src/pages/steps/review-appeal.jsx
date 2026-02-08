@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Button, Divider, Table, Space, Row, Col, Image } from "antd"
-import { getPageLabel, getProjectConfig } from "../../utils"
+import { getPageLabel, getProjectConfig, parseCurrency } from "../../utils"
 import { AppealContext, AppealDispatchContext } from "../../context/appeal"
 import { useNavigate } from "react-router-dom"
 import { submitAppeal } from "../../requests"
@@ -80,6 +80,10 @@ const ReviewAppeal = () => {
     navigate("../complete")
   }
 
+  const primaryComparable = appeal.comparables.find(
+    ({ pin }) => pin === appeal.selected_primary
+  )
+
   return (
     <>
       <Row>
@@ -141,6 +145,19 @@ const ReviewAppeal = () => {
         ))}
       </Image.PreviewGroup>
       <Divider />
+      {parseCurrency(appeal.target.assessed_value) * 2 <
+        parseCurrency(primaryComparable?.sale_price) && (
+        <>
+          <p>
+            <strong>
+              Although the City overvalued your home, this appeal is unlikely to
+              result in a reduction of your property taxes because of your
+              taxable value.
+            </strong>
+          </p>
+          <Divider />
+        </>
+      )}
       <Space>
         <Button
           size="large"

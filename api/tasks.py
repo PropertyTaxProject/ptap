@@ -62,7 +62,7 @@ def sync_submissions_spreadsheet(submissions, worksheet, region, since=None):
             [
                 rec.uuid,
                 rec.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                info.get("name", f"{info['first_name']} {info['last_name']}"),
+                info.get("name", f"{info.get('first_name')} {info.get('last_name')}"),
                 street_address,
                 info.get("email"),
                 info.get("phone"),
@@ -85,7 +85,7 @@ def sync_submissions_spreadsheet(submissions, worksheet, region, since=None):
                 submission.get("damage_level"),
                 submission.get("damage"),
                 len(submission.get("files", [])),
-                assessed_value,
+                assessed_value * 2,  # Getting market value
                 primary_sale_price,
             ]
         )
