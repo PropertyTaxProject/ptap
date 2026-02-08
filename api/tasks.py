@@ -87,6 +87,7 @@ def sync_submissions_spreadsheet(submissions, worksheet, region, since=None):
                 len(submission.get("files", [])),
                 assessed_value * 2,  # Getting market value
                 primary_sale_price,
+                submission.get("step"),
             ]
         )
 
