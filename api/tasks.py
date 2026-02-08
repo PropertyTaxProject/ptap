@@ -41,9 +41,9 @@ def sync_submissions_spreadsheet(submissions, worksheet, region, since=None):
     rows = []
     for rec in submissions:
         submission = rec.data
-        info = submission.get("user", {})
-        eligibility = submission.get("eligibility", {})
-        user_property = submission.get("property", {})
+        info = submission.get("user") or {}
+        eligibility = submission.get("eligibility") or {}
+        user_property = submission.get("property") or {}
         street_address = ""
         assessed_value = ""
         primary_sale_price = ""
@@ -114,7 +114,7 @@ def send_reminders(mail, logger):
     ):
         try:
             data = submission.data
-            email = data.get("user", {}).get("email", "").lower()
+            email = (data.get("user") or {}).get("email", "").lower()
             # Ignore user email if they've submitted or been sent a reminder
             if (data.get("step") == "submit") or data.get("reminder_sent"):
                 emails_to_ignore.add(email)
