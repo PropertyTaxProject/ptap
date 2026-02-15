@@ -242,7 +242,7 @@ jobs:
           REPOSITORY: ptap
           IMAGE_TAG: ${{ env.DEPLOY_ENV }}-${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build --platform linux/amd64 -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - uses: hashicorp/setup-terraform@v2
