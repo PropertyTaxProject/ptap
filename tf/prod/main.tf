@@ -177,6 +177,7 @@ resource "aws_iam_policy" "read_access" {
           "ecr:Get*",
           "ecr:List*",
           "ecr:Describe*",
+          "ecr:BatchGet*",
           "s3:Get*",
           "s3:List*",
           "events:Get*",
