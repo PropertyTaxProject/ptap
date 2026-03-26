@@ -39,6 +39,12 @@ const AppealClosed = ({ region }) => (
             alt="Coalition for Property Tax Justice logo"
           />
         </Space>
+        <br />
+        <br />
+        <p>
+          Our 2026 application period for the 2026 Property Tax Appeals Program
+          has closed.
+        </p>
       </>
     ) : (
       ``
